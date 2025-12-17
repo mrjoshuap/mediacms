@@ -166,6 +166,8 @@ patches:
 
 ### Using Overlays
 
+Note: Do not apply `kustomization.yaml` with `-f`; the server will return `no matches for kind "Kustomization"`. Always render with `-k` or pipe `oc kustomize ... | oc apply -f -`.
+
 **Development (using fork):**
 ```bash
 # Apply dev overlay
@@ -173,6 +175,9 @@ oc apply -k deploy/openshift/overlays/dev/
 
 # Or preview what will be applied
 oc kustomize deploy/openshift/overlays/dev/
+
+# Quick sanity check before applying
+oc kustomize deploy/openshift/overlays/dev/ | head -n 20
 ```
 
 **Production (using main repo):**

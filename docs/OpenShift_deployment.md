@@ -54,6 +54,7 @@ flowchart LR
 4. Apply the ArgoCD Application:
    - Production/default repo: `oc apply -k deploy/openshift/base/`
    - Dev/fork overlay: `oc apply -k deploy/openshift/overlays/dev/`
+   - Note: Applying `kustomization.yaml` with `-f` will fail (`no matches for kind "Kustomization"`); always render with `-k` or `oc kustomize ... | oc apply -f -`.
 5. Watch ArgoCD/builds/pods:
    ```bash
    oc get application mediacms -n openshift-gitops
