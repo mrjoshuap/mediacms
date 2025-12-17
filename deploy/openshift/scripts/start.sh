@@ -44,7 +44,7 @@ elif [ "${ENABLE_CELERY_SHORT:-no}" = "yes" ]; then
         --time-limit="${CELERY_SHORT_HARD_TIME_LIMIT:-360}" \
         --prefetch-multiplier="${CELERY_SHORT_PREFETCH_MULTIPLIER:-4}" \
         --max-tasks-per-child="${CELERY_SHORT_MAX_TASKS_PER_CHILD:-100}" \
-        -c"${CELERY_SHORT_CONCURRENCY:-4}" \
+        -c "${CELERY_SHORT_CONCURRENCY:-4}" \
         -Q "short_tasks" \
         -n "short@%h"
 elif [ "${ENABLE_CELERY_LONG:-no}" = "yes" ]; then
@@ -60,7 +60,7 @@ elif [ "${ENABLE_CELERY_LONG:-no}" = "yes" ]; then
         --max-tasks-per-child="${CELERY_LONG_MAX_TASKS_PER_CHILD:-20}" \
         --soft-time-limit="${CELERY_LONG_SOFT_TIME_LIMIT:-3600}" \
         --time-limit="${CELERY_LONG_HARD_TIME_LIMIT:-5400}" \
-        -c"${CELERY_LONG_CONCURRENCY:-1}" \
+        -c "${CELERY_LONG_CONCURRENCY:-1}" \
         -Q "long_tasks" \
         -n "long@%h"
 else
