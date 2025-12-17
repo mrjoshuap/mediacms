@@ -29,15 +29,21 @@ The deployment consists of:
 ```
 deploy/openshift/
 ├── README.md                        # This file
+├── app/                             # ArgoCD Application kustomizations (namespace: openshift-gitops)
+│   ├── base/
+│   │   ├── mediacms-application.yaml    # ArgoCD Application (main repo/branch)
+│   │   └── kustomization.yaml       # Kustomize for ArgoCD Application
+│   └── overlays/
+│       └── dev/
+│           └── kustomization.yaml   # ArgoCD Application overlay (fork repo/branch)
 ├── base/
-│   ├── mediacms-application.yaml    # ArgoCD Application manifest (defaults: main repo, main branch)
 │   ├── mediacms-config.yaml         # Non-sensitive configuration (ConfigMap)
 │   ├── mediacms-secrets.yaml        # Secret template with required keys
 │   ├── namespace.yaml               # Namespace definition
 │   ├── imagemagick-policy.yaml      # ImageMagick policy ConfigMap
 │   ├── uwsgi-config.yaml            # uWSGI configuration ConfigMap
 │   ├── web-config.yaml              # Nginx configuration ConfigMap
-│   └── kustomization.yaml           # Kustomize base configuration
+│   └── kustomization.yaml           # Kustomize base configuration (workloads)
 ├── overlays/
 │   ├── dev/
 │   │   └── kustomization.yaml       # Dev overlay (fork repo, deploy/openshift-4.19 branch)
@@ -76,24 +82,20 @@ The deployment uses Kustomize overlays to support environment-specific configura
 
 ### Base Configuration
 
-The `base/` directory contains the default configuration:
-- **Repository**: `https://github.com/mediacms-io/mediacms.git`
-- **Branch**: `main`
-- **Application Path**: `deploy/openshift/base`
+- **Workload base**: `base/` contains the default manifests ArgoCD will sync.
+- **ArgoCD Application base**: `app/base/` defines the Application in `openshift-gitops` and points to `deploy/openshift/base`.
+- **Defaults**: repository `https://github.com/mediacms-io/mediacms.git`, branch `main`, path `deploy/openshift/base`.
 
 ### Development Overlay
 
-The `overlays/dev/` directory patches the base configuration for development:
-- **Repository**: `https://github.com/mrjoshuap/mediacms.git` (fork)
-- **Branch**: `deploy/openshift-4.19`
-- Patches both the ArgoCD Application and BuildConfigs
+- **Workloads**: `overlays/dev/` patches the workload base (BuildConfig repo/ref, labels, etc.).
+- **ArgoCD Application**: `app/overlays/dev/` patches the Application to use the fork/branch (`https://github.com/mrjoshuap/mediacms.git`, `deploy/openshift-4.19`).
 
 ### Production Overlay
 
-The `overlays/prod/` directory uses base defaults (main repository) but can be extended with production-specific patches like:
-- Higher replica counts
-- Different resource limits
-- Production-specific configurations
+- **Workloads**: `overlays/prod/` uses base defaults (main repository) but can be extended with production-specific patches.
+- **ArgoCD Application**: `app/base/` already targets the main repo/branch; add an `app/overlays/prod/` only if you need Application-level overrides.
+- Common production workload patches: higher replica counts, different resource limits, production-specific configurations
 
 #### Common production patch examples
 
@@ -168,7 +170,7 @@ patches:
 
 Note: Do not apply `kustomization.yaml` with `-f`; the server will return `no matches for kind "Kustomization"`. Always render with `-k` or pipe `oc kustomize ... | oc apply -f -`.
 
-**Development (using fork):**
+**Development workloads (manual apply/preview):**
 ```bash
 # Apply dev overlay
 oc apply -k deploy/openshift/overlays/dev/
@@ -180,34 +182,44 @@ oc kustomize deploy/openshift/overlays/dev/
 oc kustomize deploy/openshift/overlays/dev/ | head -n 20
 ```
 
-**Production (using main repo):**
+**Production workloads (manual apply/preview):**
 ```bash
-# Apply base (or prod overlay)
+# Apply base
 oc apply -k deploy/openshift/base/
 
 # Or use prod overlay
 oc apply -k deploy/openshift/overlays/prod/
 ```
 
-**Creating ArgoCD Application from overlay:**
+**ArgoCD Application overlays (namespace: openshift-gitops):**
 ```bash
-# Generate the patched Application manifest
-oc kustomize deploy/openshift/overlays/dev/ | oc apply -f -
+# Generate the patched Application manifest (dev)
+oc kustomize deploy/openshift/app/overlays/dev/ | oc apply -f -
 
-# Or apply directly
-oc apply -k deploy/openshift/overlays/dev/
+# Apply dev overlay directly
+oc apply -k deploy/openshift/app/overlays/dev/
+
+# Apply production Application (main repo/branch)
+oc apply -k deploy/openshift/app/base/
 ```
 
 ### Customizing Overlays
 
-To create a new overlay or modify existing ones:
+To create a new **workload** overlay:
 
 1. Create a new directory under `overlays/` (e.g., `overlays/staging/`)
 2. Create a `kustomization.yaml` that references `../../base`
 3. Add patches for any resources you want to override
 4. Apply with `oc apply -k deploy/openshift/overlays/staging/`
 
-Example patch structure:
+To create a new **ArgoCD Application** overlay (for repo/branch tweaks):
+
+1. Create a new directory under `app/overlays/` (e.g., `app/overlays/staging/`)
+2. Create a `kustomization.yaml` that references `../../base`
+3. Add JSON6902 patches that target the `Application` resource
+4. Apply with `oc apply -k deploy/openshift/app/overlays/staging/`
+
+Example patch structure (`app/overlays/<env>/kustomization.yaml`):
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -318,19 +330,16 @@ Other deployments (web, celery workers) rely on the OpenShift Dockerfile default
      -n mediacms
    ```
 
-2. **Create ArgoCD Application**:
+2. **Create ArgoCD Application** (ArgoCD will then sync workloads from `deploy/openshift/base`):
 
    **For Production (main repository):**
    ```bash
-   oc apply -k deploy/openshift/base/
-   # Or specifically apply the Application
-   oc apply -f deploy/openshift/base/mediacms-application.yaml
+   oc apply -k deploy/openshift/app/base/
    ```
 
    **For Development (fork repository):**
    ```bash
-   # Apply dev overlay which patches the Application
-   oc apply -k deploy/openshift/overlays/dev/
+   oc apply -k deploy/openshift/app/overlays/dev/
    ```
 
 3. **ArgoCD will automatically**:

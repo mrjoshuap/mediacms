@@ -7,21 +7,7 @@ namespace: mediacms
 resources:
 - ../../base
 
-# Patches for ArgoCD Application
-  
-  
 patches:
-  # Patch Application to use fork repository and deploy/openshift-4.19 branch
-- patch: |-
-    - op: replace
-      path: /spec/source/repoURL
-      value: https://github.com/mrjoshuap/mediacms.git
-    - op: replace
-      path: /spec/source/targetRevision
-      value: deploy/openshift-4.19
-  target:
-    kind: Application
-    name: mediacms
   # Patch BuildConfig base to use fork repository and deploy/openshift-4.19 branch
 - patch: |-
     - op: replace

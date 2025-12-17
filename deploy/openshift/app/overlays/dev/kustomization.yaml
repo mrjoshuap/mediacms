@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../base
+
+patches:
+- target:
+    kind: Application
+    name: mediacms
+  patch: |-
+    - op: replace
+      path: /spec/source/repoURL
+      value: https://github.com/mrjoshuap/mediacms.git
+    - op: replace
+      path: /spec/source/targetRevision
+      value: deploy/openshift-4.19

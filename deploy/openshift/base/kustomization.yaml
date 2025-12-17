@@ -5,7 +5,6 @@ namespace: mediacms
 
 
 resources:
-- mediacms-application.yaml
 - namespace.yaml
 - mediacms-config.yaml
 - mediacms-secrets.yaml
