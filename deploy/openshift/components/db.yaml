@@ -52,6 +52,13 @@ spec:
       - name: postgres
         image: postgres:17.2-alpine
         imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
         ports:
         - name: postgres
           containerPort: 5432
