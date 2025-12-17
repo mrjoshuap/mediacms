@@ -1,0 +1,76 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrations
+  namespace: mediacms
+  labels:
+    app.kubernetes.io/name: mediacms
+    app.kubernetes.io/component: migrations
+    app.kubernetes.io/part-of: mediacms
+    app.kubernetes.io/managed-by: argocd
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-weight: "0"
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mediacms
+        app.kubernetes.io/component: migrations
+        app.kubernetes.io/part-of: mediacms
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: mediacms
+        image: mediacms-base:latest
+        imagePullPolicy: Always
+        command: ["./deploy/openshift/scripts/prestart.sh"]
+        env:
+        - name: ENABLE_UWSGI
+          value: "no"
+        - name: ENABLE_NGINX
+          value: "no"
+        - name: ENABLE_CELERY_BEAT
+          value: "no"
+        - name: ENABLE_CELERY_SHORT
+          value: "no"
+        - name: ENABLE_CELERY_LONG
+          value: "no"
+        - name: ENABLE_MIGRATIONS
+          value: "yes"
+        envFrom:
+        - configMapRef:
+            name: mediacms-config
+        - secretRef:
+            name: mediacms-secrets
+        volumeMounts:
+        - name: local-settings
+          mountPath: /home/mediacms.io/mediacms/cms/local_settings.py
+          subPath: local_settings.py
+          readOnly: true
+        - name: imagemagick-policy
+          mountPath: /etc/ImageMagick-6/policy.xml
+          subPath: policy.xml
+          readOnly: true
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "512Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+      volumes:
+      - name: local-settings
+        configMap:
+          name: mediacms-config
+      - name: imagemagick-policy
+        configMap:
+          name: imagemagick-policy
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL

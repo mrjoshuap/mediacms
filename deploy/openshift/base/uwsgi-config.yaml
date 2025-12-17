@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: uwsgi-config
+  namespace: mediacms
+  labels:
+    app.kubernetes.io/name: mediacms
+    app.kubernetes.io/part-of: mediacms
+    app.kubernetes.io/managed-by: argocd
+data:
+  uwsgi.ini: |
+    [uwsgi]
+
+    chdir = /home/mediacms.io/mediacms/
+    virtualenv = /home/mediacms.io
+    module = cms.wsgi
+
+    threads = 1
+
+    master = true
+
+    socket = 0.0.0.0:9000
+
+    workers = 2
+
+    vacuum = true
+
+    hook-master-start = unix_signal:15 gracefully_kill_them_all
+    need-app = true
+    die-on-term = true
+    buffer-size=32768

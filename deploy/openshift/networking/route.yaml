@@ -1,0 +1,22 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: web
+  namespace: mediacms
+  labels:
+    app.kubernetes.io/name: mediacms
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: mediacms
+    app.kubernetes.io/managed-by: argocd
+spec:
+  to:
+    kind: Service
+    name: web
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  # host: mediacms.example.com  # Uncomment and set your hostname
+  # wildcardPolicy: None

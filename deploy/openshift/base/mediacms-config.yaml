@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mediacms-config
+  namespace: mediacms
+  labels:
+    app.kubernetes.io/name: mediacms
+    app.kubernetes.io/part-of: mediacms
+    app.kubernetes.io/managed-by: argocd
+data:
+  # Application Settings
+  FRONTEND_HOST: "http://localhost"
+  PORTAL_NAME: "MediaCMS"
+  TIME_ZONE: "Europe/London"
+  
+  # Database Configuration (non-sensitive)
+  DB_HOST: "db"
+  DB_PORT: "5432"
+  DB_NAME: "mediacms"
+  # DB_USER and DB_PASSWORD are in Secrets
+  
+  # Redis Configuration
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+  REDIS_DB: "1"
+  REDIS_LOCATION: "redis://redis:6379/1"
+
+  # Celery Configuration
+  CELERY_LOG_LEVEL: "INFO"
+  CELERY_SHORT_SOFT_TIME_LIMIT: "600"
+  CELERY_SHORT_CONCURRENCY: "10"
+  CELERY_LONG_PREFETCH_MULTIPLIER: "1"
+    
+  # Python Environment
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+  VIRTUAL_ENV: "/home/mediacms.io"
+  
+  # Process Control (set per deployment)
+  # ENABLE_UWSGI, ENABLE_NGINX, ENABLE_CELERY_BEAT, etc. are set in deployments
+  
+  # local_settings.py - Python configuration file for Django settings overrides
+  local_settings.py: |
+    import os
+    
+    # Frontend and Portal Configuration
+    FRONTEND_HOST = os.getenv('FRONTEND_HOST', 'http://localhost')
+    PORTAL_NAME = os.getenv('PORTAL_NAME', 'MediaCMS')
+    SECRET_KEY = os.getenv('SECRET_KEY', '')
+    
+    # Database Configuration
+    # Uses OpenShift variable naming: DB_NAME, DB_HOST, DB_PORT from ConfigMap
+    # DB_USER and DB_PASSWORD from Secrets
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv('DB_NAME', 'mediacms'),
+            "HOST": os.getenv('DB_HOST', 'db'),
+            "PORT": os.getenv('DB_PORT', '5432'),
+            "USER": os.getenv('DB_USER', 'mediacms'),
+            "PASSWORD": os.getenv('DB_PASSWORD', ''),
+            "OPTIONS": {'pool': True},
+        }
+    }
+    
+    # Redis Cache Configuration
+    REDIS_LOCATION = os.getenv('REDIS_LOCATION', 'redis://redis:6379/1')
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": REDIS_LOCATION,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            },
+        }
+    }
+    
+    # Celery Configuration
+    BROKER_URL = REDIS_LOCATION
+    CELERY_RESULT_BACKEND = BROKER_URL
+    
+    # MP4HLS Command (if using bento4)
+    MP4HLS_COMMAND = "/home/mediacms.io/bento4/bin/mp4hls"
+    
+    # Debug Mode
+    DEBUG = os.getenv('DEBUG', 'False') == 'True'

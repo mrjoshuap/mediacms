@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mediacms-db-pvc
+  namespace: mediacms
+  labels:
+    app.kubernetes.io/name: mediacms
+    app.kubernetes.io/component: db
+    app.kubernetes.io/part-of: mediacms
+    app.kubernetes.io/managed-by: argocd
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  # Uses cluster default storage class; set storageClassName if a specific class is required

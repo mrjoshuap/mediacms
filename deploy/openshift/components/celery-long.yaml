@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-long
+  namespace: mediacms
+  labels:
+    app.kubernetes.io/name: mediacms
+    app.kubernetes.io/component: celery-long
+    app.kubernetes.io/part-of: mediacms
+    app.kubernetes.io/managed-by: argocd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mediacms
+      app.kubernetes.io/component: celery-long
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mediacms
+        app.kubernetes.io/component: celery-long
+        app.kubernetes.io/part-of: mediacms
+        app.kubernetes.io/managed-by: argocd
+    spec:
+      containers:
+      - name: mediacms
+        image: mediacms-base:latest
+        imagePullPolicy: Always
+        command: ["./deploy/openshift/scripts/entrypoint.sh"]
+        args: ["./deploy/openshift/scripts/start.sh"]
+        env:
+        - name: ENABLE_UWSGI
+          value: "no"
+        - name: ENABLE_NGINX
+          value: "no"
+        - name: ENABLE_CELERY_BEAT
+          value: "no"
+        - name: ENABLE_CELERY_SHORT
+          value: "no"
+        - name: ENABLE_CELERY_LONG
+          value: "yes"
+        - name: ENABLE_MIGRATIONS
+          value: "no"
+        - name: CELERY_LONG_CONCURRENCY
+          value: "1"
+        - name: CELERY_LONG_PREFETCH_MULTIPLIER
+          value: "1"
+        - name: CELERY_LONG_MAX_TASKS_PER_CHILD
+          value: "20"
+        - name: CELERY_LONG_SOFT_TIME_LIMIT
+          value: "3600"
+        - name: CELERY_LONG_HARD_TIME_LIMIT
+          value: "5400"
+        envFrom:
+        - configMapRef:
+            name: mediacms-config
+        - secretRef:
+            name: mediacms-secrets
+        volumeMounts:
+        - name: media-storage
+          mountPath: /home/mediacms.io/mediacms/media_files
+        - name: local-settings
+          mountPath: /home/mediacms.io/mediacms/cms/local_settings.py
+          subPath: local_settings.py
+          readOnly: true
+        - name: imagemagick-policy
+          mountPath: /etc/ImageMagick-6/policy.xml
+          subPath: policy.xml
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+          # emptyDir-backed /tmp scratch space
+        resources:
+          requests:
+            cpu: "1000m"
+            memory: "2Gi"
+          limits:
+            cpu: "4000m"
+            memory: "4Gi"
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - "ps aux | grep -v grep | grep celery.*long || exit 1"
+          initialDelaySeconds: 120
+          periodSeconds: 60
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - "ps aux | grep -v grep | grep celery.*long || exit 1"
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+      volumes:
+      - name: media-storage
+        persistentVolumeClaim:
+          claimName: media-files-pvc
+      - name: local-settings
+        configMap:
+          name: mediacms-config
+      - name: imagemagick-policy
+        configMap:
+          name: imagemagick-policy
+      - name: tmp
+        # emptyDir backing for /tmp
+        emptyDir: {}
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL

@@ -1,0 +1,13 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: mediacms-base
+  namespace: mediacms
+  labels:
+    app.kubernetes.io/name: mediacms
+    app.kubernetes.io/part-of: mediacms
+    app.kubernetes.io/managed-by: argocd
+    app.kubernetes.io/component: build
+spec:
+  lookupPolicy:
+    local: false

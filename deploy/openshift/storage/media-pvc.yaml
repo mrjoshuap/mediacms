@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: media-files-pvc
+  namespace: mediacms
+  labels:
+    app.kubernetes.io/name: mediacms
+    app.kubernetes.io/component: storage
+    app.kubernetes.io/part-of: mediacms
+    app.kubernetes.io/managed-by: argocd
+spec:
+  accessModes:
+    - ReadWriteMany
+  # If ReadWriteMany is not supported, use ReadWriteOnce and ensure
+  # only one pod mounts it at a time (or use a shared storage solution)
+  resources:
+    requests:
+      storage: 100Gi
+  # storageClassName: ""  # Use default storage class, or specify one
+  # Uncomment and set if you need a specific storage class:
+  # storageClassName: "gp2"  # Example for AWS EBS
+  # storageClassName: "managed-nfs-storage"  # Example for NFS

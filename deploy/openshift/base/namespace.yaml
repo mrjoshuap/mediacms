@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mediacms
+  labels:
+    app.kubernetes.io/name: mediacms
+    app.kubernetes.io/part-of: mediacms
+    app.kubernetes.io/managed-by: argocd
