@@ -11,10 +11,10 @@ resources:
 - imagemagick-policy.yaml
 - uwsgi-config.yaml
 - web-config.yaml
+- ../storage
 - ../builds
 - ../components
 - ../networking
-- ../storage
 labels:
 - includeSelectors: true
   pairs:
