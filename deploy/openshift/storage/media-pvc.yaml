@@ -11,12 +11,19 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  # If ReadWriteMany is not supported, use ReadWriteOnce and ensure
-  # only one pod mounts it at a time (or use a shared storage solution)
+  # ReadWriteMany is required as multiple pods (web, uwsgi, celery) mount this PVC
+  # You MUST use a StorageClass that supports ReadWriteMany (e.g., NFS, CephFS)
   resources:
     requests:
       storage: 100Gi
-  # storageClassName: ""  # Use default storage class, or specify one
-  # Uncomment and set if you need a specific storage class:
-  # storageClassName: "gp2"  # Example for AWS EBS
-  # storageClassName: "managed-nfs-storage"  # Example for NFS
+  # IMPORTANT: You MUST specify a StorageClass that supports ReadWriteMany
+  # Common options in OpenShift:
+  # - "managed-nfs-storage" (if NFS provisioner is installed)
+  # - "ocs-storagecluster-cephfs" (if OpenShift Data Foundation is installed)
+  # - "nfs" (if basic NFS provisioner is available)
+  # 
+  # To find available StorageClasses: oc get storageclass
+  # To check if a StorageClass supports ReadWriteMany: oc describe storageclass <name>
+  #
+  # Uncomment and set the appropriate StorageClass for your cluster:
+  #storageClassName: "ocs-external-storagecluster-cephfs-legacy"  # CHANGE THIS to match your cluster's ReadWriteMany-capable StorageClass
