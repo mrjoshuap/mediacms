@@ -49,8 +49,4 @@ touch /home/mediacms.io/mediacms/logs/debug.log
 # Create runtime directory for PID files (use /tmp for better compatibility)
 mkdir -p /tmp/mediacms
 
-# Ensure deployment scripts are executable
-chmod +x /home/mediacms.io/mediacms/deploy/openshift/scripts/start.sh \
-         /home/mediacms.io/mediacms/deploy/openshift/scripts/prestart.sh
-
 exec "$@"
