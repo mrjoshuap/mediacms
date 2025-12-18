@@ -26,4 +26,4 @@ spec:
   # To check if a StorageClass supports ReadWriteMany: oc describe storageclass <name>
   #
   # Uncomment and set the appropriate StorageClass for your cluster:
-  #storageClassName: "ocs-external-storagecluster-cephfs-legacy"  # CHANGE THIS to match your cluster's ReadWriteMany-capable StorageClass
+  storageClassName: "ocs-external-storagecluster-cephfs-legacy"  # CHANGE THIS to match your cluster's ReadWriteMany-capable StorageClass
