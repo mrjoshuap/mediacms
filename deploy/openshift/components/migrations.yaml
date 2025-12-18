@@ -24,8 +24,8 @@ spec:
       restartPolicy: OnFailure
       containers:
       - name: mediacms
-        image: mediacms-base:latest
-        imagePullPolicy: Always
+        image: image-registry.openshift-image-registry.svc:5000/mediacms/mediacms-base:latest
+        imagePullPolicy: IfNotPresent
         command: ["./deploy/openshift/scripts/prestart.sh"]
         env:
         - name: ENABLE_UWSGI
