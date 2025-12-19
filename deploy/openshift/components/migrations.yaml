@@ -64,7 +64,7 @@ spec:
       containers:
       - name: mediacms
         image: image-registry.openshift-image-registry.svc:5000/mediacms/mediacms-base:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         command: ["/bin/bash", "./deploy/openshift/scripts/prestart.sh"]
         env:
         - name: ENABLE_UWSGI
