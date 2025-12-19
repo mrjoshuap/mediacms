@@ -23,6 +23,46 @@ spec:
         app.kubernetes.io/managed-by: argocd
     spec:
       initContainers:
+      - name: wait-for-db
+        image: postgres:17.2-alpine
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/sh
+        - -c
+        - |
+          until pg_isready -h db -U "${DB_USER}" -d "${DB_NAME}"; do
+            echo "Waiting for database to be ready..."
+            sleep 2
+          done
+          echo "Database is ready!"
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mediacms-secrets
+              key: DB_USER
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: mediacms-config
+              key: DB_NAME
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mediacms-secrets
+              key: DB_PASSWORD
+      - name: wait-for-redis
+        image: redis:alpine
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/sh
+        - -c
+        - |
+          until redis-cli -h redis ping | grep -q PONG; do
+            echo "Waiting for Redis to be ready..."
+            sleep 2
+          done
+          echo "Redis is ready!"
       - name: wait-for-migrations
         image: quay.io/openshift/origin-cli:latest
         imagePullPolicy: IfNotPresent
