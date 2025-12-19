@@ -22,6 +22,31 @@ spec:
         app.kubernetes.io/part-of: mediacms
         app.kubernetes.io/managed-by: argocd
     spec:
+      initContainers:
+      - name: wait-for-migrations
+        image: bitnami/kubectl:latest
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Waiting for migrations job to complete..."
+          # Wait for job to exist first
+          while ! kubectl get job migrations -n mediacms &>/dev/null; do
+            echo "Migrations job not yet created, waiting..."
+            sleep 5
+          done
+          # Wait for job to complete
+          until kubectl get job migrations -n mediacms -o jsonpath='{.status.conditions[?(@.type=="Complete")].status}' 2>/dev/null | grep -q "True"; do
+            FAILED=$(kubectl get job migrations -n mediacms -o jsonpath='{.status.conditions[?(@.type=="Failed")].status}' 2>/dev/null || echo "")
+            if [ "$FAILED" = "True" ]; then
+              echo "ERROR: Migrations job failed!" >&2
+              exit 1
+            fi
+            echo "Migrations job not yet complete, waiting..."
+            sleep 5
+          done
+          echo "Migrations job completed successfully!"
       containers:
       - name: mediacms
         image: image-registry.openshift-image-registry.svc:5000/mediacms/mediacms-base:latest
