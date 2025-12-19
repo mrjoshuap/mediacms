@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: media-files-pvc
+  namespace: mediacms-prod
+spec:
+  storageClassName: "ocs-external-storagecluster-cephfs-legacy"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: static-pvc
+  namespace: mediacms-prod
+spec:
+  storageClassName: "ocs-external-storagecluster-cephfs-legacy"
