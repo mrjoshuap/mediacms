@@ -4,7 +4,7 @@ metadata:
   name: web
   namespace: mediacms-prod
 spec:
-  host: mediacms.apps.ocp-compact.home.mrjoshuap.com
+  host: mediacms.apps.example.com
   tls:
     termination: edge
     insecureEdgeTerminationPolicy: Redirect

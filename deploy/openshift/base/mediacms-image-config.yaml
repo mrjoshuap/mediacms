@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mediacms-image-config
+  namespace: mediacms
+  labels:
+    app.kubernetes.io/name: mediacms
+    app.kubernetes.io/part-of: mediacms
+    app.kubernetes.io/managed-by: argocd
+data:
+  # Default image: mediacms-base built in-cluster
+  # Override this in overlays to use mediacms-full or external registry images
+  image: "image-registry.openshift-image-registry.svc:5000/mediacms/mediacms-base:latest"

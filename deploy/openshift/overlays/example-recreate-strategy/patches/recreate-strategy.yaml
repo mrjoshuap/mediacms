@@ -1,0 +1,71 @@
+# Example patch file demonstrating custom deployment strategies
+# This shows how to configure Recreate and RollingUpdate strategies
+
+# Example 1: Use Recreate strategy for all deployments
+# Recreate strategy terminates all old pods before creating new ones
+# Useful for stateful applications that can't run multiple versions simultaneously
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  strategy:
+    type: Recreate
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uwsgi
+spec:
+  strategy:
+    type: Recreate
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-beat
+spec:
+  strategy:
+    type: Recreate
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-short
+spec:
+  strategy:
+    type: Recreate
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-long
+spec:
+  strategy:
+    type: Recreate
+
+# Example 2: Custom RollingUpdate strategy (commented out)
+# Uncomment and modify as needed for custom rolling update behavior
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: web
+# spec:
+#   strategy:
+#     type: RollingUpdate
+#     rollingUpdate:
+#       maxSurge: 1
+#       maxUnavailable: 0
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: uwsgi
+# spec:
+#   strategy:
+#     type: RollingUpdate
+#     rollingUpdate:
+#       maxSurge: 1
+#       maxUnavailable: 50%

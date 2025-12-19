@@ -1,0 +1,56 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: mediacms
+
+# Reference base but exclude builds directory
+# This assumes you're using pre-built images from an external registry
+resources:
+- ../../base/namespace.yaml
+- ../../base/mediacms-config.yaml
+- ../../base/mediacms-image-config.yaml
+- ../../base/mediacms-secrets.yaml
+- ../../base/imagemagick-policy.yaml
+- ../../base/uwsgi-config.yaml
+- ../../base/web-config.yaml
+- ../../base/job-reader-role.yaml
+- ../storage
+- ../components
+- ../networking
+# Note: ../builds is intentionally excluded
+
+# Patch the image ConfigMap to use an external pre-built image
+# You must ensure this image exists and is accessible
+patches:
+- patch: |-
+    - op: replace
+      path: /data/image
+      value: quay.io/example/mediacms:1.0.0
+  target:
+    kind: ConfigMap
+    name: mediacms-image-config
+
+# Re-apply replacements to ensure the patched ConfigMap value is used
+replacements:
+- source:
+    kind: ConfigMap
+    name: mediacms-image-config
+    fieldPath: data.image
+  targets:
+  - select:
+      kind: Deployment
+    fieldPaths:
+    - spec.template.spec.containers.0.image
+  - select:
+      kind: Job
+    fieldPaths:
+    - spec.template.spec.containers.0.image
+
+# Add example-specific labels
+labels:
+- includeSelectors: true
+  pairs:
+    app.kubernetes.io/environment: example-no-builds
+    app.kubernetes.io/managed-by: argocd
+    app.kubernetes.io/name: mediacms
+    app.kubernetes.io/part-of: mediacms

@@ -260,6 +260,17 @@ oc apply -k deploy/openshift/app/overlays/dev/
 oc apply -k deploy/openshift/app/base/
 ```
 
+### Example Overlays
+
+The deployment includes several example overlays demonstrating different configuration patterns:
+
+- **`overlays/example-full/`**: Shows how to use the `mediacms-full` image variant
+- **`overlays/example-external-registry/`**: Demonstrates using images from external registries
+- **`overlays/example-no-builds/`**: Shows how to disable in-cluster builds and use pre-built images
+- **`overlays/example-recreate-strategy/`**: Examples of custom deployment strategies (Recreate and RollingUpdate)
+
+These examples can be used as templates for creating your own overlays. See the [Image Management](#image-management) and [Deployment Strategies](#deployment-strategies) sections for details.
+
 ### Customizing Overlays
 
 To create a new **workload** overlay:
@@ -268,6 +279,8 @@ To create a new **workload** overlay:
 2. Create a `kustomization.yaml` that references `../../base`
 3. Add patches for any resources you want to override
 4. Apply with `oc apply -k deploy/openshift/overlays/staging/`
+
+You can also reference the example overlays as starting points for common configurations.
 
 To create a new **ArgoCD Application** overlay (for repo/branch tweaks):
 
@@ -312,7 +325,8 @@ The deployment uses OpenShift BuildConfig to build containers from source:
 ### BuildConfig Details
 
 - **Base Image BuildConfig**: Builds the `base` target (standard deployment) from `Dockerfile.openshift`
-- **ImageStreams**: Tracks built images for automatic deployment triggers
+- **Full Image BuildConfig**: Builds the `full` target (includes additional dependencies like OpenAI Whisper) from `Dockerfile.openshift`
+- **ImageStreams**: Tracks built images (`mediacms-base` and `mediacms-full`) for automatic deployment triggers
 - **Build Triggers**: ConfigChange, ImageChange, and optional GitHub webhook
 
 ### OpenShift Dockerfile Notes
@@ -328,6 +342,170 @@ The deployment uses OpenShift BuildConfig to build containers from source:
 1. Build them locally or in CI/CD before pushing to the branch
 2. Or create a separate build pipeline that builds frontend assets and commits them
 3. Or modify the BuildConfig to include a frontend build step
+
+## Image Management
+
+The deployment supports flexible image management through a ConfigMap-based approach. All MediaCMS components (web, uwsgi, celery workers, migrations) use the same container image, which is configurable via the `mediacms-image-config` ConfigMap.
+
+### Image Variants
+
+Two image variants are available:
+
+- **mediacms-base** (default): Standard MediaCMS image with core dependencies
+- **mediacms-full**: Extended image that includes additional dependencies from `requirements-full.txt` (e.g., OpenAI Whisper for transcription)
+
+### Switching Between Images
+
+#### Using mediacms-full Image
+
+To use the `mediacms-full` image instead of `mediacms-base`, create an overlay that patches the image ConfigMap and re-applies replacements:
+
+```yaml
+# overlays/my-env/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../base
+
+patches:
+- patch: |-
+    - op: replace
+      path: /data/image
+      value: image-registry.openshift-image-registry.svc:5000/mediacms/mediacms-full:latest
+  target:
+    kind: ConfigMap
+    name: mediacms-image-config
+
+# Important: Re-apply replacements to use the patched ConfigMap value
+replacements:
+- source:
+    kind: ConfigMap
+    name: mediacms-image-config
+    fieldPath: data.image
+  targets:
+  - select:
+      kind: Deployment
+    fieldPaths:
+    - spec.template.spec.containers.0.image
+  - select:
+      kind: Job
+    fieldPaths:
+    - spec.template.spec.containers.0.image
+```
+
+**Note**: When patching the `mediacms-image-config` ConfigMap in an overlay, you must also include the `replacements` section to ensure the new image value is injected into all Deployments and Jobs. This is because Kustomize processes replacements at each kustomization level.
+
+See `overlays/example-full/` for a complete example.
+
+#### Using External Registry Images
+
+To use pre-built images from an external registry (e.g., Quay.io, Docker Hub, or your private registry):
+
+```yaml
+# overlays/my-env/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../base
+
+patches:
+- patch: |-
+    - op: replace
+      path: /data/image
+      value: quay.io/example/mediacms:1.0.0
+  target:
+    kind: ConfigMap
+    name: mediacms-image-config
+
+# Important: Re-apply replacements to use the patched ConfigMap value
+replacements:
+- source:
+    kind: ConfigMap
+    name: mediacms-image-config
+    fieldPath: data.image
+  targets:
+  - select:
+      kind: Deployment
+    fieldPaths:
+    - spec.template.spec.containers.0.image
+  - select:
+      kind: Job
+    fieldPaths:
+    - spec.template.spec.containers.0.image
+```
+
+**Important**: When using external images, ensure:
+- The image is accessible from your OpenShift cluster
+- Image pull secrets are configured if the registry requires authentication
+- The image tag/version matches your requirements
+
+See `overlays/example-external-registry/` for a complete example.
+
+### Disabling Builds
+
+If you want to use pre-built images exclusively and disable in-cluster builds:
+
+1. Create an overlay that excludes the `../builds` directory:
+
+```yaml
+# overlays/my-env/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- namespace.yaml
+- mediacms-config.yaml
+- mediacms-image-config.yaml
+- mediacms-secrets.yaml
+- imagemagick-policy.yaml
+- uwsgi-config.yaml
+- web-config.yaml
+- job-reader-role.yaml
+- ../storage
+- ../components
+- ../networking
+# Note: ../builds is intentionally excluded
+
+patches:
+- patch: |-
+    - op: replace
+      path: /data/image
+      value: quay.io/example/mediacms:1.0.0
+  target:
+    kind: ConfigMap
+    name: mediacms-image-config
+```
+
+2. Ensure your image reference points to an accessible external registry
+3. Apply the overlay: `oc apply -k deploy/openshift/overlays/my-env/`
+
+See `overlays/example-no-builds/` for a complete example.
+
+### How Image Configuration Works
+
+The base configuration uses Kustomize replacements to inject the image value from `mediacms-image-config` ConfigMap into all Deployments and Jobs:
+
+```yaml
+# base/kustomization.yaml
+replacements:
+- source:
+    kind: ConfigMap
+    name: mediacms-image-config
+    fieldPath: data.image
+  targets:
+  - select:
+      kind: Deployment
+    fieldPaths:
+    - spec.template.spec.containers.[name=mediacms].image
+  - select:
+      kind: Job
+    fieldPaths:
+    - spec.template.spec.containers.[name=mediacms].image
+```
+
+This ensures all MediaCMS components use the same image, which can be easily changed via overlays.
 
 ## OpenShift-Specific Scripts
 
@@ -475,6 +653,49 @@ oc apply -k deploy/openshift/overlays/dev/
    # Or apply separately if needed
    oc apply -k deploy/openshift/storage/
    ```
+
+## Deployment Strategies
+
+By default, all Deployments use the `RollingUpdate` strategy, which allows zero-downtime updates. You can customize the deployment strategy via overlays.
+
+### Recreate Strategy
+
+The `Recreate` strategy terminates all old pods before creating new ones. This is useful for stateful applications that cannot run multiple versions simultaneously:
+
+```yaml
+# overlays/my-env/patches/recreate-strategy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  strategy:
+    type: Recreate
+```
+
+### Custom RollingUpdate Strategy
+
+You can customize the `RollingUpdate` strategy with specific surge and unavailable settings:
+
+```yaml
+# overlays/my-env/patches/rolling-update-strategy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1          # Maximum number of pods that can be created above desired count
+      maxUnavailable: 0    # Maximum number of pods that can be unavailable during update
+```
+
+**Strategy Options**:
+- `maxSurge`: Can be a number (e.g., `1`) or percentage (e.g., `25%`). Defaults to `25%`.
+- `maxUnavailable`: Can be a number (e.g., `0`) or percentage (e.g., `25%`). Defaults to `25%`.
+
+See `overlays/example-recreate-strategy/` for complete examples of both strategies.
 
 ## Configuration
 

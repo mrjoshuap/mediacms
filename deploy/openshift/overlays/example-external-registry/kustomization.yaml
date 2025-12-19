@@ -3,24 +3,23 @@ kind: Kustomization
 
 namespace: mediacms
 
-
+# Reference the base configuration
 resources:
-- namespace.yaml
-- mediacms-config.yaml
-- mediacms-image-config.yaml
-- mediacms-secrets.yaml
-- imagemagick-policy.yaml
-- uwsgi-config.yaml
-- web-config.yaml
-- job-reader-role.yaml
-- ../storage
-- ../builds
-- ../components
-- ../networking
+- ../../base
 
-# Replace container image references with value from mediacms-image-config ConfigMap
-# This replaces the image field in the first container (index 0) of all Deployments and Jobs
-# All MediaCMS components have the mediacms container as the first (and only) container
+# Patch the image ConfigMap to use an external registry image
+# Example: quay.io/example/mediacms:1.0.0
+# Replace with your actual registry and image path
+patches:
+- patch: |-
+    - op: replace
+      path: /data/image
+      value: quay.io/example/mediacms:1.0.0
+  target:
+    kind: ConfigMap
+    name: mediacms-image-config
+
+# Re-apply replacements to ensure the patched ConfigMap value is used
 replacements:
 - source:
     kind: ConfigMap
@@ -36,9 +35,11 @@ replacements:
     fieldPaths:
     - spec.template.spec.containers.0.image
 
+# Add example-specific labels
 labels:
 - includeSelectors: true
   pairs:
+    app.kubernetes.io/environment: example-external-registry
     app.kubernetes.io/managed-by: argocd
     app.kubernetes.io/name: mediacms
     app.kubernetes.io/part-of: mediacms

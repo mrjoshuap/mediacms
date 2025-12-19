@@ -1,0 +1,20 @@
+# Example patch file showing how to use external registry images
+# This file demonstrates the patch approach (alternative to inline patches in kustomization.yaml)
+# 
+# To use this approach, reference this file in kustomization.yaml:
+# patches:
+# - path: patches/image-external.yaml
+#   target:
+#     kind: ConfigMap
+#     name: mediacms-image-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mediacms-image-config
+data:
+  # Example external registry images:
+  # - quay.io/example/mediacms:1.0.0
+  # - registry.example.com/mediacms:latest
+  # - docker.io/username/mediacms:v1.2.3
+  image: "quay.io/example/mediacms:1.0.0"
