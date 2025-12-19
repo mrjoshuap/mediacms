@@ -29,6 +29,7 @@ elif [ "${ENABLE_CELERY_BEAT:-no}" = "yes" ]; then
     cd /home/mediacms.io/mediacms
     exec /home/mediacms.io/bin/celery beat \
         --pidfile=/tmp/mediacms/beat.pid \
+        --schedule=/tmp/mediacms/celerybeat-schedule \
         --loglevel="${CELERY_LOG_LEVEL:-INFO}"
 elif [ "${ENABLE_CELERY_SHORT:-no}" = "yes" ]; then
     echo "Starting celery short worker..."
