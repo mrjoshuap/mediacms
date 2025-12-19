@@ -13,7 +13,7 @@ spec:
   ports:
   - name: http
     port: 80
-    targetPort: 80
+    targetPort: 8080
     protocol: TCP
   selector:
     app.kubernetes.io/name: mediacms
@@ -139,7 +139,7 @@ spec:
         args: ["./deploy/openshift/scripts/start.sh"]
         ports:
         - name: http
-          containerPort: 80
+          containerPort: 8080
           protocol: TCP
         env:
         - name: ENABLE_UWSGI
@@ -188,7 +188,7 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: 80
+            port: 8080
           initialDelaySeconds: 60
           periodSeconds: 30
           timeoutSeconds: 5
@@ -196,7 +196,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /
-            port: 80
+            port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5

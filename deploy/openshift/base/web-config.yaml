@@ -55,7 +55,7 @@ data:
         include /etc/nginx/conf.d/*.conf;
 
         server {
-            listen 80 ;
+            listen 8080 ;
 
             gzip on;
             access_log /home/mediacms.io/mediacms/logs/nginx.access.log;

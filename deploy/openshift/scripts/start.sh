@@ -20,7 +20,21 @@ fi
 
 if [ "${ENABLE_NGINX:-no}" = "yes" ]; then
     echo "Starting nginx..."
-    exec /usr/sbin/nginx -g 'daemon off;'
+    # Verify config file exists and contains our temp path settings
+    if ! grep -q "client_body_temp_path /tmp/nginx/body" /etc/nginx/nginx.conf; then
+        echo "WARNING: nginx.conf does not contain expected temp path settings" >&2
+        echo "Config file may not be updated. Current config:" >&2
+        head -30 /etc/nginx/nginx.conf >&2 || true
+    fi
+    # Ensure temp directories exist (in case config hasn't been updated yet)
+    mkdir -p /tmp/nginx/{body,proxy,fastcgi,uwsgi,scgi}
+    # Test nginx configuration first
+    if ! /usr/sbin/nginx -t -c /etc/nginx/nginx.conf 2>&1; then
+        echo "ERROR: nginx configuration test failed" >&2
+        exit 1
+    fi
+    # Start nginx with explicit config file path
+    exec /usr/sbin/nginx -c /etc/nginx/nginx.conf -g 'daemon off;'
 elif [ "${ENABLE_UWSGI:-no}" = "yes" ]; then
     echo "Starting uwsgi..."
     exec /home/mediacms.io/bin/uwsgi --ini /etc/uwsgi/uwsgi.ini

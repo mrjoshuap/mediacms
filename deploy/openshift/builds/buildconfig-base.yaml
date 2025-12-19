@@ -29,10 +29,10 @@ spec:
       name: mediacms-base:latest
   resources:
     limits:
-      cpu: "2"
+      cpu: "2000m"
       memory: 4Gi
     requests:
-      cpu: "1"
+      cpu: "1000m"
       memory: 2Gi
   triggers:
     - type: ConfigChange
