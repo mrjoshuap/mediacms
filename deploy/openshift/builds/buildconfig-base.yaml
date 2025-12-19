@@ -23,6 +23,8 @@ spec:
       buildArgs:
         - name: DEVELOPMENT_MODE
           value: "False"
+      # Build only the 'base' target, skip 'full'
+      target: base
   output:
     to:
       kind: ImageStreamTag
