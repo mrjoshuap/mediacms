@@ -36,13 +36,11 @@ if [ "${ENABLE_MIGRATIONS:-no}" = "yes" ]; then
 
         if [ ! -d /home/mediacms.io/mediacms/static ]; then
             echo "Copying contents of /home/mediacms.io/mediacms/static-vanilla to /home/mediacms.io/mediacms/static"
-            mkdir -p /home/mediacms.io/mediacms/static
             cp -r /home/mediacms.io/mediacms/static-vanilla/* /home/mediacms.io/mediacms/static/
         fi
 
         if [ ! -d /home/mediacms.io/mediacms/media_files ]; then
             echo "Copying contents of /home/mediacms.io/mediacms/media_files-vanilla to /home/mediacms.io/mediacms/media_files"
-            mkdir -p /home/mediacms.io/mediacms/media_files
             cp -r /home/mediacms.io/mediacms/media_files-vanilla/* /home/mediacms.io/mediacms/media_files/
         fi
 
