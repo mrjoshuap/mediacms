@@ -4,12 +4,12 @@ set -euo pipefail
 # Forward nginx logs to stdout/stderr for Kubernetes log collection (only if nginx is enabled)
 # This ensures logs are captured by kubectl logs and log aggregation systems
 if [ "${ENABLE_NGINX:-no}" = "yes" ]; then
-    # Ensure nginx log directory exists before creating symlinks
-    mkdir -p /var/log/nginx
-    ln -sf /dev/stdout /var/log/nginx/access.log
-    ln -sf /dev/stderr /var/log/nginx/error.log
-    ln -sf /dev/stdout /var/log/nginx/mediacms.io.access.log
-    ln -sf /dev/stderr /var/log/nginx/mediacms.io.error.log
+    # Ensure logs directory exists before creating symlinks
+    mkdir -p /home/mediacms.io/mediacms/logs
+    ln -sf /dev/stdout /home/mediacms.io/mediacms/logs/nginx.access.log
+    ln -sf /dev/stderr /home/mediacms.io/mediacms/logs/nginx.error.log
+    ln -sf /dev/stdout /home/mediacms.io/mediacms/logs/nginx.mediacms.io.access.log
+    ln -sf /dev/stderr /home/mediacms.io/mediacms/logs/nginx.mediacms.io.error.log
 fi
 
 # local_settings.py must be provided via ConfigMap volume mount in OpenShift deployments
