@@ -85,6 +85,10 @@ spec:
         - secretRef:
             name: mediacms-secrets
         volumeMounts:
+        - name: media-storage
+          mountPath: /home/mediacms.io/mediacms/media_files
+        - name: static
+          mountPath: /home/mediacms.io/mediacms/static
         - name: local-settings
           mountPath: /home/mediacms.io/mediacms/cms/local_settings.py
           subPath: local_settings.py
@@ -101,6 +105,12 @@ spec:
             cpu: "1000m"
             memory: "1Gi"
       volumes:
+      - name: media-storage
+        persistentVolumeClaim:
+          claimName: media-files-pvc
+      - name: static
+        persistentVolumeClaim:
+          claimName: static-pvc
       - name: local-settings
         configMap:
           name: mediacms-config
