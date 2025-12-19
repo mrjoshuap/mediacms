@@ -11,6 +11,7 @@ resources:
 - imagemagick-policy.yaml
 - uwsgi-config.yaml
 - web-config.yaml
+- job-reader-role.yaml
 - ../storage
 - ../builds
 - ../components

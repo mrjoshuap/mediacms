@@ -70,23 +70,46 @@ spec:
         - /bin/sh
         - -c
         - |
+          set -uo pipefail
           echo "Waiting for migrations job to complete..."
           # Wait for job to exist first
+          MAX_WAIT=300
+          ELAPSED=0
           while ! oc get job migrations -n mediacms &>/dev/null; do
-            echo "Migrations job not yet created, waiting..."
+            if [ $ELAPSED -ge $MAX_WAIT ]; then
+              echo "ERROR: Timeout waiting for migrations job to be created" >&2
+              exit 1
+            fi
+            echo "Migrations job not yet created, waiting... (${ELAPSED}s)"
             sleep 5
+            ELAPSED=$((ELAPSED + 5))
           done
+          echo "Migrations job found, waiting for completion..."
           # Wait for job to complete
-          until oc get job migrations -n mediacms -o jsonpath='{.status.conditions[?(@.type=="Complete")].status}' 2>/dev/null | grep -q "True"; do
+          ELAPSED=0
+          while true; do
+            if [ $ELAPSED -ge $MAX_WAIT ]; then
+              echo "ERROR: Timeout waiting for migrations job to complete" >&2
+              oc get job migrations -n mediacms -o yaml >&2 || true
+              exit 1
+            fi
+            # Check if job completed successfully
+            COMPLETE=$(oc get job migrations -n mediacms -o jsonpath='{.status.conditions[?(@.type=="Complete")].status}' 2>/dev/null || echo "")
+            if [ "$COMPLETE" = "True" ]; then
+              echo "Migrations job completed successfully!"
+              exit 0
+            fi
+            # Check if job failed
             FAILED=$(oc get job migrations -n mediacms -o jsonpath='{.status.conditions[?(@.type=="Failed")].status}' 2>/dev/null || echo "")
             if [ "$FAILED" = "True" ]; then
               echo "ERROR: Migrations job failed!" >&2
+              oc get job migrations -n mediacms -o yaml >&2 || true
               exit 1
             fi
-            echo "Migrations job not yet complete, waiting..."
+            echo "Migrations job not yet complete, waiting... (${ELAPSED}s)"
             sleep 5
+            ELAPSED=$((ELAPSED + 5))
           done
-          echo "Migrations job completed successfully!"
       containers:
       - name: mediacms
         image: image-registry.openshift-image-registry.svc:5000/mediacms/mediacms-base:latest
