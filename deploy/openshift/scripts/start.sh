@@ -9,7 +9,7 @@ PRE_START_PATH="$BASE_DIR/deploy/openshift/scripts/prestart.sh"
 # Run prestart script if it exists (handles migrations, static files, config validation)
 if [ -f "$PRE_START_PATH" ]; then
     echo "Running prestart script: $PRE_START_PATH"
-    bash "$PRE_START_PATH"
+    /bin/bash "$PRE_START_PATH"
 else
     echo "WARNING: Prestart script not found at $PRE_START_PATH" >&2
     echo "Skipping prestart tasks (migrations, static files, etc.)" >&2

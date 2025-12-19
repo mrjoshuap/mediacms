@@ -79,10 +79,14 @@ COPY . /home/mediacms.io/mediacms
 WORKDIR /home/mediacms.io/mediacms
 
 # OpenShift runtime defaults: explicit script paths and writable dirs for random UID
-RUN chmod +x ./deploy/openshift/scripts/*.sh && \
+# Make scripts world-readable and executable (OpenShift runs with random UID)
+# Also ensure entrypoint.sh itself is executable
+RUN chmod 755 ./deploy/openshift/scripts/*.sh && \
+    chmod 755 ./deploy/openshift/scripts/entrypoint.sh && \
     mkdir -p /home/mediacms.io/mediacms/{logs,media_files/hls,static,staticfiles} /tmp/mediacms && \
     chmod -R 777 /home/mediacms.io/mediacms/logs /home/mediacms.io/mediacms/media_files /home/mediacms.io/mediacms/static /home/mediacms.io/mediacms/staticfiles /tmp/mediacms
 
 # Default to OpenShift entrypoint (single-process, no supervisord)
-ENTRYPOINT ["./deploy/openshift/scripts/entrypoint.sh"]
+# Use bash explicitly to avoid executable bit issues with random UID
+ENTRYPOINT ["/bin/bash", "./deploy/openshift/scripts/entrypoint.sh"]
 CMD ["./deploy/openshift/scripts/start.sh"]
