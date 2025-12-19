@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: static-pvc
+  namespace: mediacms
+  labels:
+    app.kubernetes.io/name: mediacms
+    app.kubernetes.io/component: storage
+    app.kubernetes.io/part-of: mediacms
+    app.kubernetes.io/managed-by: argocd
+spec:
+  accessModes:
+    - ReadWriteMany
+  # ReadWriteMany is required as multiple pods (web, uwsgi, celery) mount this PVC
+  # You MUST use a StorageClass that supports ReadWriteMany (e.g., NFS, CephFS)
+  resources:
+    requests:
+      storage: 5Gi
+  # IMPORTANT: You MUST specify a StorageClass that supports ReadWriteMany
+  # Common options in OpenShift:
+  # - "managed-nfs-storage" (if NFS provisioner is installed)
+  # - "ocs-storagecluster-cephfs" (if OpenShift Data Foundation is installed)
+  # - "nfs" (if basic NFS provisioner is available)
+  # 
+  # To find available StorageClasses: oc get storageclass
+  # To check if a StorageClass supports ReadWriteMany: oc describe storageclass <name>
+  #
+  # Uncomment and set the appropriate StorageClass for your cluster:
+  storageClassName: "ocs-external-storagecluster-cephfs-legacy"  # CHANGE THIS to match your cluster's ReadWriteMany-capable StorageClass

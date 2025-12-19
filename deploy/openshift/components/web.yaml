@@ -178,6 +178,8 @@ spec:
           mountPath: /etc/ImageMagick-6/policy.xml
           subPath: policy.xml
           readOnly: true
+        - name: static
+          mountPath: /home/mediacms.io/mediacms/static/
         resources:
           requests:
             cpu: "500m"
@@ -205,6 +207,9 @@ spec:
       - name: media-storage
         persistentVolumeClaim:
           claimName: media-files-pvc
+      - name: static
+        persistentVolumeClaim:
+          claimName: static-pvc
       - name: local-settings
         configMap:
           name: mediacms-config
