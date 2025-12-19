@@ -38,10 +38,28 @@ def get_user_or_session(request):
         if not request.session.session_key:
             request.session.save()
         ret["user_session"] = request.session.session_key
-    if settings.MASK_IPS_FOR_ACTIONS:
-        ret["remote_ip_addr"] = mask_ip(request.META.get("REMOTE_ADDR"))
+
+    # Get client IP, checking X-Forwarded-For only if USE_X_FORWARDED_HOST is enabled
+    # (for reverse proxy/load balancer scenarios)
+    # OpenShift routes set X-Forwarded-For with the real client IP
+    use_x_forwarded_host = getattr(settings, 'USE_X_FORWARDED_HOST', False)
+    if use_x_forwarded_host:
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            # X-Forwarded-For can contain multiple IPs, the first one is the original client
+            client_ip = x_forwarded_for.split(',')[0].strip()
+            # If the stripped result is empty (e.g., header was only whitespace), fall back to REMOTE_ADDR
+            if not client_ip:
+                client_ip = request.META.get("REMOTE_ADDR")
+        else:
+            client_ip = request.META.get("REMOTE_ADDR")
     else:
-        ret["remote_ip_addr"] = request.META.get("REMOTE_ADDR")
+        client_ip = request.META.get("REMOTE_ADDR")
+    
+    if settings.MASK_IPS_FOR_ACTIONS:
+        ret["remote_ip_addr"] = mask_ip(client_ip)
+    else:
+        ret["remote_ip_addr"] = client_ip
     return ret
 
 

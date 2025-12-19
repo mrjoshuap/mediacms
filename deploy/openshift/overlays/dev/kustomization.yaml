@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: mediacms
+namespace: mediacms-dev
 
 # Reference the base configuration
 resources:
@@ -19,6 +19,11 @@ patches:
   target:
     kind: BuildConfig
     name: mediacms-base
+- path: patches/namespace.yaml
+- path: patches/route.yaml
+- path: patches/replicas.yaml
+- path: patches/resources.yaml
+- path: patches/storage.yaml
 
 # Add dev-specific labels
 labels:

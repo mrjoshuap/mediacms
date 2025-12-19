@@ -1,0 +1,10 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: web
+  namespace: mediacms-dev
+spec:
+  host: mediacms-dev.apps.ocp-compact.home.mrjoshuap.com
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

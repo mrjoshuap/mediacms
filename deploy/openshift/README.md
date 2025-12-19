@@ -90,16 +90,56 @@ The deployment uses Kustomize overlays to support environment-specific configura
 
 - **Workloads**: `overlays/dev/` patches the workload base (BuildConfig repo/ref, labels, etc.).
 - **ArgoCD Application**: `app/overlays/dev/` patches the Application to use the fork/branch (`https://github.com/mrjoshuap/mediacms.git`, `deploy/openshift-4.19`).
+- **Namespace**: Uses `mediacms-dev` namespace (patched from base `mediacms` namespace)
+- **Route Hostname**: Configured via `patches/route.yaml` (default: `mediacms-dev.example.com` - update to match your domain)
+- **Resource Optimization**: Lower replica counts and resource limits for cost savings
 
 ### Production Overlay
 
 - **Workloads**: `overlays/prod/` uses base defaults (main repository) but can be extended with production-specific patches.
 - **ArgoCD Application**: `app/base/` already targets the main repo/branch; add an `app/overlays/prod/` only if you need Application-level overrides.
-- Common production workload patches: higher replica counts, different resource limits, production-specific configurations
+- **Namespace**: Uses `mediacms-prod` namespace (patched from base `mediacms` namespace)
+- **Route Hostname**: Configured via `patches/route.yaml` (default: `mediacms.example.com` - update to match your domain)
+- **Production Optimizations**: Higher replica counts, increased resource limits, larger storage sizes
+
+### Environment-Specific Namespaces
+
+Each overlay uses its own namespace to prevent accidental cross-environment operations:
+- **Development**: `mediacms-dev`
+- **Production**: `mediacms-prod`
+
+The namespace is automatically set via the `namespace:` field in each overlay's `kustomization.yaml` and patched via `patches/namespace.yaml`.
+
+### Route Hostname Configuration
+
+Each environment can have its own route hostname configured via patch files:
+- **Development**: `overlays/dev/patches/route.yaml` - Set `spec.host` to your dev hostname (e.g., `mediacms-dev.example.com`)
+- **Production**: `overlays/prod/patches/route.yaml` - Set `spec.host` to your production hostname (e.g., `mediacms.example.com`)
+
+**Important**: Update the hostname in the route patch files to match your actual domain before deploying.
+
+### Reverse Proxy Configuration
+
+OpenShift Routes act as reverse proxies, which means Django needs to be configured to trust and use the forwarded headers. The base ConfigMap (`base/mediacms-config.yaml`) includes the following reverse proxy settings in `local_settings.py`:
+
+```python
+# Reverse Proxy Configuration for OpenShift Routes
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+```
+
+These settings ensure:
+- Django trusts the `X-Forwarded-Host` header from the route
+- HTTPS is properly detected via `X-Forwarded-Proto`
+- Secure cookies are used for HTTPS routes
+
+**Client IP Detection**: The application code in `files/methods.py` has been updated to read the real client IP from the `X-Forwarded-For` header (set by OpenShift routes) instead of using `REMOTE_ADDR` (which would be the route's internal IP). This ensures accurate client IP addresses for logging, rate limiting, and security features.
 
 #### Common production patch examples
 
-Add patches under `overlays/prod/` and reference them from the prod `kustomization.yaml`.
+The following patches are already included in the overlays. You can customize them as needed:
 
 **Scale web + uWSGI replicas**
 ```yaml
@@ -158,13 +198,26 @@ spec:
     insecureEdgeTerminationPolicy: Redirect
 ```
 
-Reference patches in `overlays/prod/kustomization.yaml`:
-```yaml
-patches:
-  - patches/replicas.yaml
-  - patches/uwsgi-resources.yaml
-  - patches/route.yaml
-```
+### Included Patches
+
+Both dev and prod overlays include the following patches (located in `overlays/<env>/patches/`):
+
+**Development (`overlays/dev/patches/`):**
+- `namespace.yaml` - Sets namespace to `mediacms-dev`
+- `route.yaml` - Sets dev route hostname
+- `replicas.yaml` - Reduces replicas (web: 1, uwsgi: 1, celery-short: 1, celery-long: 1)
+- `resources.yaml` - Lowers resource limits for cost savings
+- `storage.yaml` - Smaller storage sizes (media: 10Gi, static: 5Gi, db: 5Gi)
+
+**Production (`overlays/prod/patches/`):**
+- `namespace.yaml` - Sets namespace to `mediacms-prod`
+- `route.yaml` - Sets production route hostname
+- `replicas.yaml` - Increases replicas (web: 3, uwsgi: 2, celery-short: 3, celery-long: 2)
+- `resources.yaml` - Higher resource limits (uwsgi: 4 CPU, 4Gi memory)
+- `storage.yaml` - Larger storage sizes (media: 500Gi, static: 20Gi, db: 50Gi)
+- `storage-class.yaml` - Sets production storage class
+
+All patches are automatically referenced in the respective `kustomization.yaml` files.
 
 ### Using Overlays
 
@@ -184,11 +237,15 @@ oc kustomize deploy/openshift/overlays/dev/ | head -n 20
 
 **Production workloads (manual apply/preview):**
 ```bash
-# Apply base
-oc apply -k deploy/openshift/base/
-
-# Or use prod overlay
+# Apply prod overlay
 oc apply -k deploy/openshift/overlays/prod/
+
+# Or preview what will be applied
+oc kustomize deploy/openshift/overlays/dev/
+
+# Quick sanity check before applying
+oc kustomize deploy/openshift/overlays/dev/ | head -n 20
+
 ```
 
 **ArgoCD Application overlays (namespace: openshift-gitops):**
@@ -486,15 +543,15 @@ Defined PVCs:
 
 ### Route Configuration
 
-Edit `networking/route.yaml` to set:
+Route hostnames are configured per environment via overlay patches:
+- **Development**: Edit `overlays/dev/patches/route.yaml` and set `spec.host` to your dev hostname
+- **Production**: Edit `overlays/prod/patches/route.yaml` and set `spec.host` to your production hostname
 
-- **Hostname**: Uncomment and set `spec.host`
-- **TLS**: Currently set to edge termination with redirect
-- **TLS Certificate**: OpenShift will use default certificate, or configure custom
-
-### Network Policies
-
-Optional network policies can be added to `networking/network-policy.yaml` for additional security.
+**Important**: 
+- Update the hostname values in the route patch files before deploying
+- Ensure the hostname matches the `FRONTEND_HOST` environment variable (without `http://` or `https://` prefix)
+- TLS is configured as edge termination with redirect by default
+- OpenShift will use the default certificate, or you can configure a custom certificate
 
 ## Resource Requirements
 
@@ -617,11 +674,51 @@ oc start-build mediacms-base -n mediacms
 oc rollout restart deployment/web -n mediacms
 ```
 
+## Migration Notes
+
+### Namespace Changes
+
+If you have existing deployments using the `mediacms` namespace, you'll need to migrate to environment-specific namespaces:
+
+1. **Backup existing resources** (if needed):
+   ```bash
+   oc get all -n mediacms -o yaml > mediacms-backup.yaml
+   ```
+
+2. **Apply the new overlay** which will create the new namespace:
+   ```bash
+   oc apply -k deploy/openshift/overlays/dev/
+   # or
+   oc apply -k deploy/openshift/overlays/prod/
+   ```
+
+3. **Migrate resources** (if needed):
+   - Resources will be created in the new namespace automatically
+   - Existing PVCs in the old namespace will need to be migrated or recreated
+   - Consider using `oc get <resource> -n mediacms -o yaml | oc apply -n mediacms-dev -f -` for manual migration
+
+### Route Hostname Updates
+
+- Update `overlays/dev/patches/route.yaml` and `overlays/prod/patches/route.yaml` with your actual hostnames
+- Ensure DNS is configured to point to your OpenShift cluster
+- The hostname should match the `FRONTEND_HOST` environment variable (without protocol prefix)
+
+### Storage Patches
+
+- Storage patches only affect **new** PVCs
+- Existing PVCs will keep their current sizes
+- To resize existing PVCs, you'll need to use OpenShift's volume expansion features or recreate the PVCs
+
+### Reverse Proxy Configuration
+
+The reverse proxy settings in `base/mediacms-config.yaml` are automatically applied to all environments. The application code has been updated to read client IPs from `X-Forwarded-For` headers, ensuring accurate client IP detection behind OpenShift routes.
+
 ## Branch-Specific Notes
 
 This branch (`deploy/openshift-4.19`) combines:
 - Fix for issue #1447 (missing migration for Meta options)
 - Quick bug fixes (regex denoter fix, celerybeat gitignore)
+- Enhanced overlay support with environment-specific namespaces and configurations
 
 The branch is tracked separately from `main` for OpenShift-specific deployment configurations.
 

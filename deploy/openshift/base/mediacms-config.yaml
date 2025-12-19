@@ -82,5 +82,15 @@ data:
     # MP4HLS Command (if using bento4)
     MP4HLS_COMMAND = "/home/mediacms.io/bento4/bin/mp4hls"
     
+    # Reverse Proxy Configuration for OpenShift Routes
+    # OpenShift routes set X-Forwarded-For, X-Forwarded-Proto, X-Forwarded-Host headers
+    # These settings ensure Django properly handles requests from the route proxy
+    USE_X_FORWARDED_HOST = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    
+    # For HTTPS routes, ensure secure cookies
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    
     # Debug Mode
     DEBUG = os.getenv('DEBUG', 'False') == 'True'

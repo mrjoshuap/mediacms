@@ -9,7 +9,7 @@ if [ "${ENABLE_MIGRATIONS:-no}" = "yes" ]; then
     echo "Running database migrations..."
     python manage.py migrate
     
-    EXISTING_INSTALLATION=$(echo "from users.models import User; print(User.objects.exists())" | python manage.py shell)
+    EXISTING_INSTALLATION=$(python -c "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cms.settings'); import django; django.setup(); from users.models import User; print(User.objects.exists())")
     if [ "$EXISTING_INSTALLATION" = "True" ]; then
         echo "Database already initialized - skipping loaddata and user creation"
     else
