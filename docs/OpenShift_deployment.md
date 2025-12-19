@@ -427,11 +427,11 @@ replacements:
   - select:
       kind: Deployment
     fieldPaths:
-    - spec.template.spec.containers.0.image
+    - spec.template.spec.containers.[name=mediacms].image
   - select:
       kind: Job
     fieldPaths:
-    - spec.template.spec.containers.0.image
+    - spec.template.spec.containers.[name=mediacms].image
 ```
 
 **Note**: When patching the `mediacms-image-config` ConfigMap in an overlay, you must also include the `replacements` section to ensure the new image value is injected into all Deployments and Jobs. This is because Kustomize processes replacements at each kustomization level.
@@ -475,12 +475,35 @@ replacements:
   targets:
   - select:
       kind: Deployment
+      labelSelector: app=mediacms,component=celery-beat
+    fieldPaths:
+    - spec.template.spec.containers.0.image
+  - select:
+      kind: Deployment
+      labelSelector: app=mediacms,component=celery-short
+    fieldPaths:
+    - spec.template.spec.containers.0.image
+  - select:
+      kind: Deployment
+      labelSelector: app=mediacms,component=celery-long
+    fieldPaths:
+    - spec.template.spec.containers.0.image
+  - select:
+      kind: Deployment
+      labelSelector: app=mediacms,component=web
+    fieldPaths:
+    - spec.template.spec.containers.0.image
+  - select:
+      kind: Deployment
+      labelSelector: app=mediacms,component=uwsgi
     fieldPaths:
     - spec.template.spec.containers.0.image
   - select:
       kind: Job
+      name: migrations
+
     fieldPaths:
-    - spec.template.spec.containers.0.image
+    - spec.template.spec.containers.[name=mediacms].image
 ```
 
 **Important**: When using external images, ensure:

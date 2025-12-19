@@ -2,7 +2,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: web
-  namespace: mediacms-dev
+  namespace: mediacms
 spec:
   host: mediacms-dev.apps.example.com
   tls:

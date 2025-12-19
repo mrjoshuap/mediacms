@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: web
-  namespace: mediacms-dev
+  namespace: mediacms
 spec:
   replicas: 1
 ---
@@ -10,7 +10,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: uwsgi
-  namespace: mediacms-dev
+  namespace: mediacms
 spec:
   replicas: 1
 ---
@@ -18,7 +18,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: celery-short
-  namespace: mediacms-dev
+  namespace: mediacms
 spec:
   replicas: 1
 ---
@@ -26,6 +26,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: celery-long
-  namespace: mediacms-dev
+  namespace: mediacms
 spec:
   replicas: 1

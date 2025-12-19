@@ -40,11 +40,11 @@ replacements:
   - select:
       kind: Deployment
     fieldPaths:
-    - spec.template.spec.containers.0.image
+    - spec.template.spec.containers.[name=mediacms].image
   - select:
       kind: Job
     fieldPaths:
-    - spec.template.spec.containers.0.image
+    - spec.template.spec.containers.[name=mediacms].image
 
 # Add example-specific labels
 labels:
