@@ -10,6 +10,9 @@ if [ "${ENABLE_NGINX:-no}" = "yes" ]; then
     ln -sf /dev/stderr /home/mediacms.io/mediacms/logs/nginx.error.log
     ln -sf /dev/stdout /home/mediacms.io/mediacms/logs/nginx.mediacms.io.access.log
     ln -sf /dev/stderr /home/mediacms.io/mediacms/logs/nginx.mediacms.io.error.log
+    # Create nginx temp directories (required for non-root OpenShift)
+    # nginx needs these directories for client body, proxy, fastcgi, uwsgi, and scgi temp files
+    mkdir -p /tmp/nginx/{body,proxy,fastcgi,uwsgi,scgi}
 fi
 
 # local_settings.py must be provided via ConfigMap volume mount in OpenShift deployments

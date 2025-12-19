@@ -18,6 +18,13 @@ data:
 
     worker_rlimit_nofile    2048;  # sized to match modest connection count
     http {
+        # Use writable directories for nginx temp files (required for non-root OpenShift)
+        client_body_temp_path /tmp/nginx/body;
+        proxy_temp_path /tmp/nginx/proxy;
+        fastcgi_temp_path /tmp/nginx/fastcgi;
+        uwsgi_temp_path /tmp/nginx/uwsgi;
+        scgi_temp_path /tmp/nginx/scgi;
+        
         proxy_connect_timeout 75;
         proxy_read_timeout 12000;
         client_max_body_size 5800M;
