@@ -19,12 +19,13 @@ spec:
   strategy:
     type: Docker
     dockerStrategy:
-      dockerfilePath: Dockerfile.openshift
+      dockerfilePath: Dockerfile.openshift.full
       buildArgs:
         - name: DEVELOPMENT_MODE
           value: "False"
-      # Build the 'full' target instead of 'base'
-      target: full
+      from:
+        kind: ImageStreamTag
+        name: mediacms-base:latest
   output:
     to:
       kind: ImageStreamTag
@@ -39,7 +40,10 @@ spec:
   triggers:
     - type: ConfigChange
     - type: ImageChange
-      imageChange: {}
+      imageChange:
+        from:
+          kind: ImageStreamTag
+          name: mediacms-base:latest
     - type: GitHub
       github:
         secret: github-webhook-secret

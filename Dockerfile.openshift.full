@@ -1,0 +1,7 @@
+############ FULL IMAGE ############
+FROM base AS full
+COPY requirements-full.txt ./
+RUN mkdir -p /root/.cache/ && \
+    chmod go+rwx /root/ && \
+    chmod go+rwx /root/.cache/
+RUN uv pip install -r requirements-full.txt

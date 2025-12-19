@@ -93,11 +93,3 @@ RUN chmod 755 ./deploy/openshift/scripts/*.sh && \
 # Use bash explicitly to avoid executable bit issues with random UID
 ENTRYPOINT ["/bin/bash", "./deploy/openshift/scripts/entrypoint.sh"]
 CMD ["./deploy/openshift/scripts/start.sh"]
-
-############ FULL IMAGE ############
-FROM base AS full
-COPY requirements-full.txt ./
-RUN mkdir -p /root/.cache/ && \
-    chmod go+rwx /root/ && \
-    chmod go+rwx /root/.cache/
-RUN uv pip install -r requirements-full.txt
