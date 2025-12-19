@@ -47,7 +47,29 @@ spec:
       terminationGracePeriodSeconds: 60
       securityContext:
         runAsNonRoot: true
-        fsGroup: 999
+      initContainers:
+      - name: init-db-data
+        image: postgres:17.2-alpine
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/sh
+        - -c
+        - |
+          if [ ! -d /var/lib/postgresql/data/pgdata ]; then
+            mkdir -p /var/lib/postgresql/data/pgdata
+          fi
+          chown -R $(id -u):$(id -g) /var/lib/postgresql/data
+          chmod -R 700 /var/lib/postgresql/data
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/postgresql/data
       containers:
       - name: postgres
         image: postgres:17.2-alpine
