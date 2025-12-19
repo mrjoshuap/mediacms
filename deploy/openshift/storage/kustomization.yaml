@@ -5,8 +5,9 @@ namespace: mediacms
 
 
 resources:
-- media-pvc.yaml
 - db-pvc.yaml
+- media-pvc.yaml
+- static-pvc.yaml
 labels:
 - includeSelectors: true
   pairs:
