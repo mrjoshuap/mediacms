@@ -18,7 +18,6 @@ patches:
       value: deploy/openshift-4.19
   target:
     kind: BuildConfig
-    name: mediacms-base
 - path: patches/route.yaml
 - path: patches/replicas.yaml
 - path: patches/resources.yaml
