@@ -29,8 +29,7 @@ elif [ "${ENABLE_CELERY_BEAT:-no}" = "yes" ]; then
     cd /home/mediacms.io/mediacms
     exec /home/mediacms.io/bin/celery beat \
         --pidfile=/tmp/mediacms/beat.pid \
-        --loglevel="${CELERY_LOG_LEVEL:-INFO}" \
-        --logfile=-
+        --loglevel="${CELERY_LOG_LEVEL:-INFO}"
 elif [ "${ENABLE_CELERY_SHORT:-no}" = "yes" ]; then
     echo "Starting celery short worker..."
     cd /home/mediacms.io/mediacms
@@ -39,7 +38,6 @@ elif [ "${ENABLE_CELERY_SHORT:-no}" = "yes" ]; then
     exec /home/mediacms.io/bin/celery worker \
         --pidfile=/tmp/mediacms/worker.pid \
         --loglevel="${CELERY_LOG_LEVEL:-INFO}" \
-        --logfile=- \
         --soft-time-limit="${CELERY_SHORT_SOFT_TIME_LIMIT:-300}" \
         --time-limit="${CELERY_SHORT_HARD_TIME_LIMIT:-360}" \
         --prefetch-multiplier="${CELERY_SHORT_PREFETCH_MULTIPLIER:-4}" \
@@ -54,7 +52,6 @@ elif [ "${ENABLE_CELERY_LONG:-no}" = "yes" ]; then
     exec /home/mediacms.io/bin/celery worker \
         --pidfile=/tmp/mediacms/worker.pid \
         --loglevel="${CELERY_LOG_LEVEL:-INFO}" \
-        --logfile=- \
         -Ofair \
         --prefetch-multiplier="${CELERY_LONG_PREFETCH_MULTIPLIER:-1}" \
         --max-tasks-per-child="${CELERY_LONG_MAX_TASKS_PER_CHILD:-20}" \
