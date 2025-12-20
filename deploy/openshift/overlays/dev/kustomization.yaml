@@ -22,6 +22,7 @@ patches:
 - path: patches/replicas.yaml
 - path: patches/resources.yaml
 - path: patches/storage.yaml
+- path: patches/storage-class.yaml
 
 # Add dev-specific labels
 labels:

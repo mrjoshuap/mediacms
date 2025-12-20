@@ -10,4 +10,4 @@ metadata:
 data:
   # Default image: mediacms-base built in-cluster
   # Override this in overlays to use mediacms-full or external registry images
-  image: "image-registry.openshift-image-registry.svc:5000/mediacms/mediacms-base:latest"
+  image: "mediacms-dev/mediacms-base:latest"

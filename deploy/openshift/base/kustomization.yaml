@@ -29,34 +29,14 @@ replacements:
   targets:
   - select:
       kind: Deployment
-      labelSelector: app=mediacms,component=celery-beat
+      labelSelector: default-image=mediacms
     fieldPaths:
-    - spec.template.spec.containers.[name=celery-beat].image
-  - select:
-      kind: Deployment
-      labelSelector: app=mediacms,component=celery-long
-    fieldPaths:
-    - spec.template.spec.containers.[name=celery-long].image
-  - select:
-      kind: Deployment
-      labelSelector: app=mediacms,component=celery-short
-    fieldPaths:
-    - spec.template.spec.containers.[name=celery-short].image
-  - select:
-      kind: Deployment
-      labelSelector: app=mediacms,component=uwsgi
-    fieldPaths:
-    - spec.template.spec.containers.[name=uwsgi].image
-  - select:
-      kind: Deployment
-      labelSelector: app=mediacms,component=web
-    fieldPaths:
-    - spec.template.spec.containers.[name=web].image
+     - spec.template.spec.containers.[name=mediacms].image
   - select:
       kind: Job
-      labelSelector: app=mediacms,component=migrations
+      labelSelector: default-image=mediacms
     fieldPaths:
-    - spec.template.spec.containers.[name=migrations].image
+     - spec.template.spec.containers.[name=mediacms].image
 
 labels:
 - includeSelectors: true

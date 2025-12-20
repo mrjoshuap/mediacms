@@ -8,6 +8,7 @@ metadata:
     app.kubernetes.io/component: celery-long
     app.kubernetes.io/part-of: mediacms
     app.kubernetes.io/managed-by: argocd
+    default-image: mediacms
 spec:
   replicas: 1
   selector:
@@ -112,7 +113,7 @@ spec:
           done
       containers:
       - name: mediacms
-        image: image-registry.openshift-image-registry.svc:5000/mediacms/mediacms-base:latest
+        image: mediacms/mediacms-base:latest
         imagePullPolicy: Always
         command: ["/bin/bash", "./deploy/openshift/scripts/entrypoint.sh"]
         args: ["./deploy/openshift/scripts/start.sh"]

@@ -12,7 +12,7 @@ patches:
 - patch: |-
     - op: replace
       path: /data/image
-      value: image-registry.openshift-image-registry.svc:5000/mediacms/mediacms-full:latest
+      value: mediacms-full:latest
   target:
     kind: ConfigMap
     name: mediacms-image-config

@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/component: build
 spec:
   lookupPolicy:
-    local: false
+    local: true
 ---
 apiVersion: image.openshift.io/v1
 kind: ImageStream
@@ -24,4 +24,4 @@ metadata:
     app.kubernetes.io/component: build
 spec:
   lookupPolicy:
-    local: false
+    local: true
