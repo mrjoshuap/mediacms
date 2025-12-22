@@ -3,7 +3,44 @@ import PropTypes from 'prop-types';
 import { PageStore } from '../../utils/stores/';
 import { FilterOptions } from '../_shared';
 import { translateString } from '../../utils/helpers/';
+import { config as mediacmsConfig } from '../../utils/settings/config.js';
 import '../management-table/ManageItemList-filters.scss';
+
+const getFilterSettings = () => {
+  const config = mediacmsConfig(window.MediaCMS);
+  return config && config.site && config.site.filters ? config.site.filters : {
+    enableViewsRange: false,
+    enableLikesRange: false,
+    enableEncodingStatus: false,
+    enableUntagged: false,
+    enableEnhancedDuration: false,
+  };
+};
+
+const getDurationFilters = () => {
+  const baseDuration = [
+    { id: 'all', title: translateString('All') },
+    { id: '0-20', title: translateString('00 - 20 min') },
+    { id: '20-40', title: translateString('20 - 40 min') },
+    { id: '40-60', title: translateString('40 - 60 min') },
+    { id: '60-120', title: translateString('60 - 120 min+') },
+  ];
+  
+  const filterSettings = getFilterSettings();
+  if (filterSettings.enableEnhancedDuration) {
+    return [
+      { id: 'all', title: translateString('All') },
+      { id: '<60s', title: translateString('< 60 sec') },
+      { id: '1-5m', title: translateString('1 - 5 min') },
+      { id: '5-15m', title: translateString('5 - 15 min') },
+      { id: '15-30m', title: translateString('15 - 30 min') },
+      { id: '30-60m', title: translateString('30 - 60 min') },
+      { id: '60-120m', title: translateString('60 - 120 min') },
+      { id: '120m+', title: translateString('120+ min') },
+    ];
+  }
+  return baseDuration;
+};
 
 const filters = {
   media_type: [
@@ -20,18 +57,19 @@ const filters = {
     { id: 'this_month', title: translateString('This month') },
     { id: 'this_year', title: translateString('This year') },
   ],
-  duration: [
-    { id: 'all', title: translateString('All') },
-    { id: '0-20', title: translateString('00 - 20 min') },
-    { id: '20-40', title: translateString('20 - 40 min') },
-    { id: '40-60', title: translateString('40 - 60 min') },
-    { id: '60-120', title: translateString('60 - 120 min+') },
-  ],
+  duration: getDurationFilters(),
   publish_state: [
     { id: 'all', title: translateString('All') },
     { id: 'private', title: translateString('Private') },
     { id: 'unlisted', title: translateString('Unlisted') },
     { id: 'public', title: translateString('Published') },
+  ],
+  encoding_status: [
+    { id: 'all', title: translateString('All') },
+    { id: 'success', title: translateString('Success') },
+    { id: 'running', title: translateString('Running') },
+    { id: 'pending', title: translateString('Pending') },
+    { id: 'fail', title: translateString('Fail') },
   ],
   sort_by: [
     { id: 'date_added_desc', title: translateString('Upload date (newest)') },
@@ -50,13 +88,17 @@ export function ProfileMediaFilters(props) {
   const [publishStateFilter, setFilter_publish_state] = useState('all');
   const [sortByFilter, setFilter_sort_by] = useState('date_added_desc');
   const [tagFilter, setFilter_tag] = useState('all');
+  const [encodingStatusFilter, setFilter_encoding_status] = useState('all');
 
   const containerRef = useRef(null);
   const innerContainerRef = useRef(null);
 
+  const filterSettings = getFilterSettings();
+
   // Build tags filter options from props
   const tagsOptions = [
     { id: 'all', title: 'All' },
+    ...(filterSettings.enableUntagged ? [{ id: 'untagged', title: translateString('Untagged') }] : []),
     ...(props.tags || []).map((tag) => ({ id: tag, title: tag })),
   ];
 
@@ -77,6 +119,7 @@ export function ProfileMediaFilters(props) {
       publish_state: publishStateFilter,
       sort_by: props.selectedSort || sortByFilter,
       tag: props.selectedTag || tagFilter,
+      encoding_status: encodingStatusFilter,
     };
 
     switch (filterType) {
@@ -110,6 +153,11 @@ export function ProfileMediaFilters(props) {
         args.tag = clickedValue === tagFilter ? 'all' : clickedValue;
         props.onFiltersUpdate(args);
         setFilter_tag(args.tag);
+        break;
+      case 'encoding_status':
+        args.encoding_status = clickedValue === encodingStatusFilter ? 'all' : clickedValue;
+        props.onFiltersUpdate(args);
+        setFilter_encoding_status(args.encoding_status);
         break;
     }
   }
@@ -174,6 +222,20 @@ export function ProfileMediaFilters(props) {
             />
           </div>
         </div>
+
+        {filterSettings.enableEncodingStatus && (
+          <div className="mi-filter">
+            <div className="mi-filter-title">{translateString('ENCODING STATUS')}</div>
+            <div className="mi-filter-options">
+              <FilterOptions
+                id={'encoding_status'}
+                options={filters.encoding_status}
+                selected={encodingStatusFilter}
+                onSelect={onFilterSelect}
+              />
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

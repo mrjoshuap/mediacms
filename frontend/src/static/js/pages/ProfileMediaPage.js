@@ -623,6 +623,7 @@ export class ProfileMediaPage extends Page {
       sort_by: null,
       ordering: null,
       t: null,
+      encoding_status: null,
     };
 
     switch (updatedArgs.media_type) {
@@ -651,6 +652,11 @@ export class ProfileMediaPage extends Page {
     // Handle publish state filter
     if (updatedArgs.publish_state && updatedArgs.publish_state !== 'all') {
       args.publish_state = updatedArgs.publish_state;
+    }
+
+    // Handle encoding status filter
+    if (updatedArgs.encoding_status && updatedArgs.encoding_status !== 'all') {
+      args.encoding_status = updatedArgs.encoding_status;
     }
 
     switch (updatedArgs.sort_by) {
@@ -866,7 +872,8 @@ export class ProfileMediaPage extends Page {
       this.state.filterArgs.includes('media_type=') ||
       this.state.filterArgs.includes('upload_date=') ||
       this.state.filterArgs.includes('duration=') ||
-      this.state.filterArgs.includes('publish_state=')
+      this.state.filterArgs.includes('publish_state=') ||
+      this.state.filterArgs.includes('encoding_status=')
     );
 
     const hasActiveTags = this.state.selectedTag && this.state.selectedTag !== 'all';

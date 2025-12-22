@@ -8,6 +8,13 @@ export function init(settings) {
     title: '',
     useRoundedCorners: true,
     version: '1.0.0',
+    filters: {
+      enableViewsRange: false,
+      enableLikesRange: false,
+      enableEncodingStatus: false,
+      enableUntagged: false,
+      enableEnhancedDuration: false,
+    },
   };
 
   if (void 0 !== settings) {
@@ -33,6 +40,24 @@ export function init(settings) {
 
     if ('string' === typeof settings.version) {
       SITE.version = settings.version.trim();
+    }
+
+    if (settings.filters && 'object' === typeof settings.filters) {
+      if ('boolean' === typeof settings.filters.enableViewsRange) {
+        SITE.filters.enableViewsRange = settings.filters.enableViewsRange;
+      }
+      if ('boolean' === typeof settings.filters.enableLikesRange) {
+        SITE.filters.enableLikesRange = settings.filters.enableLikesRange;
+      }
+      if ('boolean' === typeof settings.filters.enableEncodingStatus) {
+        SITE.filters.enableEncodingStatus = settings.filters.enableEncodingStatus;
+      }
+      if ('boolean' === typeof settings.filters.enableUntagged) {
+        SITE.filters.enableUntagged = settings.filters.enableUntagged;
+      }
+      if ('boolean' === typeof settings.filters.enableEnhancedDuration) {
+        SITE.filters.enableEnhancedDuration = settings.filters.enableEnhancedDuration;
+      }
     }
   }
 }

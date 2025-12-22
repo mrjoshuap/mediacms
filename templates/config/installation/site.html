@@ -51,5 +51,12 @@ MediaCMS.site = {
 	    	title: 'Categories',
 	    },
     },
+    filters: {
+	    enableViewsRange: {% if ENABLE_FILTER_VIEWS_RANGE %}true{% else %}false{% endif %},
+	    enableLikesRange: {% if ENABLE_FILTER_LIKES_RANGE %}true{% else %}false{% endif %},
+	    enableEncodingStatus: {% if ENABLE_FILTER_ENCODING_STATUS %}true{% else %}false{% endif %},
+	    enableUntagged: {% if ENABLE_FILTER_UNTAGGED %}true{% else %}false{% endif %},
+	    enableEnhancedDuration: {% if ENABLE_FILTER_ENHANCED_DURATION %}true{% else %}false{% endif %},
+    },
 };
 

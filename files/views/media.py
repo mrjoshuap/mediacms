@@ -113,6 +113,12 @@ class MediaList(APIView):
         duration = params.get('duration', '').strip()
         publish_state = params.get('publish_state', '').strip()
         query = params.get("q", "").strip().lower()
+        # New filter parameters
+        views_min = params.get('views_min', '').strip()
+        views_max = params.get('views_max', '').strip()
+        likes_min = params.get('likes_min', '').strip()
+        likes_max = params.get('likes_max', '').strip()
+        encoding_status = params.get('encoding_status', '').strip()
 
         parsed_combined = False
         if sort_by and '_' in sort_by:
@@ -208,7 +214,11 @@ class MediaList(APIView):
             media = media.filter(search=query)
 
         if tag:
-            media = media.filter(tags__title=tag)
+            # Handle untagged filter if enabled
+            if getattr(settings, 'ENABLE_FILTER_UNTAGGED', False) and tag == 'untagged':
+                media = media.filter(tags__isnull=True).distinct()
+            else:
+                media = media.filter(tags__title=tag)
 
         if media_type:
             media = media.filter(media_type=media_type)
@@ -217,6 +227,7 @@ class MediaList(APIView):
             media = media.filter(add_date__gte=gte)
 
         if duration:
+            # Basic duration ranges (always enabled)
             if duration == '0-20':
                 media = media.filter(duration__gte=0, duration__lt=1200)
             elif duration == '20-40':
@@ -225,9 +236,56 @@ class MediaList(APIView):
                 media = media.filter(duration__gte=2400, duration__lt=3600)
             elif duration == '60-120':
                 media = media.filter(duration__gte=3600)
+            # Enhanced duration ranges (if enabled)
+            elif getattr(settings, 'ENABLE_FILTER_ENHANCED_DURATION', False):
+                if duration == '<60s':
+                    media = media.filter(duration__gte=0, duration__lt=60)
+                elif duration == '1-5m':
+                    media = media.filter(duration__gte=60, duration__lt=300)  # 1-5 minutes = 60-299 seconds
+                elif duration == '5-15m':
+                    media = media.filter(duration__gte=300, duration__lt=900)  # 5-15 minutes = 300-899 seconds
+                elif duration == '15-30m':
+                    media = media.filter(duration__gte=900, duration__lt=1800)  # 15-30 minutes = 900-1799 seconds
+                elif duration == '30-60m':
+                    media = media.filter(duration__gte=1800, duration__lt=3600)  # 30-60 minutes = 1800-3599 seconds
+                elif duration == '60-120m':
+                    media = media.filter(duration__gte=3600, duration__lt=7200)  # 60-120 minutes = 3600-7199 seconds
+                elif duration == '120m+':
+                    media = media.filter(duration__gte=7200)  # 120+ minutes = 7200+ seconds
 
         if publish_state and publish_state in ['private', 'public', 'unlisted']:
             media = media.filter(state=publish_state)
+
+        # Views range filter
+        if getattr(settings, 'ENABLE_FILTER_VIEWS_RANGE', False):
+            if views_min:
+                try:
+                    media = media.filter(views__gte=int(views_min))
+                except ValueError:
+                    pass
+            if views_max:
+                try:
+                    media = media.filter(views__lte=int(views_max))
+                except ValueError:
+                    pass
+
+        # Likes range filter
+        if getattr(settings, 'ENABLE_FILTER_LIKES_RANGE', False):
+            if likes_min:
+                try:
+                    media = media.filter(likes__gte=int(likes_min))
+                except ValueError:
+                    pass
+            if likes_max:
+                try:
+                    media = media.filter(likes__lte=int(likes_max))
+                except ValueError:
+                    pass
+
+        # Encoding status filter
+        if getattr(settings, 'ENABLE_FILTER_ENCODING_STATUS', False) and encoding_status:
+            if encoding_status in ['success', 'running', 'pending', 'fail']:
+                media = media.filter(encoding_status=encoding_status)
 
         if not already_sorted:
             media = media.order_by(f"{ordering}{sort_by}")
@@ -964,6 +1022,13 @@ class MediaSearch(APIView):
 
         author = params.get("author", "").strip()
         upload_date = params.get('upload_date', '').strip()
+        duration = params.get('duration', '').strip()
+        # New filter parameters
+        views_min = params.get('views_min', '').strip()
+        views_max = params.get('views_max', '').strip()
+        likes_min = params.get('likes_min', '').strip()
+        likes_max = params.get('likes_max', '').strip()
+        encoding_status = params.get('encoding_status', '').strip()
 
         # Handle combined sort options (e.g., title_asc, views_desc)
         parsed_combined = False
@@ -1023,7 +1088,11 @@ class MediaSearch(APIView):
             media = media.filter(search=query)
 
         if tag:
-            media = media.filter(tags__title=tag)
+            # Handle untagged filter if enabled
+            if getattr(settings, 'ENABLE_FILTER_UNTAGGED', False) and tag == 'untagged':
+                media = media.filter(tags__isnull=True).distinct()
+            else:
+                media = media.filter(tags__title=tag)
 
         if category:
             media = media.filter(category__title__contains=category)
@@ -1049,6 +1118,64 @@ class MediaSearch(APIView):
                 gte = datetime(year, 1, 1)
             if gte:
                 media = media.filter(add_date__gte=gte)
+
+        if duration:
+            # Basic duration ranges (always enabled)
+            if duration == '0-20':
+                media = media.filter(duration__gte=0, duration__lt=1200)
+            elif duration == '20-40':
+                media = media.filter(duration__gte=1200, duration__lt=2400)
+            elif duration == '40-60':
+                media = media.filter(duration__gte=2400, duration__lt=3600)
+            elif duration == '60-120':
+                media = media.filter(duration__gte=3600)
+            # Enhanced duration ranges (if enabled)
+            elif getattr(settings, 'ENABLE_FILTER_ENHANCED_DURATION', False):
+                if duration == '<60s':
+                    media = media.filter(duration__gte=0, duration__lt=60)
+                elif duration == '1-5m':
+                    media = media.filter(duration__gte=60, duration__lt=300)  # 1-5 minutes = 60-299 seconds
+                elif duration == '5-15m':
+                    media = media.filter(duration__gte=300, duration__lt=900)  # 5-15 minutes = 300-899 seconds
+                elif duration == '15-30m':
+                    media = media.filter(duration__gte=900, duration__lt=1800)  # 15-30 minutes = 900-1799 seconds
+                elif duration == '30-60m':
+                    media = media.filter(duration__gte=1800, duration__lt=3600)  # 30-60 minutes = 1800-3599 seconds
+                elif duration == '60-120m':
+                    media = media.filter(duration__gte=3600, duration__lt=7200)  # 60-120 minutes = 3600-7199 seconds
+                elif duration == '120m+':
+                    media = media.filter(duration__gte=7200)  # 120+ minutes = 7200+ seconds
+
+        # Views range filter
+        if getattr(settings, 'ENABLE_FILTER_VIEWS_RANGE', False):
+            if views_min:
+                try:
+                    media = media.filter(views__gte=int(views_min))
+                except ValueError:
+                    pass
+            if views_max:
+                try:
+                    media = media.filter(views__lte=int(views_max))
+                except ValueError:
+                    pass
+
+        # Likes range filter
+        if getattr(settings, 'ENABLE_FILTER_LIKES_RANGE', False):
+            if likes_min:
+                try:
+                    media = media.filter(likes__gte=int(likes_min))
+                except ValueError:
+                    pass
+            if likes_max:
+                try:
+                    media = media.filter(likes__lte=int(likes_max))
+                except ValueError:
+                    pass
+
+        # Encoding status filter
+        if getattr(settings, 'ENABLE_FILTER_ENCODING_STATUS', False) and encoding_status:
+            if encoding_status in ['success', 'running', 'pending', 'fail']:
+                media = media.filter(encoding_status=encoding_status)
 
         media = media.order_by(f"{ordering}{sort_by}")
 

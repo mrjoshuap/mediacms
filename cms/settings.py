@@ -579,6 +579,14 @@ ALLOW_CUSTOM_MEDIA_URLS = False
 # Whether to allow anonymous users to list all users
 ALLOW_ANONYMOUS_USER_LISTING = True
 
+# Media Filter Configuration
+# All new filters are disabled by default - admins can enable them individually
+ENABLE_FILTER_VIEWS_RANGE = False  # Views range filtering
+ENABLE_FILTER_LIKES_RANGE = False  # Likes range filtering
+ENABLE_FILTER_ENCODING_STATUS = False  # Encoding status filtering
+ENABLE_FILTER_UNTAGGED = False  # Untagged media filtering
+ENABLE_FILTER_ENHANCED_DURATION = False  # Enhanced duration ranges (beyond existing basic ranges)
+
 # Who can see the members page
 # valid choices are all, editors, admins
 CAN_SEE_MEMBERS_PAGE = "all"

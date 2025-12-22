@@ -60,6 +60,13 @@ def stuff(request):
     ret["INCLUDE_LISTING_NUMBERS"] = settings.INCLUDE_LISTING_NUMBERS
     ret["VERSION"] = VERSION
 
+    # Media Filter Configuration
+    ret["ENABLE_FILTER_VIEWS_RANGE"] = getattr(settings, 'ENABLE_FILTER_VIEWS_RANGE', False)
+    ret["ENABLE_FILTER_LIKES_RANGE"] = getattr(settings, 'ENABLE_FILTER_LIKES_RANGE', False)
+    ret["ENABLE_FILTER_ENCODING_STATUS"] = getattr(settings, 'ENABLE_FILTER_ENCODING_STATUS', False)
+    ret["ENABLE_FILTER_UNTAGGED"] = getattr(settings, 'ENABLE_FILTER_UNTAGGED', False)
+    ret["ENABLE_FILTER_ENHANCED_DURATION"] = getattr(settings, 'ENABLE_FILTER_ENHANCED_DURATION', False)
+
     if request.user.is_superuser:
         ret["DJANGO_ADMIN_URL"] = settings.DJANGO_ADMIN_URL
 
