@@ -1206,18 +1206,16 @@ def media_file_delete(sender, instance, **kwargs):
 
 
 @receiver(m2m_changed, sender=Media.category.through)
-def media_m2m(sender, instance, action, pk_set, **kwargs):
-    import logging
+def media_m2m(sender, instance, action, pk_set=None, **kwargs):
+    # Only update on post actions to avoid duplicate updates
+    if action not in ['post_add', 'post_remove', 'post_clear']:
+        return
 
-    logger = logging.getLogger(__name__)
+    from .category import Category
 
-    # Only log post_add and post_remove actions to avoid duplicate logs
     if action in ['post_add', 'post_remove']:
-        from .category import Category
-
         categories = Category.objects.filter(pk__in=pk_set) if pk_set else []
         category_names = [cat.title for cat in categories]
-
         logger.info(
             "Media category %s - friendly_token=%s, user_id=%s, action=%s, category_count=%s, category_names=%s",
             "added" if action == 'post_add' else "removed",
@@ -1228,12 +1226,54 @@ def media_m2m(sender, instance, action, pk_set, **kwargs):
             category_names,
         )
 
-    if instance.category.all():
-        for category in instance.category.all():
-            category.update_category_media()
-    if instance.tags.all():
-        for tag in instance.tags.all():
-            tag.update_tag_media()
+    categories_to_update = set()
+    if action == 'post_clear':
+        if instance.category.all():
+            categories_to_update.update(instance.category.all())
+    else:
+        if pk_set:
+            categories_to_update.update(Category.objects.filter(pk__in=pk_set))
+        if instance.category.all():
+            categories_to_update.update(instance.category.all())
 
-    if action in ("post_add", "post_remove", "post_clear"):
-        instance.update_search_vector()
+    for category in categories_to_update:
+        category.update_category_media()
+
+    # Avoid refresh_from_db here; M2M is already applied on the instance.
+    instance.update_search_vector()
+
+
+@receiver(m2m_changed, sender=Media.tags.through)
+def media_tags_m2m(sender, instance, action, pk_set=None, **kwargs):
+    if action not in ['post_add', 'post_remove', 'post_clear']:
+        return
+
+    from .category import Tag
+
+    if action in ['post_add', 'post_remove']:
+        tags = Tag.objects.filter(pk__in=pk_set) if pk_set else []
+        tag_names = [tag.title for tag in tags]
+        logger.info(
+            "Media tag %s - friendly_token=%s, user_id=%s, action=%s, tag_count=%s, tag_names=%s",
+            "added" if action == 'post_add' else "removed",
+            instance.friendly_token if instance.friendly_token else None,
+            instance.user.id if instance.user else None,
+            action,
+            len(tags),
+            tag_names,
+        )
+
+    tags_to_update = set()
+    if action == 'post_clear':
+        if instance.tags.all():
+            tags_to_update.update(instance.tags.all())
+    else:
+        if pk_set:
+            tags_to_update.update(Tag.objects.filter(pk__in=pk_set))
+        if instance.tags.all():
+            tags_to_update.update(instance.tags.all())
+
+    for tag in tags_to_update:
+        tag.update_tag_media()
+
+    instance.update_search_vector()
