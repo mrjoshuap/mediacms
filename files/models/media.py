@@ -826,13 +826,24 @@ class Media(models.Model):
         return ep
 
     @property
+    def categories_info(self):
+        """Property used on serializers"""
+
+        ret = []
+        for cat in self.category.all():
+            ret.append({"title": cat.title, "url": cat.get_absolute_url()})
+        # Sort alphabetically by title (case-insensitive)
+        return sorted(ret, key=lambda x: x['title'].lower())
+
+    @property
     def tags_info(self):
         """Property used on serializers"""
 
         ret = []
         for tag in self.tags.all():
             ret.append({"title": tag.title, "url": tag.get_absolute_url()})
-        return ret
+        # Sort alphabetically by title (case-insensitive)
+        return sorted(ret, key=lambda x: x['title'].lower())
 
     @property
     def original_media_url(self):
