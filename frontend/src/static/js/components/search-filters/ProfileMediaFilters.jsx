@@ -63,6 +63,7 @@ const filters = {
     { id: 'private', title: translateString('Private') },
     { id: 'unlisted', title: translateString('Unlisted') },
     { id: 'public', title: translateString('Published') },
+    { id: 'shared', title: translateString('Shared') },
   ],
   encoding_status: [
     { id: 'all', title: translateString('All') },

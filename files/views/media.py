@@ -253,8 +253,13 @@ class MediaList(APIView):
                 elif duration == '120m+':
                     media = media.filter(duration__gte=7200)  # 120+ minutes = 7200+ seconds
 
-        if publish_state and publish_state in ['private', 'public', 'unlisted']:
-            media = media.filter(state=publish_state)
+        if publish_state:
+            if publish_state == 'shared':
+                # Filter media that have custom permissions OR RBAC categories
+                shared_conditions = Q(permissions__isnull=False) | Q(category__is_rbac_category=True)
+                media = media.filter(shared_conditions).distinct()
+            elif publish_state in ['private', 'public', 'unlisted']:
+                media = media.filter(state=publish_state)
 
         # Views range filter
         if getattr(settings, 'ENABLE_FILTER_VIEWS_RANGE', False):
@@ -857,13 +862,14 @@ class MediaDetail(APIView):
 
         serializer = MediaSerializer(media, data=request.data, context={"request": request})
         if serializer.is_valid():
-            serializer.save(user=request.user)
-            # no need to update the media file itself, only the metadata
             # if request.data.get('media_file'):
-            #    media_file = request.data["media_file"]
-            #    serializer.save(user=request.user, media_file=media_file)
+            #     media_file = request.data["media_file"]
+            #     media.state = helpers.get_default_state(request.user)
+            #     media.listable = False
+            #     serializer.save(user=request.user, media_file=media_file)
             # else:
-            #    serializer.save(user=request.user)
+            #     serializer.save(user=request.user)
+            serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
