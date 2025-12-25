@@ -26,7 +26,7 @@ export function hasClassname(el, cls) {
 export const cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
 
 export const requestAnimationFrame =
-  window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+  window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
 export function BrowserEvents() {
   const callbacks = {
