@@ -181,9 +181,11 @@ class SpritePreview extends Component {
     }
 
     updateSpriteThumbnail(currentTime) {
-        if (!this.previewSprite || !this.previewSprite.url) {
+        if (!this.previewSprite || !this.previewSprite.url || !this.previewSprite.frame) {
             // Hide image if no sprite data available
-            this.spriteImage.style.display = 'none';
+            if (this.spriteImage) {
+                this.spriteImage.style.display = 'none';
+            }
             return;
         }
 

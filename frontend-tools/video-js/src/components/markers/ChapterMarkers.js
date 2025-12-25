@@ -297,9 +297,11 @@ class ChapterMarkers extends Component {
     }
 
     updateSpriteThumbnail(currentTime) {
-        if (!this.previewSprite || !this.previewSprite.url) {
+        if (!this.previewSprite || !this.previewSprite.url || !this.previewSprite.frame) {
             // Hide image if no sprite data available
-            this.chapterImage.style.display = 'none';
+            if (this.chapterImage) {
+                this.chapterImage.style.display = 'none';
+            }
             return;
         }
 
