@@ -193,7 +193,8 @@ HLS_DIR = os.path.join(MEDIA_ROOT, "hls/")
 
 FFMPEG_COMMAND = "ffmpeg"  # this is the path
 FFPROBE_COMMAND = "ffprobe"  # this is the path
-MP4HLS = "mp4hls"
+# mp4hls command, part of Bento4 (wrapper script that calls mp4-hls.py from source)
+MP4HLS_COMMAND = "/usr/local/bin/mp4hls"
 
 MASK_IPS_FOR_ACTIONS = True
 # how many seconds a process in running state without reporting progress is
@@ -251,9 +252,6 @@ POST_UPLOAD_AUTHOR_MESSAGE_UNLISTED_NO_COMMENTARY = ""
 # exists
 
 CANNOT_ADD_MEDIA_MESSAGE = "User cannot add media, or maximum number of media uploads has been reached."
-
-# mp4hls command, part of Bento4
-MP4HLS_COMMAND = "/home/mediacms.io/mediacms/Bento4-SDK-1-6-0-637.x86_64-unknown-linux/bin/mp4hls"
 
 # highly experimental, related with remote workers
 ADMIN_TOKEN = ""
@@ -370,41 +368,24 @@ FILE_UPLOAD_HANDLERS = [
     "django.core.files.uploadhandler.TemporaryFileUploadHandler",
 ]
 
-LOGS_DIR = os.path.join(BASE_DIR, "logs")
-
-error_filename = os.path.join(LOGS_DIR, "debug.log")
-if not os.path.exists(LOGS_DIR):
-    try:
-        os.mkdir(LOGS_DIR)
-    except PermissionError:
-        pass
-
-if not os.path.isfile(error_filename):
-    open(error_filename, 'a').close()
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {"verbose": {"format": "%(levelname)s %(asctime)s %(module)s " "%(process)d %(thread)d %(message)s"}},
     "handlers": {
-        "file": {
-            "level": "ERROR",
-            "class": "logging.FileHandler",
-            "filename": error_filename,
-        },
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        }
     },
-    "loggers": {
-        "django": {
-            "handlers": ["file"],
-            "level": "ERROR",
-            "propagate": True,
-        },
-    },
+    "root": {"level": "INFO", "handlers": ["console"]},
 }
 
-DATABASES = {"default": {"ENGINE": "django.db.backends.postgresql", "NAME": "mediacms", "HOST": "127.0.0.1", "PORT": "5432", "USER": "mediacms", "PASSWORD": "mediacms", "OPTIONS": {'pool': True}}}
+DATABASES = {"default": {"ENGINE": "django.db.backends.postgresql", "NAME": "mediacms", "HOST": "db", "PORT": "5432", "USER": "mediacms", "PASSWORD": "mediacms", "OPTIONS": {'pool': True}}}
 
 
-REDIS_LOCATION = "redis://127.0.0.1:6379/1"
+REDIS_LOCATION = "redis://redis:6379/1"
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -425,7 +406,9 @@ CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
-CELERY_SOFT_TIME_LIMIT = 2 * 60 * 60
+# Celery soft time limit (in seconds) - can be overridden via environment variable
+# Default: 2 hours (7200 seconds)
+CELERY_SOFT_TIME_LIMIT = int(os.environ.get("CELERY_SOFT_TIME_LIMIT", 2 * 60 * 60))
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 CELERYD_PREFETCH_MULTIPLIER = 1
 
@@ -601,13 +584,16 @@ WHISPER_MODEL = "base"
 SIDEBAR_FOOTER_TEXT = ""
 
 try:
-    # keep a local_settings.py file for local overrides
-    from .local_settings import *  # noqa
+    # Load custom settings from custom/local_settings.py
+    import sys
+
+    sys.path.insert(0, BASE_DIR)
+    from custom.local_settings import *  # noqa
 
     # ALLOWED_HOSTS needs a url/ip
     ALLOWED_HOSTS.append(FRONTEND_HOST.replace("http://", "").replace("https://", ""))
 except ImportError:
-    # local_settings not in use
+    # custom/local_settings.py not in use or empty
     pass
 
 # Don't add new settings below that could be overridden in local_settings.py!!!

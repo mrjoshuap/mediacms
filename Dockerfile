@@ -1,113 +1,184 @@
-FROM python:3.13.5-slim-bookworm AS build-image
+############ BUILD IMAGE (for Bento4 Python script and Python packages) ############
+FROM python:3.13-alpine AS build-image
 
-# Install system dependencies needed for downloading and extracting
-RUN apt-get update -y && \
-    apt-get install -y --no-install-recommends wget xz-utils unzip && \
-    rm -rf /var/lib/apt/lists/* && \
-    apt-get purge --auto-remove && \
-    apt-get clean
+# Update installed packages and clean cache
+RUN apk update && apk upgrade && rm -rf /var/cache/apk/*
 
-RUN wget -q https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz
+# Install system dependencies needed for building Bento4 and Python packages
+RUN apk add --no-cache \
+    git \
+    cmake \
+    make \
+    g++ \
+    gcc \
+    musl-dev \
+    libffi-dev \
+    postgresql-dev \
+    pkgconf \
+    zlib-dev \
+    libxml2-dev \
+    libxslt-dev \
+    xmlsec-dev \
+    imagemagick-dev \
+    && rm -rf /var/cache/apk/*
 
-RUN mkdir -p ffmpeg-tmp && \
-    tar -xf ffmpeg-release-amd64-static.tar.xz --strip-components 1 -C ffmpeg-tmp && \
-    cp -v ffmpeg-tmp/ffmpeg ffmpeg-tmp/ffprobe ffmpeg-tmp/qt-faststart /usr/local/bin && \
-    rm -rf ffmpeg-tmp ffmpeg-release-amd64-static.tar.xz
+# Get target architecture
+ARG TARGETARCH
+ARG TARGETPLATFORM
 
-# Install Bento4 in the specified location
-RUN mkdir -p /home/mediacms.io/bento4 && \
-    wget -q http://zebulon.bok.net/Bento4/binaries/Bento4-SDK-1-6-0-637.x86_64-unknown-linux.zip && \
-    unzip Bento4-SDK-1-6-0-637.x86_64-unknown-linux.zip -d /home/mediacms.io/bento4 && \
-    mv /home/mediacms.io/bento4/Bento4-SDK-1-6-0-637.x86_64-unknown-linux/* /home/mediacms.io/bento4/ && \
-    rm -rf /home/mediacms.io/bento4/Bento4-SDK-1-6-0-637.x86_64-unknown-linux && \
-    rm -rf /home/mediacms.io/bento4/docs && \
-    rm Bento4-SDK-1-6-0-637.x86_64-unknown-linux.zip
+# Clone Bento4 source to get mp4-hls.py Python script
+# We only need the Python script, not the full build
+RUN git clone -b v1.6.0-637 https://github.com/axiomatic-systems/Bento4.git /tmp/bento4 && \
+    mkdir -p /home/mediacms.io/bento4/utils && \
+    cp -r /tmp/bento4/Source/Python/utils/* /home/mediacms.io/bento4/utils/ && \
+    chmod +x /home/mediacms.io/bento4/utils/mp4-hls.py && \
+    rm -rf /tmp/bento4
 
-############ BASE RUNTIME IMAGE ############
-FROM python:3.13.5-slim-bookworm AS base
+# Set up virtualenv for building Python packages (use same path as runtime)
+RUN mkdir -p /home/mediacms.io && \
+    python3 -m venv /home/mediacms.io
+ENV PATH="/home/mediacms.io/bin:$PATH"
 
-SHELL ["/bin/bash", "-c"]
-
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV CELERY_APP='cms'
-ENV VIRTUAL_ENV=/home/mediacms.io
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-
-# Install system dependencies first
-RUN apt-get update -y && \
-    apt-get -y upgrade && \
-    apt-get install --no-install-recommends -y \
-        supervisor \
-        nginx \
-        imagemagick \
-        procps \
-        build-essential \
-        pkg-config \
-        zlib1g-dev \
-        zlib1g \
-        libxml2-dev \
-        libxmlsec1-dev \
-        libxmlsec1-openssl \
-        libpq-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Set up virtualenv first
-RUN mkdir -p /home/mediacms.io/mediacms/{logs} && \
-    cd /home/mediacms.io && \
-    python3 -m venv $VIRTUAL_ENV
-
-# Copy requirements files
+# Copy requirements and install Python packages
 COPY requirements.txt requirements-dev.txt ./
-
-# Install Python dependencies using pip (within virtualenv)
 ARG DEVELOPMENT_MODE=False
 RUN pip install --no-cache-dir uv && \
     uv pip install --no-binary lxml --no-binary xmlsec -r requirements.txt && \
     if [ "$DEVELOPMENT_MODE" = "True" ]; then \
-        echo "Installing development dependencies..." && \
         uv pip install -r requirements-dev.txt; \
     fi && \
-    apt-get purge -y --auto-remove \
-        build-essential \
-        pkg-config \
-        libxml2-dev \
-        libxmlsec1-dev \
-        libpq-dev
+    find /home/mediacms.io -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true && \
+    find /home/mediacms.io -type f -name "*.pyc" -delete 2>/dev/null || true && \
+    find /home/mediacms.io -type f -name "*.pyo" -delete 2>/dev/null || true && \
+    find /home/mediacms.io -type d -name "tests" ! -path "*/site-packages/*" -exec rm -rf {} + 2>/dev/null || true && \
+    find /home/mediacms.io -type d -name "test" ! -path "*/site-packages/*" -exec rm -rf {} + 2>/dev/null || true && \
+    find /home/mediacms.io -type f -name "*.txt" -path "*/tests/*" -delete 2>/dev/null || true && \
+    find /home/mediacms.io -type f -name "README*" -path "*/site-packages/*" -delete 2>/dev/null || true && \
+    find /home/mediacms.io -type f -name "CHANGELOG*" -path "*/site-packages/*" -delete 2>/dev/null || true && \
+    find /home/mediacms.io -type f -name "LICENSE*" -path "*/site-packages/*" -delete 2>/dev/null || true
 
-# Copy ffmpeg and Bento4 from build image
-COPY --from=build-image /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
-COPY --from=build-image /usr/local/bin/ffprobe /usr/local/bin/ffprobe
-COPY --from=build-image /usr/local/bin/qt-faststart /usr/local/bin/qt-faststart
+############ BASE RUNTIME IMAGE ############
+FROM python:3.13-alpine AS base
+
+LABEL org.opencontainers.image.title="MediaCMS"
+LABEL org.opencontainers.image.description="Modern, scalable and open source video platform"
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    CELERY_APP='cms' \
+    VIRTUAL_ENV=/home/mediacms.io \
+    PATH="/home/mediacms.io/bin:/usr/lib/jellyfin-ffmpeg:/home/mediacms.io/bento4/bin:/usr/local/bin:/usr/bin:$PATH"
+
+# Update installed packages and clean cache
+RUN apk update && apk upgrade && rm -rf /var/cache/apk/*
+
+# Install only runtime system dependencies (no build tools)
+RUN apk add --no-cache \
+    postgresql-libs \
+    libxml2 \
+    libxslt \
+    xmlsec \
+    imagemagick \
+    imagemagick-libs \
+    procps \
+    zlib \
+    jellyfin-ffmpeg \
+    bento4 \
+    && rm -rf /var/cache/apk/*
+
+# Set up virtualenv directory structure
+RUN mkdir -p /home/mediacms.io/mediacms/logs /home/mediacms.io/mediacms/media_files /home/mediacms.io/mediacms/static
+
+# Copy Python virtualenv from build stage (created at same path, so paths are correct)
+COPY --from=build-image /home/mediacms.io/bin /home/mediacms.io/bin
+COPY --from=build-image /home/mediacms.io/lib /home/mediacms.io/lib
+COPY --from=build-image /home/mediacms.io/include /home/mediacms.io/include
+COPY --from=build-image /home/mediacms.io/pyvenv.cfg /home/mediacms.io/pyvenv.cfg
+
+# Copy Bento4 Python utils from build image
 COPY --from=build-image /home/mediacms.io/bento4 /home/mediacms.io/bento4
 
-# Copy application files
-COPY . /home/mediacms.io/mediacms
+# Create mp4hls wrapper script that calls mp4-hls.py
+RUN echo '#!/bin/sh' > /usr/local/bin/mp4hls && \
+    echo 'BASEDIR="/home/mediacms.io/bento4"' >> /usr/local/bin/mp4hls && \
+    echo 'exec python3 "$BASEDIR/utils/mp4-hls.py" "$@"' >> /usr/local/bin/mp4hls && \
+    chmod +x /usr/local/bin/mp4hls
+# Note: jellyfin-ffmpeg is installed via apk above, so ffmpeg/ffprobe are available in PATH
+# Note: qt-faststart is only available for x86_64 builds (optional utility for MP4 optimization)
+# If needed, it can be added separately or handled conditionally via a wrapper script
+
+# Create www-data user first
+RUN addgroup -g 33 www-data 2>/dev/null || true && \
+    adduser -D -u 33 -G www-data www-data 2>/dev/null || true
+
+# Copy application files (media_files excluded except userlogos via .dockerignore)
+COPY --chown=www-data:www-data . /home/mediacms.io/mediacms
 WORKDIR /home/mediacms.io/mediacms
 
-# required for sprite thumbnail generation for large video files
-COPY deploy/docker/policy.xml /etc/ImageMagick-6/policy.xml
+# Clean up unnecessary files and Python cache after copy
+RUN find /home/mediacms.io/mediacms -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true && \
+    find /home/mediacms.io/mediacms -type f -name "*.pyc" -delete 2>/dev/null || true && \
+    find /home/mediacms.io/mediacms -type f -name "*.pyo" -delete 2>/dev/null || true && \
+    find /home/mediacms.io/mediacms -type f -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
 
-# Set process control environment variables
-ENV ENABLE_UWSGI='yes' \
-    ENABLE_NGINX='yes' \
-    ENABLE_CELERY_BEAT='yes' \
-    ENABLE_CELERY_SHORT='yes' \
-    ENABLE_CELERY_LONG='yes' \
-    ENABLE_MIGRATIONS='yes'
+# Copy stock media files to staging location (for initialization in migrations)
+RUN if [ -d "/home/mediacms.io/mediacms/media_files/userlogos" ]; then \
+        mkdir -p /home/mediacms.io/stock_media_files && \
+        cp -r /home/mediacms.io/mediacms/media_files/userlogos /home/mediacms.io/stock_media_files/ && \
+        rm -rf /home/mediacms.io/mediacms/media_files; \
+    fi
 
-EXPOSE 9000 80
+# Copy imagemagick policy for sprite thumbnail generation
+# Alpine uses ImageMagick-7, but we'll copy to both possible locations for compatibility
+COPY config/imagemagick/policy.xml /tmp/policy.xml
+RUN if [ -d /etc/ImageMagick-7 ]; then \
+        cp /tmp/policy.xml /etc/ImageMagick-7/policy.xml; \
+    elif [ -d /etc/ImageMagick-6 ]; then \
+        cp /tmp/policy.xml /etc/ImageMagick-6/policy.xml; \
+    fi && \
+    rm /tmp/policy.xml
 
-RUN chmod +x ./deploy/docker/entrypoint.sh
+# Create runtime directories and set permissions
+# Note: logs, media_files, and static are volumes, but we ensure directories exist with correct ownership
+RUN mkdir -p /var/run/mediacms /var/lib/mediacms /home/mediacms.io/mediacms/logs \
+             /home/mediacms.io/mediacms/media_files \
+             /home/mediacms.io/mediacms/static && \
+    chown -R www-data:www-data /home/mediacms.io/mediacms \
+                                /var/run/mediacms \
+                                /var/lib/mediacms
 
-ENTRYPOINT ["./deploy/docker/entrypoint.sh"]
-CMD ["./deploy/docker/start.sh"]
+############ API IMAGE (Django/gunicorn) ############
+FROM base AS api
 
-############ FULL IMAGE ############
-FROM base AS full
+# gunicorn is already installed via requirements.txt
+
+# Run container as www-data user
+USER www-data
+
+EXPOSE 8000
+
+# Use virtual environment's Python to run gunicorn to ensure correct Python path
+WORKDIR /home/mediacms.io/mediacms
+CMD ["/home/mediacms.io/bin/gunicorn", "cms.wsgi:application", "--config", "config/gunicorn/gunicorn.conf.py"]
+
+############ WORKER IMAGE (Celery) ############
+FROM base AS worker
+
+# Run container as www-data user
+USER www-data
+
+# CMD will be overridden in docker-compose for different worker types
+
+############ WORKER-FULL IMAGE (Celery with extra codecs) ############
+FROM worker AS worker-full
+
+USER root
+
 COPY requirements-full.txt ./
-RUN mkdir -p /root/.cache/ && \
-    chmod go+rwx /root/ && \
-    chmod go+rwx /root/.cache/
-RUN uv pip install -r requirements-full.txt
+RUN mkdir -p /root/.cache && \
+    chmod go+rwx /root && \
+    chmod go+rwx /root/.cache && \
+    uv pip install -r requirements-full.txt && \
+    chown -R www-data:www-data /home/mediacms.io/mediacms
+
+USER www-data
