@@ -17,3 +17,11 @@ services:
       dockerfile: Dockerfile
       target: worker-full
     image: mediacms/mediacms-worker:latest-full
+    volumes:
+      - ./custom:/home/mediacms.io/mediacms/custom:ro
+      - media_files:/home/mediacms.io/mediacms/media_files
+      - logs:/home/mediacms.io/mediacms/logs
+      - whisper_models:/home/mediacms.io/whisper_models
+
+volumes:
+  whisper_models:

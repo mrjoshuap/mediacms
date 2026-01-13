@@ -42,10 +42,59 @@ ENV PATH="/home/mediacms.io/bin:$PATH"
 # Copy requirements and install Python packages
 COPY requirements.txt requirements-dev.txt ./
 ARG DEVELOPMENT_MODE=False
-RUN pip install --no-cache-dir uv && \
-    uv pip install --no-binary lxml --no-binary xmlsec -r requirements.txt && \
+RUN pip install --no-cache uv && \
+    uv pip install --no-cache --no-binary lxml --no-binary xmlsec -r requirements.txt && \
     if [ "$DEVELOPMENT_MODE" = "True" ]; then \
-        uv pip install -r requirements-dev.txt; \
+        uv pip install --no-cache -r requirements-dev.txt; \
+    fi && \
+    find /home/mediacms.io -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true && \
+    find /home/mediacms.io -type f -name "*.pyc" -delete 2>/dev/null || true && \
+    find /home/mediacms.io -type f -name "*.pyo" -delete 2>/dev/null || true && \
+    find /home/mediacms.io -type d -name "tests" ! -path "*/site-packages/*" -exec rm -rf {} + 2>/dev/null || true && \
+    find /home/mediacms.io -type d -name "test" ! -path "*/site-packages/*" -exec rm -rf {} + 2>/dev/null || true && \
+    find /home/mediacms.io -type f -name "*.txt" -path "*/tests/*" -delete 2>/dev/null || true && \
+    find /home/mediacms.io -type f -name "README*" -path "*/site-packages/*" -delete 2>/dev/null || true && \
+    find /home/mediacms.io -type f -name "CHANGELOG*" -path "*/site-packages/*" -delete 2>/dev/null || true && \
+    find /home/mediacms.io -type f -name "LICENSE*" -path "*/site-packages/*" -delete 2>/dev/null || true
+
+############ BUILD IMAGE FOR WORKER-FULL (Ubuntu-based for PyTorch compatibility) ############
+FROM python:3.13-slim AS build-image-full
+
+# Update and install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git \
+    libpq-dev \
+    libffi-dev \
+    pkg-config \
+    zlib1g-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    libxmlsec1-dev \
+    imagemagick \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Clone Bento4 source to get mp4-hls.py Python script
+RUN git clone -b v1.6.0-637 https://github.com/axiomatic-systems/Bento4.git /tmp/bento4 && \
+    mkdir -p /home/mediacms.io/bento4/utils && \
+    cp -r /tmp/bento4/Source/Python/utils/* /home/mediacms.io/bento4/utils/ && \
+    chmod +x /home/mediacms.io/bento4/utils/mp4-hls.py && \
+    rm -rf /tmp/bento4
+
+# Set up virtualenv for building Python packages (use same path as runtime)
+RUN mkdir -p /home/mediacms.io && \
+    python3 -m venv /home/mediacms.io
+ENV PATH="/home/mediacms.io/bin:$PATH"
+
+# Copy requirements and install Python packages
+COPY requirements.txt requirements-dev.txt ./
+ARG DEVELOPMENT_MODE=False
+RUN pip install --no-cache-dir uv && \
+    uv pip install --no-cache --no-binary lxml --no-binary xmlsec -r requirements.txt && \
+    if [ "$DEVELOPMENT_MODE" = "True" ]; then \
+        uv pip install --no-cache -r requirements-dev.txt; \
     fi && \
     find /home/mediacms.io -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true && \
     find /home/mediacms.io -type f -name "*.pyc" -delete 2>/dev/null || true && \
@@ -147,6 +196,92 @@ RUN mkdir -p /var/run/mediacms /var/lib/mediacms /home/mediacms.io/mediacms/logs
                                 /var/run/mediacms \
                                 /var/lib/mediacms
 
+############ BASE RUNTIME IMAGE FOR WORKER-FULL (Ubuntu-based) ############
+FROM python:3.13-slim AS base-full
+
+LABEL org.opencontainers.image.title="MediaCMS"
+LABEL org.opencontainers.image.description="Modern, scalable and open source video platform"
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    CELERY_APP='cms' \
+    VIRTUAL_ENV=/home/mediacms.io \
+    XDG_CACHE_HOME=/home/mediacms.io/.cache \
+    PATH="/home/mediacms.io/bin:/usr/bin/ffmpeg:/home/mediacms.io/bento4/bin:/usr/local/bin:/usr/bin:$PATH"
+
+# Install runtime system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    libxml2 \
+    libxslt1.1 \
+    libxmlsec1 \
+    libxmlsec1-openssl \
+    imagemagick \
+    ffmpeg \
+    procps \
+    zlib1g \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up virtualenv directory structure
+RUN mkdir -p /home/mediacms.io/mediacms/logs /home/mediacms.io/mediacms/media_files /home/mediacms.io/mediacms/static
+
+# Copy Python virtualenv from build-image-full
+COPY --from=build-image-full /home/mediacms.io/bin /home/mediacms.io/bin
+COPY --from=build-image-full /home/mediacms.io/lib /home/mediacms.io/lib
+COPY --from=build-image-full /home/mediacms.io/include /home/mediacms.io/include
+COPY --from=build-image-full /home/mediacms.io/pyvenv.cfg /home/mediacms.io/pyvenv.cfg
+
+# Copy Bento4 Python utils from build image
+COPY --from=build-image-full /home/mediacms.io/bento4 /home/mediacms.io/bento4
+
+# Create mp4hls wrapper script that calls mp4-hls.py
+RUN echo '#!/bin/sh' > /usr/local/bin/mp4hls && \
+    echo 'BASEDIR="/home/mediacms.io/bento4"' >> /usr/local/bin/mp4hls && \
+    echo 'exec python3 "$BASEDIR/utils/mp4-hls.py" "$@"' >> /usr/local/bin/mp4hls && \
+    chmod +x /usr/local/bin/mp4hls
+
+# Create www-data user
+RUN groupadd -g 33 www-data 2>/dev/null || true && \
+    useradd -u 33 -g www-data -m -s /bin/bash www-data 2>/dev/null || true
+
+# Copy application files
+COPY --chown=www-data:www-data . /home/mediacms.io/mediacms
+WORKDIR /home/mediacms.io/mediacms
+
+# Clean up unnecessary files and Python cache after copy
+RUN find /home/mediacms.io/mediacms -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true && \
+    find /home/mediacms.io/mediacms -type f -name "*.pyc" -delete 2>/dev/null || true && \
+    find /home/mediacms.io/mediacms -type f -name "*.pyo" -delete 2>/dev/null || true && \
+    find /home/mediacms.io/mediacms -type f -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+
+# Copy stock media files to staging location (for initialization in migrations)
+RUN if [ -d "/home/mediacms.io/mediacms/media_files/userlogos" ]; then \
+        mkdir -p /home/mediacms.io/stock_media_files && \
+        cp -r /home/mediacms.io/mediacms/media_files/userlogos /home/mediacms.io/stock_media_files/ && \
+        rm -rf /home/mediacms.io/mediacms/media_files; \
+    fi
+
+# Copy imagemagick policy for sprite thumbnail generation
+COPY config/imagemagick/policy.xml /tmp/policy.xml
+RUN if [ -d /etc/ImageMagick-7 ]; then \
+        cp /tmp/policy.xml /etc/ImageMagick-7/policy.xml; \
+    elif [ -d /etc/ImageMagick-6 ]; then \
+        cp /tmp/policy.xml /etc/ImageMagick-6/policy.xml; \
+    fi && \
+    rm /tmp/policy.xml
+
+# Create runtime directories and set permissions
+RUN mkdir -p /var/run/mediacms /var/lib/mediacms /home/mediacms.io/mediacms/logs \
+             /home/mediacms.io/mediacms/media_files \
+             /home/mediacms.io/mediacms/static \
+             /home/mediacms.io/.cache \
+             /var/www && \
+    chown -R www-data:www-data /home/mediacms.io/mediacms \
+                                /home/mediacms.io/.cache \
+                                /var/www \
+                                /var/run/mediacms \
+                                /var/lib/mediacms
+
 ############ API IMAGE (Django/gunicorn) ############
 FROM base AS api
 
@@ -170,15 +305,26 @@ USER www-data
 # CMD will be overridden in docker-compose for different worker types
 
 ############ WORKER-FULL IMAGE (Celery with extra codecs) ############
-FROM worker AS worker-full
+FROM base-full AS worker-full
 
 USER root
 
+# Copy requirements
 COPY requirements-full.txt ./
-RUN mkdir -p /root/.cache && \
-    chmod go+rwx /root && \
-    chmod go+rwx /root/.cache && \
-    uv pip install -r requirements-full.txt && \
-    chown -R www-data:www-data /home/mediacms.io/mediacms
 
+# Install PyTorch and Whisper (using wheels - no source build needed on glibc)
+RUN /home/mediacms.io/bin/python --version && \
+    # Install full requirements from requirements-full.txt
+    /home/mediacms.io/bin/uv pip install --no-cache -r requirements-full.txt && \
+    # Clean up build artifacts from the virtualenv (but be careful not to remove installed packages)
+    (find /home/mediacms.io/lib/python*/site-packages -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true) && \
+    (find /home/mediacms.io/lib/python*/site-packages -type f -name "*.pyc" -delete 2>/dev/null || true) && \
+    (find /home/mediacms.io/lib/python*/site-packages -type f -name "*.pyo" -delete 2>/dev/null || true) && \
+    (find /home/mediacms.io/lib/python*/site-packages -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true) && \
+    # Fix ownership of virtualenv (since we installed as root)
+    (chown -R www-data:www-data /home/mediacms.io/bin /home/mediacms.io/lib /home/mediacms.io/include /home/mediacms.io/pyvenv.cfg 2>/dev/null || true) && \
+    # Clean apt cache
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/*
+
+ENV WHISPER_MODELS_DIR=/home/mediacms.io/whisper_models
 USER www-data

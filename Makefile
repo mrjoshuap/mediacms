@@ -185,7 +185,7 @@ dev-build-no-cache:
 # Build Targets
 #########################
 
-build-all: build dev-build
+build-all: build dev-build build-worker-full
 	@echo "$(GREEN)All images built successfully!$(NC)"
 
 build-api:
