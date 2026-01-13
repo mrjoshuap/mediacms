@@ -1,3 +1,19 @@
+# Docker Compose override file for Whisper transcription support
+# This file enables Whisper transcription capabilities by using the worker-full build target
+# which includes openai-whisper and other extra codecs.
+#
+# Usage:
+#   docker compose -f docker-compose.yaml -f docker-compose.full.yaml up
+#
+# Or use Makefile targets:
+#   make up-full
+#
+# Note: Also set USE_WHISPER_TRANSCRIBE = True in your settings/local_settings.py
+
 services:
-  celery_worker:
-    image: mediacms/mediacms:full
+  celery_long:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: worker-full
+    image: mediacms/mediacms-worker:latest-full

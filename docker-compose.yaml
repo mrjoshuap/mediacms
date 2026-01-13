@@ -128,8 +128,9 @@ services:
 
   celery_long:
     image: mediacms/mediacms-worker:latest
-    # To use extra codecs, change image to: mediacms/mediacms-worker:latest-full
-    # and update build target to worker-full
+    # To enable Whisper transcription and extra codecs, use the override file:
+    #   docker compose -f docker-compose.yaml -f docker-compose.full.yaml up
+    # Or use: make up-full
     restart: unless-stopped
     command: ["/home/mediacms.io/bin/celery", "-A", "cms", "worker", "-Q", "long_tasks", "-c", "1", "-Ofair", "--prefetch-multiplier=1", "--loglevel=INFO", "-n", "long@%h"]
     depends_on:

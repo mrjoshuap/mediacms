@@ -77,6 +77,8 @@ services:
       dockerfile: Dockerfile
       target: worker
     image: mediacms/mediacms-dev:latest
+    # To enable Whisper transcription in development, change target to: worker-full
+    # and ensure requirements-full.txt dependencies are available
     # deploy.replicas is Docker Swarm syntax, not Docker Compose - kept for reference only
     # deploy:
     #   replicas: 1

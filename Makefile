@@ -10,13 +10,15 @@ NC := \033[0m # No Color
 # Compose file paths
 COMPOSE_FILE = docker-compose.yaml
 COMPOSE_FILE_DEV = docker-compose-dev.yaml
+COMPOSE_FILE_FULL = docker-compose.full.yaml
 
 # Default target
 .DEFAULT_GOAL := help
 
 .PHONY: help up up-attach down down-volumes start stop restart ps logs build build-no-cache pull
+.PHONY: up-full up-full-attach down-full down-full-volumes start-full stop-full restart-full ps-full logs-full build-full build-full-no-cache pull-full
 .PHONY: dev-up dev-up-attach dev-down dev-down-volumes dev-start dev-stop dev-restart dev-ps dev-logs dev-build dev-build-no-cache
-.PHONY: build-all build-api build-worker build-nginx build-base
+.PHONY: build-all build-api build-worker build-worker-full build-nginx build-base
 .PHONY: health health-dev health-api health-db health-redis
 .PHONY: clean clean-all shell dev-shell admin-shell db-shell redis-cli
 .PHONY: build-frontend backup-db backup-db-dev test
@@ -74,6 +76,60 @@ build-no-cache:
 pull:
 	@echo "$(GREEN)Pulling latest production images...$(NC)"
 	docker compose -f $(COMPOSE_FILE) pull
+
+#########################
+# Production Environment (Full/Whisper Mode)
+#########################
+
+up-full:
+	@echo "$(GREEN)Starting production services with Whisper transcription support...$(NC)"
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_FULL) up -d
+
+up-full-attach:
+	@echo "$(GREEN)Starting production services with Whisper transcription support (attached)...$(NC)"
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_FULL) up
+
+down-full:
+	@echo "$(YELLOW)Stopping production services (full mode)...$(NC)"
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_FULL) down
+
+down-full-volumes:
+	@echo "$(RED)Stopping production services and removing volumes (full mode)...$(NC)"
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_FULL) down -v
+
+start-full:
+	@echo "$(GREEN)Starting existing production containers (full mode)...$(NC)"
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_FULL) start
+
+stop-full:
+	@echo "$(YELLOW)Stopping production containers (full mode)...$(NC)"
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_FULL) stop
+
+restart-full:
+	@echo "$(YELLOW)Restarting production containers (full mode)...$(NC)"
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_FULL) restart
+
+ps-full:
+	@docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_FULL) ps
+
+logs-full:
+	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
+		docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_FULL) logs -f; \
+	else \
+		docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_FULL) logs -f $(filter-out $@,$(MAKECMDGOALS)); \
+	fi
+
+build-full:
+	@echo "$(GREEN)Building production images with Whisper transcription support...$(NC)"
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_FULL) build
+
+build-full-no-cache:
+	@echo "$(GREEN)Building production images with Whisper transcription support (no cache)...$(NC)"
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_FULL) build --no-cache
+
+pull-full:
+	@echo "$(GREEN)Pulling latest production images (full mode)...$(NC)"
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_FULL) pull
 
 #########################
 # Development Environment
@@ -139,6 +195,10 @@ build-api:
 build-worker:
 	@echo "$(GREEN)Building worker image...$(NC)"
 	docker compose -f $(COMPOSE_FILE) build celery_beat celery_short celery_long
+
+build-worker-full:
+	@echo "$(GREEN)Building worker image with Whisper transcription support...$(NC)"
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_FULL) build celery_long
 
 build-nginx:
 	@echo "$(GREEN)Building nginx image...$(NC)"
@@ -342,6 +402,20 @@ help:
 	@echo "  make build-no-cache   - Build all production images (no cache)"
 	@echo "  make pull             - Pull latest production images"
 	@echo ""
+	@echo "$(YELLOW)Production Commands (Full/Whisper Mode):$(NC)"
+	@echo "  make up-full          - Start production services with Whisper transcription (detached)"
+	@echo "  make up-full-attach   - Start production services with Whisper transcription (attached)"
+	@echo "  make down-full        - Stop and remove production containers (full mode)"
+	@echo "  make down-full-volumes - Stop and remove production containers and volumes (full mode)"
+	@echo "  make start-full       - Start existing production containers (full mode)"
+	@echo "  make stop-full        - Stop production containers (full mode)"
+	@echo "  make restart-full     - Restart production containers (full mode)"
+	@echo "  make ps-full          - Show production service status (full mode)"
+	@echo "  make logs-full [service] - Show production logs (full mode, optionally for specific service)"
+	@echo "  make build-full       - Build all production images with Whisper transcription support"
+	@echo "  make build-full-no-cache - Build all production images with Whisper support (no cache)"
+	@echo "  make pull-full        - Pull latest production images (full mode)"
+	@echo ""
 	@echo "$(YELLOW)Development Commands:$(NC)"
 	@echo "  make dev-up           - Start development services (detached)"
 	@echo "  make dev-up-attach    - Start development services (attached, shows logs)"
@@ -359,6 +433,7 @@ help:
 	@echo "  make build-all        - Build all images (production and dev)"
 	@echo "  make build-api        - Build only the API image (production)"
 	@echo "  make build-worker     - Build worker images (production)"
+	@echo "  make build-worker-full - Build worker image with Whisper transcription support (production)"
 	@echo "  make build-nginx      - Build nginx image (production)"
 	@echo "  make build-base       - Build base image (production)"
 	@echo ""
@@ -384,6 +459,7 @@ help:
 	@echo ""
 	@echo "$(GREEN)Examples:$(NC)"
 	@echo "  make up                # Start production"
+	@echo "  make up-full           # Start production with Whisper transcription"
 	@echo "  make dev-up            # Start development"
 	@echo "  make health            # Check production health"
 	@echo "  make logs api          # Show API logs"
