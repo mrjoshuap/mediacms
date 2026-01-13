@@ -1,37 +1,66 @@
-version: "3"
-
 services:
   migrations:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: Dockerfile
       target: base
-      args:
-        - DEVELOPMENT_MODE=True
     image: mediacms/mediacms-dev:latest
-    volumes:
-      - ./:/home/mediacms.io/mediacms/
-    command: "./deploy/docker/prestart.sh"
+    user: "www-data"
+    command: ["/bin/sh", "/home/mediacms.io/mediacms/scripts/run-migrations.sh"]
     environment:
       DEVELOPMENT_MODE: True
-      ENABLE_UWSGI: 'no'
-      ENABLE_NGINX: 'no'
-      ENABLE_CELERY_SHORT: 'no'
-      ENABLE_CELERY_LONG: 'no'
-      ENABLE_CELERY_BEAT: 'no'
       ADMIN_USER: 'admin'
       ADMIN_EMAIL: 'admin@localhost'
       ADMIN_PASSWORD: 'admin'
-    restart: on-failure
+    restart: "no"
     depends_on:
       redis:
         condition: service_healthy
       db:
         condition: service_healthy
+    volumes:
+      - ./:/home/mediacms.io/mediacms/
+      - static_files:/home/mediacms.io/mediacms/static
+      - media_files:/home/mediacms.io/mediacms/media_files
+      - logs:/home/mediacms.io/mediacms/logs
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    image: mediacms/mediacms-dev:latest
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    environment:
+      DEVELOPMENT_MODE: True
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/home/mediacms.io/mediacms/
+      - static_files:/home/mediacms.io/mediacms/static
+      - media_files:/home/mediacms.io/mediacms/media_files
+      - logs:/home/mediacms.io/mediacms/logs
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "/usr/bin/wget", "--spider", "--quiet", "http://127.0.0.1:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
   frontend:
     image: node:20
     volumes:
       - ${PWD}/frontend:/home/mediacms.io/mediacms/frontend/
+      - frontend_node_modules:/home/mediacms.io/mediacms/frontend/node_modules
+      - scripts_node_modules:/home/mediacms.io/mediacms/frontend/packages/scripts/node_modules
+      - npm_cache:/home/node/.npm
     working_dir: /home/mediacms.io/mediacms/frontend/
     command: bash -c "npm install && npm run start"
     env_file:
@@ -39,51 +68,71 @@ services:
     ports:
       - "8088:8088"
     depends_on:
-      - web
-  web:
+      - api
+    restart: unless-stopped
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: worker
     image: mediacms/mediacms-dev:latest
-    command: "python manage.py runserver 0.0.0.0:80"
+    # deploy.replicas is Docker Swarm syntax, not Docker Compose - kept for reference only
+    # deploy:
+    #   replicas: 1
+    command: ["/home/mediacms.io/bin/celery", "-A", "cms", "worker", "--loglevel=INFO"]
     environment:
       DEVELOPMENT_MODE: True
-    ports:
-      - "80:80"
+      CELERY_SHORT_SOFT_TIME_LIMIT: ${CELERY_SHORT_SOFT_TIME_LIMIT:-300}
     volumes:
       - ./:/home/mediacms.io/mediacms/
+      - media_files:/home/mediacms.io/mediacms/media_files
+      - logs:/home/mediacms.io/mediacms/logs
     depends_on:
-      - migrations
+      migrations:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/home/mediacms.io/bin/celery", "-A", "cms", "inspect", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
   db:
     image: postgres:17.2-alpine
-    volumes:
-      - ../postgres_data:/var/lib/postgresql/data/
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: mediacms
       POSTGRES_PASSWORD: mediacms
       POSTGRES_DB: mediacms
       TZ: Europe/London
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}", "--host=db", "--dbname=$POSTGRES_DB", "--username=$POSTGRES_USER"]
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
+
   redis:
-    image: "redis:alpine"
-    restart: always
+    image: redis:alpine
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
+      interval: 10s
+      timeout: 5s
       retries: 3
-  celery_worker:
-    image: mediacms/mediacms-dev:latest
-    deploy:
-      replicas: 1
-    volumes:
-      - ./:/home/mediacms.io/mediacms/
-    environment:
-      ENABLE_UWSGI: 'no'
-      ENABLE_NGINX: 'no'
-      ENABLE_CELERY_BEAT: 'no'
-      ENABLE_MIGRATIONS: 'no'
-    depends_on:
-      - web
+
+volumes:
+  postgres_data:
+  static_files:
+  media_files:
+  logs:
+  frontend_node_modules:
+  scripts_node_modules:
+  npm_cache:
