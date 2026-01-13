@@ -4,6 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: base
+      args:
+        DEVELOPMENT_MODE: "True"
     image: mediacms/mediacms-dev:latest
     user: "www-data"
     command: ["/bin/sh", "/home/mediacms.io/mediacms/scripts/run-migrations.sh"]
@@ -29,6 +31,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: api
+      args:
+        DEVELOPMENT_MODE: "True"
     image: mediacms/mediacms-dev:latest
     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     environment:
@@ -71,25 +75,18 @@ services:
       - api
     restart: unless-stopped
 
-  celery_worker:
+  celery_beat:
     build:
       context: .
       dockerfile: Dockerfile
       target: worker
+      args:
+        DEVELOPMENT_MODE: "True"
     image: mediacms/mediacms-dev:latest
-    # To enable Whisper transcription in development, change target to: worker-full
-    # and ensure requirements-full.txt dependencies are available
-    # deploy.replicas is Docker Swarm syntax, not Docker Compose - kept for reference only
-    # deploy:
-    #   replicas: 1
-    command: ["/home/mediacms.io/bin/celery", "-A", "cms", "worker", "--loglevel=INFO"]
+    restart: unless-stopped
+    command: ["/home/mediacms.io/bin/celery", "-A", "cms", "beat", "--loglevel=INFO", "--schedule=/var/lib/mediacms/celerybeat-schedule"]
     environment:
       DEVELOPMENT_MODE: True
-      CELERY_SHORT_SOFT_TIME_LIMIT: ${CELERY_SHORT_SOFT_TIME_LIMIT:-300}
-    volumes:
-      - ./:/home/mediacms.io/mediacms/
-      - media_files:/home/mediacms.io/mediacms/media_files
-      - logs:/home/mediacms.io/mediacms/logs
     depends_on:
       migrations:
         condition: service_completed_successfully
@@ -97,7 +94,76 @@ services:
         condition: service_healthy
       db:
         condition: service_healthy
+    volumes:
+      - ./:/home/mediacms.io/mediacms/
+      - media_files:/home/mediacms.io/mediacms/media_files
+      - celerybeat_data:/var/lib/mediacms
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'celery.*beat' > /dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  celery_short:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: worker
+      args:
+        DEVELOPMENT_MODE: "True"
+    image: mediacms/mediacms-dev:latest
     restart: unless-stopped
+    environment:
+      DEVELOPMENT_MODE: True
+      CELERY_SHORT_SOFT_TIME_LIMIT: ${CELERY_SHORT_SOFT_TIME_LIMIT:-300}
+    command: 
+      - /bin/sh
+      - -c
+      - /home/mediacms.io/bin/celery -A cms worker -Q short_tasks -c 10 --soft-time-limit=$${CELERY_SHORT_SOFT_TIME_LIMIT} --loglevel=INFO -n short@%h
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    volumes:
+      - ./:/home/mediacms.io/mediacms/
+      - media_files:/home/mediacms.io/mediacms/media_files
+      - logs:/home/mediacms.io/mediacms/logs
+    healthcheck:
+      test: ["CMD", "/home/mediacms.io/bin/celery", "-A", "cms", "inspect", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  celery_long:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: worker
+      args:
+        DEVELOPMENT_MODE: "True"
+    image: mediacms/mediacms-dev:latest
+    # To enable Whisper transcription in development, change target to: worker-full
+    # and ensure requirements-full.txt dependencies are available
+    restart: unless-stopped
+    command: ["/home/mediacms.io/bin/celery", "-A", "cms", "worker", "-Q", "long_tasks", "-c", "1", "-Ofair", "--prefetch-multiplier=1", "--loglevel=INFO", "-n", "long@%h"]
+    environment:
+      DEVELOPMENT_MODE: True
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    volumes:
+      - ./:/home/mediacms.io/mediacms/
+      - media_files:/home/mediacms.io/mediacms/media_files
+      - logs:/home/mediacms.io/mediacms/logs
     healthcheck:
       test: ["CMD", "/home/mediacms.io/bin/celery", "-A", "cms", "inspect", "ping"]
       interval: 30s
@@ -135,6 +201,7 @@ volumes:
   static_files:
   media_files:
   logs:
+  celerybeat_data:
   frontend_node_modules:
   scripts_node_modules:
   npm_cache:
