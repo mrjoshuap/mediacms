@@ -8,6 +8,8 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework.permissions import AllowAny
 
+from . import views
+
 schema_view = get_schema_view(
     openapi.Info(title="MediaCMS API", default_version='v1', contact=openapi.Contact(url="https://mediacms.io"), x_logo={"url": "../../static/images/logo_dark.svg"}),
     public=True,
@@ -17,6 +19,7 @@ schema_view = get_schema_view(
 # refactor seriously
 
 urlpatterns = [
+    path("health", views.health_check, name="health"),
     re_path(r"^__debug__/", include(debug_toolbar.urls)),
     path(
         "robots.txt",

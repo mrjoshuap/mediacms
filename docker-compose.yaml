@@ -44,6 +44,12 @@ services:
       - static_files:/home/mediacms.io/mediacms/static
       - media_files:/home/mediacms.io/mediacms/media_files
       - logs:/home/mediacms.io/mediacms/logs
+    healthcheck:
+      test: ["CMD", "/usr/bin/wget", "--spider", "--quiet", "http://127.0.0.1:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
   nginx:
     image: mediacms/mediacms-nginx:latest
@@ -53,7 +59,7 @@ services:
     restart: unless-stopped
     depends_on:
       api:
-        condition: service_started
+        condition: service_healthy
     ports:
       - "80:80"
     volumes:
@@ -61,6 +67,11 @@ services:
       - static_files:/var/www/static:ro
       - media_files:/var/www/media:ro
       - logs:/var/log/mediacms
+    healthcheck:
+      test: ["CMD", "/usr/bin/wget", "--spider", "--quiet", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   celery_beat:
     image: mediacms/mediacms-worker:latest
@@ -75,10 +86,18 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
+      db:
+        condition: service_healthy
     volumes:
       - ./custom:/home/mediacms.io/mediacms/custom:ro
       - media_files:/home/mediacms.io/mediacms/media_files
       - celerybeat_data:/var/lib/mediacms
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'celery.*beat' > /dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   celery_short:
     image: mediacms/mediacms-worker:latest
@@ -94,10 +113,18 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
+      db:
+        condition: service_healthy
     volumes:
       - ./custom:/home/mediacms.io/mediacms/custom:ro
       - media_files:/home/mediacms.io/mediacms/media_files
       - logs:/home/mediacms.io/mediacms/logs
+    healthcheck:
+      test: ["CMD", "/home/mediacms.io/bin/celery", "-A", "cms", "inspect", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   celery_long:
     image: mediacms/mediacms-worker:latest
@@ -110,10 +137,18 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
+      db:
+        condition: service_healthy
     volumes:
       - ./custom:/home/mediacms.io/mediacms/custom:ro
       - media_files:/home/mediacms.io/mediacms/media_files
       - logs:/home/mediacms.io/mediacms/logs
+    healthcheck:
+      test: ["CMD", "/home/mediacms.io/bin/celery", "-A", "cms", "inspect", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   db:
     image: postgres:17.2-alpine
