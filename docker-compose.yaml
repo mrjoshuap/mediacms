@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
       target: base
     image: mediacms/mediacms:latest
-    user: "33:33"
+    user: "www-data"
     command: ["/bin/sh", "/home/mediacms.io/mediacms/scripts/run-migrations.sh"]
     environment:
       ADMIN_USER: 'admin'
