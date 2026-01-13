@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "uploader.apps.UploaderConfig",
-    "djcelery_email_reboot",
+    "djcelery_email",
     "drf_yasg",
     "allauth.socialaccount.providers.saml",
     "saml_auth.apps.SamlAuthConfig",
