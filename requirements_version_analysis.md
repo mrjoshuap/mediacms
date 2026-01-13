@@ -66,10 +66,10 @@ This document compares the current package versions in `requirements.txt` with t
 - **Issue:** Project is unmaintained
 - **Recommendation:** Consider migrating to `django-treebeard` (latest: 4.8.0, Dec 2025)
 
-#### 3. **django-celery-email** - Unmaintained Package
-- **Current:** 3.0.0
-- **Latest:** Package unmaintained
-- **Recommendation:** Consider migrating to `django-celery-email-reboot` (latest: 4.2.0, Dec 2025)
+#### 3. **django-celery-email-reboot** - Already Using Recommended Package
+- **Current:** 4.2.0
+- **Status:** ✅ Using the maintained fork (django-celery-email-reboot) instead of unmaintained django-celery-email
+- **Note:** Migration from django-celery-email has already been completed
 
 #### 4. **drf-yasg** - Version Mismatch
 - **Current:** 1.21.8
@@ -111,10 +111,11 @@ This document compares the current package versions in `requirements.txt` with t
    - django-treebeard is actively maintained
    - Latest version: 4.8.0 (Dec 2025)
 
-2. **django-celery-email → django-celery-email-reboot**
-   - Drop-in replacement fork
-   - Latest version: 4.2.0 (Dec 2025)
+2. **django-celery-email-reboot** (already in use)
+   - Drop-in replacement fork of django-celery-email
+   - Current version: 4.2.0
    - Supports Django 4.0-5.3, Celery 5.2-5.7
+   - Migration from django-celery-email has already been completed
 
 ## Testing Recommendations
 

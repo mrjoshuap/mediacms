@@ -4,10 +4,16 @@ There is ongoing effort to provide a better developer experience and document it
 ## How to develop locally with Docker
 First install a recent version of [Docker](https://docs.docker.com/get-docker/), and [Docker Compose](https://docs.docker.com/compose/install/).
 
-Then run `docker compose -f docker-compose-dev.yaml up`
+Then run:
 
+```bash
+make dev-up-attach
 ```
-user@user:~/mediacms$ docker compose -f docker-compose-dev.yaml up
+
+Or using docker compose directly:
+
+```bash
+docker compose -f docker-compose-dev.yaml up
 ```
 
 In a few minutes the app will be available at http://localhost . Login via admin/admin
@@ -20,10 +26,10 @@ It build the two images used for backend and frontend.
 
 and will start all services required for MediaCMS, as Celery/Redis for asynchronous tasks, PostgreSQL database, Django and React
 
-For Django, the changes from the image produced by docker-compose.yaml are these:
+For Django, the changes from the production image are these:
 
-* Django runs in debug mode, with `python manage.py runserver`
-* uwsgi and nginx are not run
+* Django runs in debug mode, with `python manage.py runserver` (production uses Gunicorn)
+* nginx is not run (Django development server handles requests directly)
 * Django runs in Debug mode, with Debug Toolbar
 * Static files (js/css) are loaded from static/ folder
 * corsheaders is installed and configured to allow all origins
@@ -32,12 +38,18 @@ For React, it will run `npm start` in the frontend folder, which will start the 
 Check it on http://localhost:8088/
 
 ### How to develop in Django
-Django starts at http://localhost and is reloading automatically. Making any change to the python code should refresh Django.
+Django starts at http://localhost:8000 (accessed via nginx proxy on port 80) and is reloading automatically. Making any change to the python code should refresh Django.
 
 If Django breaks due to an error (eg SyntaxError, while editing the code), you might have to restart it
 
+```bash
+make dev-restart api
 ```
-docker compose -f docker-compose-dev.yaml restart web
+
+Or using docker compose directly:
+
+```bash
+docker compose -f docker-compose-dev.yaml restart api
 ```
 
 
@@ -62,19 +74,21 @@ In order to make changes to React code, edit code on frontend/src and check it's
 ### Development workflow with the frontend
 1. Edit frontend/src/ files
 2. Check changes on http://localhost:8088/
-3. Build frontend with `docker compose -f docker-compose-dev.yaml exec frontend npm run dist`
-4. Copy static files to Django static folder with`cp -r frontend/dist/static/* static/`
-5. Restart Django - `docker compose -f docker-compose-dev.yaml restart web` so that it uses the new static files
+3. Build frontend with `make build-frontend` (which builds and copies static files)
+4. Or manually:
+   - Build frontend: `docker compose -f docker-compose-dev.yaml exec frontend npm run dist`
+   - Copy static files: `cp -r frontend/dist/static/* static/`
+5. Restart Django: `make dev-restart api` so that it uses the new static files
 6. Commit the changes
 
 ### Helper commands
 There is ongoing effort to provide helper commands, check the Makefile for what it supports. Eg
 
-Bash into the web container:
+Bash into the api container:
 
 ```
-user@user:~/mediacms$ make admin-shell
-root@ca8c1096726b:/home/mediacms.io/mediacms# ./manage.py shell
+user@user:~/mediacms$ make dev-shell
+user@api-container:/home/mediacms.io/mediacms# ./manage.py shell
 ```
 
 Build the frontend:

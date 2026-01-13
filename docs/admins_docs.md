@@ -112,24 +112,38 @@ If you want to explore more options (including setup of https with letsencrypt c
 Run
 
 ```bash
-docker compose up
+make up
+```
+
+Or using docker compose directly:
+
+```bash
+docker compose up -d
 ```
 
 This will download all MediaCMS related Docker images and start all containers. Once it finishes, MediaCMS will be installed and available on http://localhost or http://ip
 
-A user admin has been created with random password, you should be able to see it at the end of migrations container, eg
+A user admin has been created with random password, you should be able to see it at the end of the migrations container logs, eg
 
 ```
-migrations_1     | Created admin user with password: gwg1clfkwf
+migrations     | Created admin user with password: gwg1clfkwf
 ```
 
-or if you have set the ADMIN_PASSWORD variable on docker-compose file you have used (example `docker-compose.yaml`), that variable will be set as the admin user's password
+or if you have set the ADMIN_PASSWORD variable in the docker-compose.yaml file, that variable will be set as the admin user's password
 
-`Note`: if you want to use the automatic transcriptions, you have to do one of the following:
-* either use the docker-compose.full.yaml, so in this case run `docker-compose -f docker-compose.yaml -f docker-compose.full.yaml up`
-* or edit the docker-compose.yaml file and set the image for the celery_worker service as mediacms/mediacms:full instead of mediacms/mediacms:latest
+`Note`: if you want to use the automatic transcriptions, use the Makefile convenience command:
 
-Plus set variable `USE_WHISPER_TRANSCRIBE = True` in the settings.py file
+```bash
+make up-full
+```
+
+Or using docker compose directly:
+
+```bash
+docker compose -f docker-compose.yaml -f docker-compose.full.yaml up -d
+```
+
+Additionally, set variable `USE_WHISPER_TRANSCRIBE = True` in your `custom/local_settings.py` file (or in `settings.py`).
 
 ### Update
 
@@ -137,9 +151,18 @@ Get latest MediaCMS image and stop/start containers
 
 ```bash
 cd /path/to/mediacms/installation
-docker pull mediacms/mediacms
+make pull
+make down
+make up
+```
+
+Or using docker compose directly:
+
+```bash
+cd /path/to/mediacms/installation
+docker compose pull
 docker compose down
-docker compose up
+docker compose up -d
 ```
 
 ### Update from version 2 to version 3
@@ -159,58 +182,198 @@ Checkout the configuration docs here.
 
 
 ### Maintenance
-Database is stored on ../postgres_data/ and media_files on media_files/
+Database and media files are stored in Docker volumes. To view volumes:
+
+```bash
+make ps
+docker volume ls
+```
+
+Or using docker compose directly:
+
+```bash
+docker compose ps
+docker volume ls
+```
+
+The main volumes are:
+- `postgres_data` - PostgreSQL database files
+- `media_files` - Uploaded media files and encoded versions
+- `static_files` - Static files (CSS, JS, etc.)
+- `logs` - Application logs
+- `celerybeat_data` - Celery beat schedule data
 
 
 ## 4. Docker Deployment options
 
-The mediacms image is built to use supervisord as the main process, which manages one or more services required to run mediacms. We can toggle which services are run in a given container by setting the environment variables below to `yes` or `no`:
+MediaCMS uses a modern multi-service Docker architecture with separate containers for each component, providing better scalability, isolation, and maintainability.
 
-* ENABLE_UWSGI
-* ENABLE_NGINX
-* ENABLE_CELERY_BEAT
-* ENABLE_CELERY_SHORT
-* ENABLE_CELERY_LONG
-* ENABLE_MIGRATIONS
+### Architecture Overview
 
-By default, all these services are enabled, but in order to create a scaleable deployment, some of them can be disabled, splitting the service up into smaller services.
+The MediaCMS Docker setup consists of the following services:
 
-Also see the `Dockerfile` for other environment variables which you may wish to override. Application settings, eg. `FRONTEND_HOST` can also be overridden by updating the `deploy/docker/local_settings.py` file.
+- **migrations**: Runs database migrations and creates the admin user (runs once on startup)
+- **api**: Django application server running with Gunicorn (exposed internally on port 8000)
+- **nginx**: Web server and reverse proxy (exposed on port 80)
+- **celery_beat**: Celery scheduler for periodic tasks
+- **celery_short**: Celery worker for short-duration tasks (transcoding, thumbnail generation)
+- **celery_long**: Celery worker for long-duration tasks (video encoding, HLS generation)
+- **db**: PostgreSQL database
+- **redis**: Redis cache and message broker
 
-To run, update the configs above if necessary, build the image by running `docker compose build`, then run `docker compose run`
+All services run as separate containers with health checks, dependency management, and proper volume mounting. Configuration is done via `custom/local_settings.py` (see [Configuration](#5-configuration) section).
 
-### Simple Deployment, accessed as http://localhost
+### Standard Deployment
 
-The main container runs migrations, mediacms_web, celery_beat, celery_workers (celery_short and celery_long services), exposed on port 80 supported by redis and postgres database.
+The default `docker-compose.yaml` provides a complete, production-ready setup:
 
- The FRONTEND_HOST in `deploy/docker/local_settings.py` is configured as http://localhost, on the docker host machine.
+```bash
+make up
+```
 
-### Server with ssl certificate through letsencrypt service, accessed as https://my_domain.com
-Before trying this out make sure the ip points to my_domain.com.
+Or using docker compose directly:
 
-With this method [this deployment](../docker-compose-letsencrypt.yaml) is used.
+```bash
+docker compose up -d
+```
 
-Edit this file and set `VIRTUAL_HOST` as my_domain.com, `LETSENCRYPT_HOST` as my_domain.com, and your email on `LETSENCRYPT_EMAIL`
+This starts all services and makes MediaCMS available at http://localhost.
 
-Edit `deploy/docker/local_settings.py` and set https://my_domain.com as `FRONTEND_HOST`
+For Whisper transcription support:
 
-Now run `docker compose -f docker-compose-letsencrypt.yaml up`, when installation finishes you will be able to access https://my_domain.com using a valid Letsencrypt certificate!
+```bash
+make up-full
+```
 
-### Advanced Deployment, accessed as http://localhost:8000
+Or using docker compose directly:
 
-Here we can run 1 mediacms_web instance, with the FRONTEND_HOST in `deploy/docker/local_settings.py` configured as http://localhost:8000. This is bootstrapped by a single migrations instance and supported by a single celery_beat instance and 1 or more celery_worker instances. Redis and postgres containers are also used for persistence. Clients can access the service on http://localhost:8000, on the docker host machine. This is similar to [this deployment](../docker-compose.yaml), with a `port` defined in FRONTEND_HOST.
+```bash
+docker compose -f docker-compose.yaml -f docker-compose.full.yaml up -d
+```
 
-### Advanced Deployment, with reverse proxy, accessed as http://mediacms.io
+### Makefile Build System
 
-Here we can use `jwilder/nginx-proxy` to reverse proxy to 1 or more instances of mediacms_web supported by other services as mentioned in the previous deployment. The FRONTEND_HOST in `deploy/docker/local_settings.py` is configured as http://mediacms.io, nginx-proxy has port 80 exposed. Clients can access the service on http://mediacms.io (Assuming DNS or the hosts file is setup correctly to point to the IP of the nginx-proxy instance). This is similar to [this deployment](../docker-compose-http-proxy.yaml).
+MediaCMS includes a comprehensive Makefile that provides convenient commands for building and deploying in different modes.
 
-### Advanced Deployment, with reverse proxy, accessed as https://localhost
+#### Production Mode
 
-The reverse proxy (`jwilder/nginx-proxy`) can be configured to provide SSL termination using self-signed certificates, letsencrypt or CA signed certificates (see: https://hub.docker.com/r/jwilder/nginx-proxy or [LetsEncrypt Example](https://www.singularaspect.com/use-nginx-proxy-and-letsencrypt-companion-to-host-multiple-websites/) ). In this case the FRONTEND_HOST should be set to https://mediacms.io. This is similar to [this deployment](../docker-compose-http-proxy.yaml).
+Production commands use the standard `docker-compose.yaml`:
 
-### A Scaleable Deployment Architecture (Docker, Swarm, Kubernetes)
+```bash
+make up              # Start production services (detached)
+make up-attach       # Start production services (attached, shows logs)
+make down            # Stop and remove production containers
+make build           # Build all production images
+make pull            # Pull latest production images
+make restart         # Restart production containers
+make logs [service]  # Show logs (optionally for specific service)
+make ps              # Show service status
+```
 
-The architecture below generalises all the deployment scenarios above, and provides a conceptual design for other deployments based on kubernetes and docker swarm. It allows for horizontal scaleability through the use of multiple mediacms_web instances and celery_workers. For large deployments, managed postgres, redis and storage may be adopted.
+#### Full Mode (Whisper Transcription)
+
+Full mode includes Whisper transcription support and additional codecs:
+
+```bash
+make up-full         # Start production services with Whisper support
+make build-full      # Build images with Whisper transcription support
+make down-full       # Stop full mode services
+make restart-full    # Restart full mode services
+make logs-full       # Show full mode logs
+```
+
+#### Development Mode
+
+Development mode enables hot-reloading and debug features:
+
+```bash
+make dev-up          # Start development services
+make dev-build       # Build development images
+make dev-down        # Stop development services
+make dev-logs        # Show development logs
+make dev-shell       # Open shell in development API container
+```
+
+#### Build Targets
+
+Build specific services:
+
+```bash
+make build-api       # Build only the API image
+make build-worker    # Build worker images (celery_beat, celery_short, celery_long)
+make build-worker-full  # Build worker image with Whisper support
+make build-nginx     # Build nginx image
+make build-base      # Build base image
+```
+
+#### Utility Commands
+
+```bash
+make health          # Check health of all production services
+make shell           # Open shell in production API container
+make db-shell        # Open PostgreSQL shell
+make redis-cli       # Open Redis CLI
+make backup-db       # Create database backup
+make clean           # Clean up stopped containers and unused images
+```
+
+For a complete list of available commands, run:
+
+```bash
+make help
+```
+
+### Hardware Encoding Support
+
+MediaCMS includes **jellyfin-ffmpeg** in the Docker images, which provides hardware-accelerated encoding capabilities. However, **hardware encoding is not automatically enabled** - it requires manual configuration.
+
+**Important Notes:**
+
+- jellyfin-ffmpeg is installed and available in the container PATH (`/usr/lib/jellyfin-ffmpeg`)
+- Hardware acceleration is **NOT automatically enabled** - you must manually modify the code to use hardware encoders
+- To enable hardware encoding, you need to:
+  1. Update `files/helpers.py` to use hardware-accelerated encoders (e.g., `h264_qsv`, `h264_nvenc`, `h264_vaapi`, etc.)
+  2. Make other necessary code changes to support your specific hardware
+  3. Ensure GPU access is properly configured in Docker (device passthrough, etc.)
+  4. Verify your hardware supports the chosen encoder
+
+Hardware encoding can significantly speed up video transcoding and reduce CPU usage, but requires GPU access and proper configuration. For most users, software encoding (the default) provides the best compatibility.
+
+### Multi-Architecture Build Support
+
+MediaCMS Docker images support multi-architecture builds using Docker buildx. The Dockerfile uses `TARGETARCH` and `TARGETPLATFORM` build arguments to support different CPU architectures.
+
+**Supported Architectures:**
+
+- `amd64` (x86_64) - Intel/AMD 64-bit processors
+- `arm64` (aarch64) - ARM 64-bit processors (Apple Silicon, ARM servers)
+
+**Building for a Specific Architecture:**
+
+To build for a specific architecture:
+
+```bash
+docker buildx build --platform linux/amd64 -t mediacms/mediacms:latest .
+docker buildx build --platform linux/arm64 -t mediacms/mediacms:latest .
+```
+
+To build for multiple architectures:
+
+```bash
+docker buildx build --platform linux/amd64,linux/arm64 -t mediacms/mediacms:latest .
+```
+
+**Notes:**
+
+- Multi-architecture builds require Docker buildx
+- Some utilities (e.g., `qt-faststart`) may only be available for specific architectures (x86_64)
+- Performance may vary between architectures
+- Alpine-based images (base, api, worker, nginx) support multi-architecture builds
+- Ubuntu-based images (worker-full for Whisper) are optimized for amd64 but may work on other architectures
+
+### A Scalable Deployment Architecture
+
+The architecture below provides a conceptual design for scalable deployments. It allows for horizontal scalability through the use of multiple API instances and Celery workers. For large deployments, managed PostgreSQL, Redis, and storage services may be adopted.
 
 ![MediaCMS](images/architecture.png)
 
@@ -222,7 +385,9 @@ It is advisable to override any of them by adding it to `local_settings.py` .
 
 In case of a the single server installation, add to `cms/local_settings.py` .
 
-In case of a docker compose installation, add to `deploy/docker/local_settings.py` . This will automatically overwrite `cms/local_settings.py` .
+In case of a docker compose installation, add to `custom/local_settings.py`. This file is mounted into containers and will override settings from `cms/settings.py`.
+
+For more information about the custom directory structure, see `custom/README.md`.
 
 Any change needs restart of MediaCMS in order to take effect.
 
@@ -232,10 +397,16 @@ Single server installation: edit `cms/local_settings.py`, make a change and rest
 #systemctl restart mediacms
 ```
 
-Docker Compose installation: edit `deploy/docker/local_settings.py`, make a change and restart MediaCMS containers
+Docker Compose installation: edit `custom/local_settings.py`, make a change and restart MediaCMS containers
 
 ```bash
-#docker compose restart web celery_worker celery_beat
+make restart
+```
+
+Or using docker compose directly:
+
+```bash
+docker compose restart api celery_short celery_long celery_beat
 ```
 
 ### 5.1 Change portal logo
@@ -722,10 +893,16 @@ checkElement('.nav-menu')
 });
 ```
 
-### 9. Restart the mediacms web server
+### 9. Restart the mediacms api server
 On docker:
+```bash
+make restart api
 ```
-sudo docker stop mediacms_web_1 && sudo docker start mediacms_web_1
+
+Or using docker compose directly:
+
+```bash
+docker compose restart api
 ```
 
 Otherwise
@@ -1073,14 +1250,14 @@ When the whisper transcribe task is triggered for a media file, MediaCMS runs th
 
 Transcription functionality is available only for the Docker installation. To enable this feature:
 
-1. **Use the override file approach (recommended):**
-   ```bash
-   docker compose -f docker-compose.yaml -f docker-compose.full.yaml up
-   ```
-   
-   Or use the Makefile convenience target:
+1. **Use the Makefile convenience command (recommended):**
    ```bash
    make up-full
+   ```
+   
+   Or using docker compose directly:
+   ```bash
+   docker compose -f docker-compose.yaml -f docker-compose.full.yaml up -d
    ```
 
 2. **Set the setting in your configuration:**

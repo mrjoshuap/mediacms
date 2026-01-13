@@ -47,9 +47,18 @@ Checkout the [Code of conduct page](../CODE_OF_CONDUCT.md) if you want to contri
 
 ## 5. Working with Docker tips
 
-To perform the Docker installation, follow instructions to install Docker + Docker compose (docs/Docker_Compose.md) and then build/start docker-compose-dev.yaml . This will run the frontend application on port 8088 on top of all other containers (including the Django web application on port 80)
+To perform the Docker installation, follow instructions in the [Administrators documentation](admins_docs.md#3-docker-installation) and then build/start the development environment. This will run the frontend application on port 8088 on top of all other containers (including the Django API application on port 8000, served by nginx on port 80).
 
+Use the Makefile:
+
+```bash
+make dev-build
+make dev-up
 ```
+
+Or using docker compose directly:
+
+```bash
 docker compose -f docker-compose-dev.yaml build
 docker compose -f docker-compose-dev.yaml up
 ```
@@ -62,15 +71,16 @@ ADMIN_EMAIL: 'admin@localhost'
 ```
 
 ### Frontend application changes
-Eg change `frontend/src/static/js/pages/HomePage.tsx` , dev application refreshes in a number of seconds (hot reloading) and I see the changes, once I'm happy I can run
+Eg change `frontend/src/static/js/pages/HomePage.tsx` , dev application refreshes in a number of seconds (hot reloading) and I see the changes, once I'm happy I can build and copy the static files:
 
+```bash
+make build-frontend
 ```
+
+Or manually using docker compose:
+
+```bash
 docker compose -f docker-compose-dev.yaml exec -T frontend npm run dist
-```
-
-And then in order for the changes to be visible on the application while served through nginx,
-
-```
 cp -r frontend/dist/static/* static/
 ```
 
@@ -87,10 +97,16 @@ http://localhost:8088/manage-media.html manage_media
 ```
 
 ### Backend application changes
-After I make changes to the django application (eg make a change on `files/forms.py`) in order to see the changes I have to restart the web container
+After I make changes to the django application (eg make a change on `files/forms.py`) in order to see the changes I have to restart the api container
 
+```bash
+make dev-restart api
 ```
-docker compose -f docker-compose-dev.yaml restart web
+
+Or using docker compose directly:
+
+```bash
+docker compose -f docker-compose-dev.yaml restart api
 ```
 
 ## How video is transcoded
@@ -119,22 +135,34 @@ This mechanism allows for workers that have access on the same filesystem (eithe
 
 This instructions assume that you're using the docker installation
 
-1. start docker-compose
+1. Start the development environment
 
-```
-docker compose up
+```bash
+make dev-up
 ```
 
-2. Install the requirements on `requirements-dev.txt ` on web container (we'll use the web container for this)
+Or using docker compose directly:
 
+```bash
+docker compose -f docker-compose-dev.yaml up -d
 ```
-docker compose exec -T web pip install -r requirements-dev.txt
+
+2. Install the requirements on `requirements-dev.txt` on api container (we'll use the api container for this)
+
+```bash
+docker compose -f docker-compose-dev.yaml exec -T api pip install -r requirements-dev.txt
 ```
 
 3. Now you can run the existing tests
 
+```bash
+make test
 ```
-docker compose exec --env TESTING=True -T web pytest
+
+Or using docker compose directly:
+
+```bash
+docker compose -f docker-compose-dev.yaml exec --env TESTING=True -T api pytest
 ```
 
 The `TESTING=True` is passed for Django to be aware this is a testing environment (so that it runs Celery tasks as functions for example and not as background tasks, since Celery is not started in the case of pytest)
@@ -142,14 +170,14 @@ The `TESTING=True` is passed for Django to be aware this is a testing environmen
 
 4. You may try a single test, by specifying the path, for example
 
-```
-docker compose exec --env TESTING=True -T web pytest tests/test_fixtures.py
+```bash
+docker compose -f docker-compose-dev.yaml exec --env TESTING=True -T api pytest tests/test_fixtures.py
 ```
 
 5. You can also see the coverage
 
-```
-docker compose exec --env TESTING=True -T web pytest --cov=. --cov-report=html
+```bash
+docker compose -f docker-compose-dev.yaml exec --env TESTING=True -T api pytest --cov=. --cov-report=html
 ```
 
 and of course...you are very welcome to help us increase it ;)
