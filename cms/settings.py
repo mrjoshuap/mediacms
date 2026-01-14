@@ -125,6 +125,9 @@ PORTAL_LOGO_LIGHT_PNG = "/static/images/logo_dark.png"
 # paths to extra css files to be included, eg "/static/css/custom.css"
 # place css inside static/css folder
 EXTRA_CSS_PATHS = []
+# paths to extra js files to be included, eg "/custom/static/js/custom.js"
+# place js inside static/js folder or custom/static/js folder
+EXTRA_JS_PATHS = []
 # protection agains anonymous users
 # per ip address limit, for actions as like/dislike/report
 TIME_TO_ACTION_ANONYMOUS = 10 * 60
@@ -328,7 +331,10 @@ ROOT_URLCONF = "cms.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ["templates"],
+        "DIRS": [
+            os.path.join(BASE_DIR, "custom", "templates"),  # Custom templates first (takes precedence)
+            "templates",  # Default templates
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

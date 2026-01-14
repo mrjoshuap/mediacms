@@ -1,3 +1,7 @@
 {% load static %}
 
 		<script src="{% static "js/_commons.js" %}?v={{ VERSION }}"></script>
+
+		{% for js_path in EXTRA_JS_PATHS %}
+		<script src="{{ js_path }}?v={{ VERSION }}"></script>
+		{% endfor %}

@@ -18,6 +18,7 @@ def stuff(request):
     ret["PORTAL_LOGO_LIGHT_SVG"] = getattr(settings, 'PORTAL_LOGO_LIGHT_SVG', "")
     ret["PORTAL_LOGO_LIGHT_PNG"] = getattr(settings, 'PORTAL_LOGO_LIGHT_PNG', "")
     ret["EXTRA_CSS_PATHS"] = getattr(settings, 'EXTRA_CSS_PATHS', [])
+    ret["EXTRA_JS_PATHS"] = getattr(settings, 'EXTRA_JS_PATHS', [])
     ret["PORTAL_DESCRIPTION"] = settings.PORTAL_DESCRIPTION
     ret["LOAD_FROM_CDN"] = settings.LOAD_FROM_CDN
     ret["CAN_LOGIN"] = settings.LOGIN_ALLOWED

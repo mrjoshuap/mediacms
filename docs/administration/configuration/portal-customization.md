@@ -2,6 +2,8 @@
 
 Customize the appearance and branding of your MediaCMS portal.
 
+> **For comprehensive customization options, see the [Customizations Guide](customizations.md)** which covers templates, CSS, JavaScript, tracking, and more.
+
 ## Logo
 
 ### SVG Logos (Recommended)
@@ -96,28 +98,42 @@ Enable cookie consent banner:
 
 ## Google Analytics
 
-Add Google Analytics tracking:
+Add Google Analytics tracking to your MediaCMS installation.
 
-1. Create `templates/tracking.html`:
+**Recommended Method:** Use template override (works for all deployment types)
 
+1. Create `custom/templates/tracking.html` with your Google Analytics code
+2. Include it in `custom/templates/root.html`
+3. Restart API service
+
+**For detailed instructions, see:**
+- [Customizations Guide](customizations.md#google-analytics) - Comprehensive Google Analytics setup
+- [Google Analytics Example](../../../custom/examples/google-analytics-gtag.md) - Step-by-step guide with examples
+
+**Quick Example:**
+
+Create `custom/templates/tracking.html`:
 ```html
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'GA_MEASUREMENT_ID');
+  gtag('config', 'G-XXXXXXXXXX');
 </script>
 ```
 
-2. Include in `templates/root.html`:
-
-```html
-{% include "tracking.html" %}
+Create `custom/templates/root.html`:
+```django
+{% extends "root.html" %}
+{% block head %}
+    {{ block.super }}
+    {% include "tracking.html" %}
+{% endblock %}
 ```
 
-3. For Docker, mount the template file as a volume
+Restart API service: `docker compose restart api` (Docker) or `sudo systemctl restart mediacms-api` (single-server)
 
 ## Static Pages
 

@@ -1,0 +1,176 @@
+/**
+ * Custom JavaScript Example
+ * 
+ * Instructions:
+ * 1. Copy this file to custom/static/js/custom.js (remove .example)
+ * 2. Customize the code as needed
+ * 3. Add to custom/local_settings.py:
+ *    EXTRA_JS_PATHS = ["/custom/static/js/custom.js"]
+ * 4. Restart API service: docker compose restart api (or sudo systemctl restart mediacms-api)
+ * 
+ * This file will be loaded after the main MediaCMS JavaScript,
+ * allowing you to extend functionality or add custom features.
+ */
+
+(function() {
+    'use strict';
+
+    /**
+     * Wait for DOM to be ready
+     */
+    function init() {
+        // Wait for both DOM and MediaCMS to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', onReady);
+        } else {
+            onReady();
+        }
+    }
+
+    /**
+     * Main initialization function
+     */
+    function onReady() {
+        console.log('Custom JavaScript loaded');
+        
+        // Initialize custom features
+        initCustomFeatures();
+        initEventListeners();
+        initAnalytics();
+    }
+
+    /**
+     * Initialize custom features
+     */
+    function initCustomFeatures() {
+        // Example: Add custom functionality to media items
+        const mediaItems = document.querySelectorAll('.item-thumb');
+        if (mediaItems.length > 0) {
+            mediaItems.forEach(item => {
+                // Add custom click handler
+                item.addEventListener('click', function() {
+                    console.log('Media item clicked:', this);
+                    // Your custom code here
+                });
+            });
+        }
+
+        // Example: Customize video player
+        // This is just an example - adjust based on your needs
+        // const videoPlayer = document.querySelector('.video-player');
+        // if (videoPlayer) {
+        //     // Custom video player code
+        // }
+    }
+
+    /**
+     * Initialize event listeners
+     */
+    function initEventListeners() {
+        // Example: Listen for custom events
+        window.addEventListener('scroll', function() {
+            // Handle scroll events
+        });
+
+        // Example: Listen for MediaCMS events (if available)
+        // document.addEventListener('mediaLoaded', function(e) {
+        //     console.log('Media loaded:', e.detail);
+        // });
+    }
+
+    /**
+     * Initialize analytics tracking
+     */
+    function initAnalytics() {
+        // Example: Custom analytics tracking
+        // Only run if Google Analytics is loaded
+        if (typeof gtag !== 'undefined') {
+            // Track page views
+            trackPageView();
+            
+            // Track custom events
+            setupCustomEventTracking();
+        }
+    }
+
+    /**
+     * Track page view
+     */
+    function trackPageView() {
+        if (typeof gtag !== 'undefined') {
+            gtag('config', 'GA_MEASUREMENT_ID', {
+                'page_path': window.location.pathname,
+                'page_title': document.title
+            });
+        }
+    }
+
+    /**
+     * Setup custom event tracking
+     */
+    function setupCustomEventTracking() {
+        // Example: Track media views
+        function trackMediaView(mediaId, mediaTitle) {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'media_view', {
+                    'event_category': 'Media',
+                    'event_label': mediaTitle,
+                    'value': 1
+                });
+            }
+        }
+
+        // Example: Track button clicks
+        function trackButtonClick(buttonName) {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'button_click', {
+                    'event_category': 'UI',
+                    'event_label': buttonName
+                });
+            }
+        }
+
+        // Make functions available globally if needed
+        window.trackMediaView = trackMediaView;
+        window.trackButtonClick = trackButtonClick;
+    }
+
+    /**
+     * Utility function: Debounce
+     */
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    /**
+     * Utility function: Check if element is in viewport
+     */
+    function isInViewport(element) {
+        const rect = element.getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+    }
+
+    // Initialize when script loads
+    init();
+
+    // Export functions to global scope if needed
+    window.customMediaCMS = {
+        init: init,
+        isInViewport: isInViewport,
+        debounce: debounce
+    };
+
+})();

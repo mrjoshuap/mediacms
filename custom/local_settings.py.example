@@ -3,21 +3,46 @@
 #
 # This file will be loaded automatically by cms/settings.py
 # Changes require restarting the API container: docker compose restart api
+# (For single-server installations: sudo systemctl restart mediacms-api)
 
-# Example customizations:
+# ============================================================================
+# BASIC CONFIGURATION
+# ============================================================================
 
 # DEBUG = False
 # ALLOWED_HOSTS = ['media.example.com', 'www.media.example.com']
 # PORTAL_NAME = "My Media Portal"
 # PORTAL_DESCRIPTION = "A custom video platform"
 
+# Frontend host (used in emails, etc.)
+# FRONTEND_HOST = "https://media.example.com"
+
+# ============================================================================
+# CUSTOMIZATION SETTINGS
+# ============================================================================
+
 # Custom logo (place file in custom/static/images/)
+# For Docker: use /custom/static/images/ path
+# For single-server: use /static/images/ or /custom/static/images/ path
 # PORTAL_LOGO_DARK_PNG = "/custom/static/images/logo_dark.png"
+# PORTAL_LOGO_DARK_SVG = "/custom/static/images/logo_dark.svg"
+# PORTAL_LOGO_LIGHT_PNG = "/custom/static/images/logo_light.png"
+# PORTAL_LOGO_LIGHT_SVG = "/custom/static/images/logo_light.svg"
 
 # Custom CSS (place file in custom/static/css/)
 # EXTRA_CSS_PATHS = ["/custom/static/css/custom.css"]
 
-# Email settings
+# Custom JavaScript (place file in custom/static/js/)
+# EXTRA_JS_PATHS = ["/custom/static/js/custom.js"]
+
+# Template overrides: Place templates in custom/templates/ directory
+# They will automatically override templates in the main templates/ directory
+# See custom/README.md for more information
+
+# ============================================================================
+# EMAIL SETTINGS
+# ============================================================================
+
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.example.com'
 # EMAIL_PORT = 587
@@ -26,13 +51,28 @@
 # EMAIL_HOST_PASSWORD = 'your-password'
 # DEFAULT_FROM_EMAIL = 'MediaCMS <noreply@example.com>'
 
-# Frontend host (used in emails, etc.)
-# FRONTEND_HOST = "https://media.example.com"
+# ============================================================================
+# SECURITY SETTINGS
+# ============================================================================
 
-# Security settings
 # SECURE_SSL_REDIRECT = True
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
 
+# ============================================================================
+# GOOGLE ANALYTICS
+# ============================================================================
+
+# To add Google Analytics, create custom/templates/tracking.html with your
+# Google Analytics code, then include it in custom/templates/root.html
+# See custom/examples/google-analytics-gtag.md for detailed instructions
+
+# ============================================================================
+# OTHER SETTINGS
+# ============================================================================
+
 # Other settings can be overridden here
 # See cms/settings.py for all available options
+# For comprehensive customization documentation, see:
+# - custom/README.md
+# - docs/administration/configuration/customizations.md
