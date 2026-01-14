@@ -27,7 +27,7 @@ make restart api celery_short celery_long celery_beat
 
 **Single Server Installation**:
 ```bash
-sudo systemctl restart mediacms celery_long celery_short celery_beat
+sudo systemctl restart mediacms.target
 ```
 
 ## Configuration Reference

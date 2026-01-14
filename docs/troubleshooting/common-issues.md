@@ -19,7 +19,7 @@ Frequently encountered problems and their solutions.
 make ps | grep celery
 
 # Single Server
-sudo systemctl status celery_long celery_short
+sudo systemctl status mediacms-celery-long mediacms-celery-short
 ```
 
 2. **Check Worker Logs**:
@@ -29,7 +29,7 @@ sudo systemctl status celery_long celery_short
 make logs celery_long
 
 # Single Server
-sudo journalctl -u celery_long -n 50
+sudo journalctl -u mediacms-celery-long -n 50
 ```
 
 3. **Check Queue Length**:
@@ -43,7 +43,7 @@ Log in to Django admin (`/admin/`) and check `Files > Encode` objects for pendin
 make restart celery_long celery_short
 
 # Single Server
-sudo systemctl restart celery_long celery_short
+sudo systemctl restart mediacms-celery-long mediacms-celery-short
 ```
 
 ## Upload Failures

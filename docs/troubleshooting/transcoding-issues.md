@@ -19,7 +19,7 @@ Problems with video processing and transcoding.
 make logs celery_long | grep -i error
 
 # Single Server
-sudo journalctl -u celery_long | grep -i error
+sudo journalctl -u mediacms-celery-long | grep -i error
 ```
 
 2. **Check FFmpeg**:

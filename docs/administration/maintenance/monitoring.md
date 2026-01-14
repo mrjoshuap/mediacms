@@ -15,7 +15,11 @@ make ps
 **Single Server Installation**:
 
 ```bash
-sudo systemctl status mediacms celery_long celery_short celery_beat
+# Check all services using the target
+sudo systemctl status mediacms.target
+
+# Or check individual services
+sudo systemctl status mediacms-api mediacms-celery-long mediacms-celery-short mediacms-celery-beat
 ```
 
 ### Health Checks
@@ -84,12 +88,14 @@ make logs nginx
 **Single Server Installation**:
 
 ```bash
-# Application logs
-sudo journalctl -u mediacms -f
+# All services using the target
+sudo journalctl -u mediacms.target -f
 
-# Celery logs
-sudo journalctl -u celery_long -f
-sudo journalctl -u celery_short -f
+# Individual service logs
+sudo journalctl -u mediacms-api -f
+sudo journalctl -u mediacms-celery-long -f
+sudo journalctl -u mediacms-celery-short -f
+sudo journalctl -u mediacms-celery-beat -f
 ```
 
 ### Log Locations

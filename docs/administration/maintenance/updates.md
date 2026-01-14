@@ -94,7 +94,7 @@ python manage.py migrate
 5. **Restart services**:
 
 ```bash
-sudo systemctl restart mediacms celery_long celery_short celery_beat
+sudo systemctl restart mediacms.target
 ```
 
 ## Major Version Updates
@@ -124,9 +124,9 @@ python3 --version  # Verify Python 3.8+
 2. **Update Celery systemd files**:
 
 ```bash
-sudo cp deploy/local_install/celery_long.service /etc/systemd/system/celery_long.service
-sudo cp deploy/local_install/celery_short.service /etc/systemd/system/celery_short.service
-sudo cp deploy/local_install/celery_beat.service /etc/systemd/system/celery_beat.service
+sudo cp config/systemd/mediacms-celery-long.service /etc/systemd/system/
+sudo cp config/systemd/mediacms-celery-short.service /etc/systemd/system/
+sudo cp config/systemd/mediacms-celery-beat.service /etc/systemd/system/
 sudo systemctl daemon-reload
 ```
 
@@ -169,7 +169,7 @@ If possible, test updates in a development environment first.
 make ps
 
 # Single Server
-sudo systemctl status mediacms celery_long celery_short celery_beat
+sudo systemctl status mediacms.target
 ```
 
 ### Check Logs
@@ -179,7 +179,7 @@ sudo systemctl status mediacms celery_long celery_short celery_beat
 make logs --tail=100
 
 # Single Server
-sudo journalctl -u mediacms -n 100
+sudo journalctl -u mediacms.target -n 100
 ```
 
 ### Test Functionality
@@ -193,7 +193,7 @@ sudo journalctl -u mediacms -n 100
 
 ### Services Won't Start
 
-- Check logs: `make logs` or `sudo journalctl -u mediacms`
+- Check logs: `make logs` or `sudo journalctl -u mediacms.target`
 - Verify configuration: Check `local_settings.py` for errors
 - Check dependencies: Ensure all requirements are installed
 

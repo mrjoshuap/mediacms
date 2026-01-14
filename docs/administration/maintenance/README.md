@@ -40,8 +40,8 @@ make ps
 make logs --tail=50
 
 # Single Server
-sudo systemctl status mediacms celery_long celery_short celery_beat
-sudo journalctl -u mediacms -n 50
+sudo systemctl status mediacms.target
+sudo journalctl -u mediacms.target -n 50
 ```
 
 ## Getting Help

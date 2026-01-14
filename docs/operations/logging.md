@@ -29,15 +29,15 @@ Log files are stored in Docker volumes:
 
 ```bash
 # Application
-sudo journalctl -u mediacms -f
+sudo journalctl -u mediacms-api -f
 
 # Celery workers
-sudo journalctl -u celery_long -f
-sudo journalctl -u celery_short -f
-sudo journalctl -u celery_beat -f
+sudo journalctl -u mediacms-celery-long -f
+sudo journalctl -u mediacms-celery-short -f
+sudo journalctl -u mediacms-celery-beat -f
 
-# All MediaCMS services
-sudo journalctl -u 'mediacms*' -f
+# All MediaCMS services using target
+sudo journalctl -u mediacms.target -f
 ```
 
 **Log Files**:
@@ -80,7 +80,7 @@ LOGGING = {
 make logs | grep -i error
 
 # Single Server
-sudo journalctl -u mediacms | grep -i error
+sudo journalctl -u mediacms.target | grep -i error
 ```
 
 ### Check Recent Logs
@@ -90,7 +90,7 @@ sudo journalctl -u mediacms | grep -i error
 make logs --tail=100
 
 # Single Server
-sudo journalctl -u mediacms -n 100
+sudo journalctl -u mediacms.target -n 100
 ```
 
 ### Follow Logs
@@ -100,7 +100,7 @@ sudo journalctl -u mediacms -n 100
 make logs -f
 
 # Single Server
-sudo journalctl -u mediacms -f
+sudo journalctl -u mediacms.target -f
 ```
 
 ## Log Analysis

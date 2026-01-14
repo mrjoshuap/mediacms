@@ -58,32 +58,63 @@ After installation completes:
 
 ## Service Management
 
-### Start Services
+MediaCMS uses several systemd services that are managed through the `mediacms.target` target. You can manage all services together using the target, or manage individual services.
+
+### Using the Target (Recommended)
+
+The `mediacms.target` manages all MediaCMS services together:
 
 ```bash
-sudo systemctl start mediacms celery_long celery_short celery_beat
+# Start all services
+sudo systemctl start mediacms.target
+
+# Stop all services
+sudo systemctl stop mediacms.target
+
+# Restart all services
+sudo systemctl restart mediacms.target
+
+# Check status of all services
+sudo systemctl status mediacms.target
+
+# Enable services to start on boot
+sudo systemctl enable mediacms.target
 ```
 
-### Stop Services
+### Individual Service Management
 
+You can also manage services individually:
+
+**Start Services:**
 ```bash
-sudo systemctl stop mediacms celery_long celery_short celery_beat
+sudo systemctl start mediacms-api mediacms-celery-long mediacms-celery-short mediacms-celery-beat
 ```
 
-### Restart Services
-
+**Stop Services:**
 ```bash
-sudo systemctl restart mediacms celery_long celery_short celery_beat
+sudo systemctl stop mediacms-api mediacms-celery-long mediacms-celery-short mediacms-celery-beat
 ```
 
-### Check Status
-
+**Restart Services:**
 ```bash
-sudo systemctl status mediacms
-sudo systemctl status celery_long
-sudo systemctl status celery_short
-sudo systemctl status celery_beat
+sudo systemctl restart mediacms-api mediacms-celery-long mediacms-celery-short mediacms-celery-beat
 ```
+
+**Check Status:**
+```bash
+sudo systemctl status mediacms-api
+sudo systemctl status mediacms-celery-long
+sudo systemctl status mediacms-celery-short
+sudo systemctl status mediacms-celery-beat
+```
+
+### Available Services
+
+- **mediacms-api.service** - Django API server (Gunicorn)
+- **mediacms-celery-long.service** - Celery worker for long-duration tasks (video encoding)
+- **mediacms-celery-short.service** - Celery worker for short-duration tasks (thumbnails, sprites)
+- **mediacms-celery-beat.service** - Celery beat scheduler for periodic tasks
+- **mediacms-migrations.service** - Database migrations (runs automatically on startup)
 
 ## Updating MediaCMS
 
@@ -95,7 +126,7 @@ source /home/mediacms.io/bin/activate  # Activate virtualenv
 git pull                                 # Update code
 pip install -r requirements.txt -U      # Update dependencies
 python manage.py migrate                 # Run migrations
-sudo systemctl restart mediacms celery_long celery_short celery_beat
+sudo systemctl restart mediacms.target   # Restart all services
 ```
 
 ### Update from Version 2 to Version 3
@@ -111,11 +142,11 @@ Version 3 requires:
 2. Update Celery systemd files:
 
 ```bash
-sudo cp deploy/local_install/celery_long.service /etc/systemd/system/celery_long.service
-sudo cp deploy/local_install/celery_short.service /etc/systemd/system/celery_short.service
-sudo cp deploy/local_install/celery_beat.service /etc/systemd/system/celery_beat.service
+sudo cp config/systemd/mediacms-celery-long.service /etc/systemd/system/
+sudo cp config/systemd/mediacms-celery-short.service /etc/systemd/system/
+sudo cp config/systemd/mediacms-celery-beat.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl start celery_long celery_short celery_beat
+sudo systemctl start mediacms-celery-long mediacms-celery-short mediacms-celery-beat
 ```
 
 3. Then follow standard update process
@@ -129,7 +160,7 @@ Configuration files:
 After making changes, restart services:
 
 ```bash
-sudo systemctl restart mediacms celery_long celery_short celery_beat
+sudo systemctl restart mediacms.target
 ```
 
 See [Configuration Guide](../../configuration/README.md) for details.
@@ -139,7 +170,7 @@ See [Configuration Guide](../../configuration/README.md) for details.
 - **Application**: `/home/mediacms.io/mediacms/`
 - **Media Files**: `/home/mediacms.io/mediacms/media_files/`
 - **Static Files**: `/home/mediacms.io/mediacms/static/`
-- **Logs**: Check systemd journal: `sudo journalctl -u mediacms`
+- **Logs**: Check systemd journal: `sudo journalctl -u mediacms-api` or `sudo journalctl -u mediacms.target`
 - **Database**: PostgreSQL data directory (managed by PostgreSQL)
 
 ## Backups
@@ -166,8 +197,14 @@ See [Backup Guide](../../maintenance/backups.md) for detailed procedures.
 Check logs:
 
 ```bash
-sudo journalctl -u mediacms -n 50
-sudo journalctl -u celery_long -n 50
+# Check all services
+sudo journalctl -u mediacms.target -n 50
+
+# Check individual services
+sudo journalctl -u mediacms-api -n 50
+sudo journalctl -u mediacms-celery-long -n 50
+sudo journalctl -u mediacms-celery-short -n 50
+sudo journalctl -u mediacms-celery-beat -n 50
 ```
 
 ### Database Connection Issues

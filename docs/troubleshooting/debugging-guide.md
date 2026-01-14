@@ -32,14 +32,14 @@ docker compose exec api tail -f /path/to/logs/mediacms.log
 
 ```bash
 # Application
-sudo journalctl -u mediacms -f
+sudo journalctl -u mediacms-api -f
 
 # Celery workers
-sudo journalctl -u celery_long -f
-sudo journalctl -u celery_short -f
+sudo journalctl -u mediacms-celery-long -f
+sudo journalctl -u mediacms-celery-short -f
 
-# All services
-sudo journalctl -u 'mediacms*' -f
+# All services using target
+sudo journalctl -u mediacms.target -f
 ```
 
 **Log Files**:

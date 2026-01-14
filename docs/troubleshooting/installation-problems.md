@@ -322,7 +322,7 @@ sudo systemctl status mediacms
 2. **Check Logs**:
 
 ```bash
-sudo journalctl -u mediacms -n 50
+sudo journalctl -u mediacms.target -n 50
 ```
 
 3. **Check Configuration**:
