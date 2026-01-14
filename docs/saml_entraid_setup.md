@@ -1,5 +1,7 @@
 # Integrating Microsoft Entra ID (formerly Azure AD) with MediaCMS via SAML Authentication
 
+> **Note**: This guide is also referenced from the [SAML Setup Guide](administration/authentication/saml-setup.md).
+
 This guide provides step-by-step instructions on how to configure Microsoft Entra ID as a SAML Identity Provider (IdP) for MediaCMS, an open-source content management system. The goal is to enable single sign-on (SSO) authentication for users in a secure and scalable way.
 
 ## Table of Contents

@@ -1,5 +1,13 @@
 # Media Permissions in MediaCMS
 
+> **⚠️ This documentation has been moved!**
+> 
+> This content has been integrated into:
+> - **[Permissions Reference](reference/permissions-reference.md)** - Complete permissions reference
+> - **[RBAC Guide](administration/authentication/rbac.md)** - RBAC setup
+> 
+> Please use the new documentation structure for the most up-to-date information.
+
 This document explains the permission system in MediaCMS, which controls who can view, edit, and manage media files.
 
 ## Overview

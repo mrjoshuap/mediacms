@@ -1,5 +1,14 @@
 # Transcoding in MediaCMS
 
+> **⚠️ This documentation has been moved!**
+> 
+> This content has been integrated into:
+> - **[Transcoding Guide](development/transcoding/README.md)** - Transcoding system overview
+> - **[Technical Details](development/transcoding/technical-details.md)** - Implementation details
+> - **[Configuration](administration/configuration/media-settings.md)** - Configuration options
+> 
+> Please use the new documentation structure for the most up-to-date information.
+
 MediaCMS uses FFmpeg for transcoding media files. Most of the transcoding settings and configurations are defined in `files/helpers.py`.
 
 ## Configuration Options

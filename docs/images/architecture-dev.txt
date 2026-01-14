@@ -1,0 +1,49 @@
+                         +------------------+
+                         |    Clients       |
+                         +------------------+
+                                |
+                    +-----------+-----------+
+                    |                       |
+                    v                       v
+        +------------------+    +------------------+
+        |      api         |    |    frontend      |
+        | (Django dev      |    | (Node.js dev     |
+        |  server,         |<-->|  server,         |
+        |  port 8000)      |    |  port 8088)      |
+        | (no nginx)       |    +------------------+
+        +------------------+
+         |                          |
+         |                          |
+         v                          v
++------------------+       +------------------+
+|   celery_beat    |       |      redis       |
+|  (singleton)     |------>|   (singleton)    |
++------------------+       +------------------+
+         |                          | *
+         |                          |
+         v                          v
++------------------+       +------------------------+
+|   migrations     |       |    celery_worker       |
+|   (run-once?)    |       | [celery_short,         |
++------------------+       |  celery_long]          |
+         |                  | (1 or many instances)  |
+         |                  +------------------------+
+         |                          |
+         v                          v
+        +----------------------------------------+
+        |      postgres database                 |
+        |      (singleton instance)              |
+        +----------------------------------------+
+                                  |
+                                  +------------------+
+                                               |
+                                               v
+                         +-----------------------------------+
+                         |        File store                 |
+                         | (static_files, media_files,       |
+                         |  logs, celerybeat_data,           |
+                         |  postgres_data,                   |
+                         |  frontend_node_modules,           |
+                         |  scripts_node_modules,            |
+                         |  npm_cache)                       |
+                         +-----------------------------------+

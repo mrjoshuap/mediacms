@@ -1,5 +1,15 @@
 # Administrators documentation
 
+> **⚠️ This documentation has been restructured!**
+> 
+> This file is kept for reference but has been split into organized sections:
+> - **[Installation Guide](administration/installation/README.md)** - Deployment options
+> - **[Configuration Guide](administration/configuration/README.md)** - System configuration
+> - **[Maintenance Guide](administration/maintenance/README.md)** - Updates and backups
+> - **[Authentication Guide](administration/authentication/README.md)** - SAML, RBAC, identity providers
+> 
+> Please use the new documentation structure for the most up-to-date information.
+
 ## Table of contents
 - [1. Welcome](#1-welcome)
 - [2. Single Server Installaton](#2-single-server-installation)

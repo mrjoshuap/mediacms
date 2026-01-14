@@ -1,4 +1,13 @@
 # Developer Experience
+
+> **⚠️ This documentation has been moved!**
+> 
+> This content has been integrated into:
+> - **[Development Environment Setup](development/setup/development-environment.md)** - Complete setup guide
+> - **[Frontend Development](development/frontend/development-workflow.md)** - Frontend workflow
+> 
+> Please use the new documentation structure for the most up-to-date information.
+
 There is ongoing effort to provide a better developer experience and document it.
 
 ## How to develop locally with Docker

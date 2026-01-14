@@ -1,5 +1,13 @@
 # Users documentation
 
+> **⚠️ This documentation has been restructured!**
+> 
+> This file is kept for reference but has been expanded and reorganized:
+> - **[User Guide](user-guide/README.md)** - Complete user documentation
+> - **[Getting Started](getting-started/users.md)** - Quick start guide
+> 
+> Please use the new documentation structure for the most up-to-date information.
+
 ## Table of contents
 - [Uploading media](#uploading-media)
 - [Downloading media](#downloading-media)

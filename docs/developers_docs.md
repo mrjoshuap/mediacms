@@ -1,5 +1,13 @@
 # Developers documentation
 
+> **⚠️ This documentation has been restructured!**
+> 
+> This file is kept for reference but has been expanded and reorganized:
+> - **[Development Guide](development/README.md)** - Complete developer documentation
+> - **[Getting Started](getting-started/developers.md)** - Quick start guide
+> 
+> Please use the new documentation structure for the most up-to-date information.
+
 ## Table of contents
 - [1. Welcome](#1-welcome)
 - [2. System architecture](#2-system-architecture)
