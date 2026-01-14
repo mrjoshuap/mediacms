@@ -10,6 +10,8 @@ Detailed workflow for frontend development.
 make dev-up-attach
 ```
 
+**Note**: The `-attach` flag runs services in the foreground and displays logs in your terminal. Use `make dev-up` to run in detached mode (background). Press `Ctrl+C` to stop attached services.
+
 This starts:
 - Django development server on port 8000 (NO nginx - direct access)
 - React development server on port 8088

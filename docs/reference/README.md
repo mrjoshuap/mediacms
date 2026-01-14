@@ -7,6 +7,7 @@ Quick reference guides for MediaCMS APIs, configuration, and terminology.
 - [API Reference](api-reference.md) - REST API endpoints and usage
 - [Configuration Reference](configuration-reference.md) - All configuration options
 - [Permissions Reference](permissions-reference.md) - Permission system details
+- [Make Commands Reference](make-commands.md) - All available make commands
 - [Glossary](glossary.md) - Terms and definitions
 
 ## Quick Links

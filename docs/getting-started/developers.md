@@ -24,6 +24,8 @@ cd mediacms
 make dev-up-attach
 ```
 
+**Note**: The `-attach` flag runs services in the foreground and displays logs in your terminal. Use `make dev-up` to run in detached mode (background). Press `Ctrl+C` to stop attached services.
+
 Or using docker compose:
 
 ```bash
