@@ -1,6 +1,6 @@
 [Unit]
-Description=MediaCMS celery long queue
-After=network.target
+Description=MediaCMS Celery Long Queue
+After=network.target postgresql.service redis.service mediacms-migrations.service
 
 [Service]
 Type=forking
@@ -25,5 +25,4 @@ ExecStop=/bin/sh -c '${CELERY_BIN} -A cms multi stopwait ${CELERYD_NODES} --pidf
 ExecReload=/bin/sh -c '${CELERY_BIN} -A cms multi restart ${CELERYD_NODES} --pidfile=${CELERYD_PID_FILE} --logfile=${CELERYD_LOG_FILE} --loglevel=${CELERYD_LOG_LEVEL} ${CELERYD_OPTS} -Q ${CELERY_QUEUE}'
 
 [Install]
-WantedBy=multi-user.target
-
+WantedBy=mediacms.target

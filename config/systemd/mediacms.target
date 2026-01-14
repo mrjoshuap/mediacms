@@ -1,0 +1,8 @@
+[Unit]
+Description=MediaCMS - All Services
+Documentation=https://github.com/mediacms-io/mediacms
+After=network.target postgresql.service redis.service
+Wants=mediacms-migrations.service mediacms-api.service mediacms-celery-beat.service mediacms-celery-short.service mediacms-celery-long.service nginx.service
+
+[Install]
+WantedBy=multi-user.target

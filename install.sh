@@ -23,14 +23,17 @@ done
 
 apt-get update && apt-get -y upgrade && apt-get install pkg-config python3-venv python3-dev virtualenv redis-server postgresql nginx git gcc vim unzip imagemagick procps libxml2-dev libxmlsec1-dev libxmlsec1-openssl python3-certbot-nginx certbot wget xz-utils -y
 
-# install ffmpeg
-echo "Downloading and installing ffmpeg"
-wget -q https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz
-mkdir -p tmp
-tar -xf ffmpeg-release-amd64-static.tar.xz --strip-components 1 -C tmp
-cp -v tmp/{ffmpeg,ffprobe,qt-faststart} /usr/local/bin
-rm -rf tmp ffmpeg-release-amd64-static.tar.xz
-echo "ffmpeg installed to /usr/local/bin"
+# install jellyfin-ffmpeg
+echo "Downloading and installing jellyfin-ffmpeg"
+JELLYFIN_FFMPEG_URL="https://fra1.mirror.jellyfin.org/main/ffmpeg/linux/latest-7.x/amd64/jellyfin-ffmpeg_7.1.3-1_portable_linux64-gpl.tar.gz"
+wget -q "$JELLYFIN_FFMPEG_URL" -O /tmp/jellyfin-ffmpeg.tar.gz
+mkdir -p /tmp/jellyfin-ffmpeg
+tar -xf /tmp/jellyfin-ffmpeg.tar.gz -C /tmp/jellyfin-ffmpeg --strip-components=1
+cp -v /tmp/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg
+cp -v /tmp/jellyfin-ffmpeg/ffprobe /usr/local/bin/ffprobe
+chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe
+rm -rf /tmp/jellyfin-ffmpeg /tmp/jellyfin-ffmpeg.tar.gz
+echo "jellyfin-ffmpeg installed to /usr/local/bin"
 
 read -p "Enter portal URL, or press enter for localhost : " FRONTEND_HOST
 read -p "Enter portal name, or press enter for 'MediaCMS : " PORTAL_NAME
@@ -59,34 +62,78 @@ SECRET_KEY=`python -c 'from django.core.management.utils import get_random_secre
 FRONTEND_HOST=`echo "$FRONTEND_HOST" | sed -r 's/http:\/\///g'`
 FRONTEND_HOST=`echo "$FRONTEND_HOST" | sed -r 's/https:\/\///g'`
 
-sed -i s/localhost/$FRONTEND_HOST/g deploy/local_install/mediacms.io
+sed -i s/localhost/$FRONTEND_HOST/g config/nginx/site-local.conf
 
 FRONTEND_HOST_HTTP_PREFIX='http://'$FRONTEND_HOST
 
-echo 'FRONTEND_HOST='\'"$FRONTEND_HOST_HTTP_PREFIX"\' >> cms/local_settings.py
-echo 'PORTAL_NAME='\'"$PORTAL_NAME"\' >> cms/local_settings.py
-echo "SSL_FRONTEND_HOST = FRONTEND_HOST.replace('http', 'https')" >> cms/local_settings.py
+# Create custom directory and local_settings.py
+mkdir -p custom
 
-echo 'SECRET_KEY='\'"$SECRET_KEY"\' >> cms/local_settings.py
-echo "LOCAL_INSTALL = True" >> cms/local_settings.py
+echo 'FRONTEND_HOST='\'"$FRONTEND_HOST_HTTP_PREFIX"\' >> custom/local_settings.py
+echo 'PORTAL_NAME='\'"$PORTAL_NAME"\' >> custom/local_settings.py
+echo "SSL_FRONTEND_HOST = FRONTEND_HOST.replace('http', 'https')" >> custom/local_settings.py
+
+echo 'SECRET_KEY='\'"$SECRET_KEY"\' >> custom/local_settings.py
+echo "LOCAL_INSTALL = True" >> custom/local_settings.py
+
+# Database configuration for single server
+echo "" >> custom/local_settings.py
+echo "# Database configuration for single server installation" >> custom/local_settings.py
+echo "DATABASES = {" >> custom/local_settings.py
+echo "    'default': {" >> custom/local_settings.py
+echo "        'ENGINE': 'django.db.backends.postgresql'," >> custom/local_settings.py
+echo "        'NAME': 'mediacms'," >> custom/local_settings.py
+echo "        'USER': 'mediacms'," >> custom/local_settings.py
+echo "        'PASSWORD': 'mediacms'," >> custom/local_settings.py
+echo "        'HOST': 'localhost'," >> custom/local_settings.py
+echo "        'PORT': '5432'," >> custom/local_settings.py
+echo "    }" >> custom/local_settings.py
+echo "}" >> custom/local_settings.py
+
+# Redis configuration for single server
+echo "" >> custom/local_settings.py
+echo "# Redis configuration for single server installation" >> custom/local_settings.py
+echo "REDIS_LOCATION = 'redis://127.0.0.1:6379/1'" >> custom/local_settings.py
+echo "CACHES = {" >> custom/local_settings.py
+echo "    'default': {" >> custom/local_settings.py
+echo "        'BACKEND': 'django_redis.cache.RedisCache'," >> custom/local_settings.py
+echo "        'LOCATION': REDIS_LOCATION," >> custom/local_settings.py
+echo "        'OPTIONS': {" >> custom/local_settings.py
+echo "            'CLIENT_CLASS': 'django_redis.client.DefaultClient'," >> custom/local_settings.py
+echo "        }," >> custom/local_settings.py
+echo "    }" >> custom/local_settings.py
+echo "}" >> custom/local_settings.py
+echo "BROKER_URL = REDIS_LOCATION" >> custom/local_settings.py
+echo "CELERY_RESULT_BACKEND = REDIS_LOCATION" >> custom/local_settings.py
 
 mkdir logs
 mkdir pids
-python manage.py migrate
-python manage.py loaddata fixtures/encoding_profiles.json
-python manage.py loaddata fixtures/categories.json
-python manage.py collectstatic --noinput
 
 ADMIN_PASS=`python -c "import secrets;chars = 'abcdefghijklmnopqrstuvwxyz0123456789';print(''.join(secrets.choice(chars) for i in range(10)))"`
-echo "from users.models import User; User.objects.create_superuser('admin', 'admin@example.com', '$ADMIN_PASS')" | python manage.py shell
 
 echo "from django.contrib.sites.models import Site; Site.objects.update(name='$FRONTEND_HOST', domain='$FRONTEND_HOST')" | python manage.py shell
 
 chown -R www-data. /home/mediacms.io/
-cp deploy/local_install/celery_long.service /etc/systemd/system/celery_long.service && systemctl enable celery_long && systemctl start celery_long
-cp deploy/local_install/celery_short.service /etc/systemd/system/celery_short.service && systemctl enable celery_short && systemctl start celery_short
-cp deploy/local_install/celery_beat.service /etc/systemd/system/celery_beat.service && systemctl enable celery_beat &&systemctl start celery_beat
-cp deploy/local_install/mediacms.service /etc/systemd/system/mediacms.service && systemctl enable mediacms.service && systemctl start mediacms.service
+
+# Install systemd services
+# Set admin credentials in migrations service before copying
+sed -i "/Environment=\"VIRTUAL_ENV=/a Environment=\"ADMIN_USER=admin\"\nEnvironment=\"ADMIN_EMAIL=admin@example.com\"\nEnvironment=\"ADMIN_PASSWORD=$ADMIN_PASS\"" config/systemd/mediacms-migrations.service
+cp config/systemd/mediacms-migrations.service /etc/systemd/system/
+cp config/systemd/mediacms-api.service /etc/systemd/system/
+cp config/systemd/mediacms-celery-beat.service /etc/systemd/system/
+cp config/systemd/mediacms-celery-short.service /etc/systemd/system/
+cp config/systemd/mediacms-celery-long.service /etc/systemd/system/
+cp config/systemd/mediacms.target /etc/systemd/system/
+
+systemctl daemon-reload
+systemctl enable mediacms.target
+systemctl start mediacms.target
+
+# Get admin password from migrations service logs
+ADMIN_PASS_FROM_SERVICE=$(journalctl -u mediacms-migrations.service --no-pager | grep "Admin user created with password" | tail -1 | sed 's/.*password: //' || echo "$ADMIN_PASS")
+if [ -n "$ADMIN_PASS_FROM_SERVICE" ] && [ "$ADMIN_PASS_FROM_SERVICE" != "$ADMIN_PASS" ]; then
+    ADMIN_PASS="$ADMIN_PASS_FROM_SERVICE"
+fi
 
 mkdir -p /etc/letsencrypt/live/mediacms.io/
 mkdir -p /etc/letsencrypt/live/$FRONTEND_HOST
@@ -95,13 +142,49 @@ mkdir -p /etc/nginx/sites-available
 mkdir -p /etc/nginx/dhparams/
 rm -rf /etc/nginx/conf.d/default.conf
 rm -rf /etc/nginx/sites-enabled/default
-cp deploy/local_install/mediacms.io_fullchain.pem /etc/letsencrypt/live/$FRONTEND_HOST/fullchain.pem
-cp deploy/local_install/mediacms.io_privkey.pem /etc/letsencrypt/live/$FRONTEND_HOST/privkey.pem
-cp deploy/local_install/dhparams.pem /etc/nginx/dhparams/dhparams.pem
-cp deploy/local_install/mediacms.io /etc/nginx/sites-available/mediacms.io
-ln -s /etc/nginx/sites-available/mediacms.io /etc/nginx/sites-enabled/mediacms.io
-cp deploy/local_install/uwsgi_params /etc/nginx/sites-enabled/uwsgi_params
-cp deploy/local_install/nginx.conf /etc/nginx/
+
+# Copy SSL certificates with priority: custom/ssl/ first, then config/ssl/examples/ with warning
+# Check for fullchain certificate
+if [ -f "custom/ssl/mediacms.io_fullchain.pem" ]; then
+    cp custom/ssl/mediacms.io_fullchain.pem /etc/letsencrypt/live/$FRONTEND_HOST/fullchain.pem
+elif [ -f "custom/ssl/fullchain.pem" ]; then
+    cp custom/ssl/fullchain.pem /etc/letsencrypt/live/$FRONTEND_HOST/fullchain.pem
+else
+    echo "WARNING: Using example SSL certificate from config/ssl/examples/"
+    echo "For production, place your certificates in custom/ssl/"
+    cp config/ssl/examples/mediacms.io_fullchain.pem /etc/letsencrypt/live/$FRONTEND_HOST/fullchain.pem
+fi
+
+# Check for private key
+if [ -f "custom/ssl/mediacms.io_privkey.pem" ]; then
+    cp custom/ssl/mediacms.io_privkey.pem /etc/letsencrypt/live/$FRONTEND_HOST/privkey.pem
+elif [ -f "custom/ssl/privkey.pem" ]; then
+    cp custom/ssl/privkey.pem /etc/letsencrypt/live/$FRONTEND_HOST/privkey.pem
+else
+    echo "WARNING: Using example SSL private key from config/ssl/examples/"
+    echo "For production, place your certificates in custom/ssl/"
+    cp config/ssl/examples/mediacms.io_privkey.pem /etc/letsencrypt/live/$FRONTEND_HOST/privkey.pem
+fi
+
+# Check for DH parameters
+if [ -f "custom/ssl/dhparams.pem" ]; then
+    cp custom/ssl/dhparams.pem /etc/nginx/dhparams/dhparams.pem
+else
+    echo "WARNING: Using example DH parameters from config/ssl/examples/"
+    echo "For production, place your certificates in custom/ssl/"
+    cp config/ssl/examples/dhparams.pem /etc/nginx/dhparams/dhparams.pem
+fi
+
+# Add sites-enabled include for single server
+sed -i '/include \/etc\/nginx\/conf\.d\/\*\.conf;/a include /etc/nginx/sites-enabled/*;' config/nginx/nginx.conf
+cp config/nginx/nginx.conf /etc/nginx/
+cp config/nginx/site-local.conf /etc/nginx/sites-available/mediacms
+ln -s /etc/nginx/sites-available/mediacms /etc/nginx/sites-enabled/mediacms
+
+# Install log rotation configuration
+cp config/logrotate/mediacms.conf /etc/logrotate.d/mediacms
+chmod 644 /etc/logrotate.d/mediacms
+
 systemctl stop nginx
 systemctl start nginx
 
@@ -127,12 +210,25 @@ else
     echo "will not generate new DH params for url 'localhost', using default DH params"
 fi
 
-# Bento4 utility installation, for HLS
+# Bento4 Python script installation, for HLS (matching Docker pattern)
+echo "Installing Bento4 Python script for HLS"
+BENTO4_DIR="/home/mediacms.io/mediacms/bento4"
+mkdir -p "$BENTO4_DIR/utils"
+git clone -b v1.6.0-637 https://github.com/axiomatic-systems/Bento4.git /tmp/bento4
+cp -r /tmp/bento4/Source/Python/utils/* "$BENTO4_DIR/utils/"
+chmod +x "$BENTO4_DIR/utils/mp4-hls.py"
+rm -rf /tmp/bento4
 
-cd /home/mediacms.io/mediacms
-wget http://zebulon.bok.net/Bento4/binaries/Bento4-SDK-1-6-0-637.x86_64-unknown-linux.zip
-unzip Bento4-SDK-1-6-0-637.x86_64-unknown-linux.zip
-mkdir /home/mediacms.io/mediacms/media_files/hls
+# Create mp4hls wrapper script
+cat > /usr/local/bin/mp4hls << 'EOF'
+#!/bin/sh
+BASEDIR="/home/mediacms.io/mediacms/bento4"
+exec python3 "$BASEDIR/utils/mp4-hls.py" "$@"
+EOF
+chmod +x /usr/local/bin/mp4hls
+
+# Create HLS directory
+mkdir -p /home/mediacms.io/mediacms/media_files/hls
 
 # last, set default owner
 chown -R www-data. /home/mediacms.io/

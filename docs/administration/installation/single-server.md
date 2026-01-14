@@ -123,7 +123,7 @@ sudo systemctl start celery_long celery_short celery_beat
 ## Configuration
 
 Configuration files:
-- `cms/local_settings.py` - Main configuration file
+- `custom/local_settings.py` - Main configuration file
 - `cms/settings.py` - Default settings (don't edit directly)
 
 After making changes, restart services:

@@ -68,3 +68,6 @@ static_collected/**
 
 # Frontend build artifacts (built separately)
 frontend/dist/**
+
+# Custom directory (mounted as volume, not copied into image)
+custom/**

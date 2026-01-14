@@ -38,7 +38,7 @@ sequenceDiagram
 
 ### Step 1: Enable SAML
 
-Edit `custom/local_settings.py` (Docker) or `cms/local_settings.py` (single server):
+Edit `custom/local_settings.py`:
 
 ```python
 USE_RBAC = True

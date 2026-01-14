@@ -391,17 +391,13 @@ The architecture below provides a conceptual design for scalable deployments. It
 ## 5. Configuration
 Several options are available on `cms/settings.py`, most of the things that are allowed or should be disallowed are described there.
 
-It is advisable to override any of them by adding it to `local_settings.py` .
-
-In case of a the single server installation, add to `cms/local_settings.py` .
-
-In case of a docker compose installation, add to `custom/local_settings.py`. This file is mounted into containers and will override settings from `cms/settings.py`.
+It is advisable to override any of them by adding it to `custom/local_settings.py`. This file is used for both Docker and single server installations and will override settings from `cms/settings.py`.
 
 For more information about the custom directory structure, see `custom/README.md`.
 
 Any change needs restart of MediaCMS in order to take effect.
 
-Single server installation: edit `cms/local_settings.py`, make a change and restart MediaCMS
+Edit `custom/local_settings.py`, make a change and restart MediaCMS
 
 ```bash
 #systemctl restart mediacms

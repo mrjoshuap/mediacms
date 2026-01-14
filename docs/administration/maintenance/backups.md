@@ -105,7 +105,7 @@ tar czf media_backup_$(date +%Y%m%d).tar.gz /home/mediacms.io/mediacms/media_fil
 ### Configuration Backup
 
 ```bash
-cp cms/local_settings.py cms/local_settings.py.backup_$(date +%Y%m%d)
+cp custom/local_settings.py custom/local_settings.py.backup_$(date +%Y%m%d)
 ```
 
 ## Restore Procedures

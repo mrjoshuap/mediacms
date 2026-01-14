@@ -13,4 +13,4 @@ Quick reference guides for MediaCMS APIs, configuration, and terminology.
 ## Quick Links
 
 - API Documentation: `/swagger/` endpoint on your MediaCMS installation
-- Configuration File: `custom/local_settings.py` (Docker) or `cms/local_settings.py` (single server)
+- Configuration File: `custom/local_settings.py` (both Docker and single server)

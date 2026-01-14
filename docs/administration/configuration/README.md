@@ -4,15 +4,9 @@ Configure MediaCMS to match your needs and requirements.
 
 ## Configuration Files
 
-### Docker Installation
+Edit `custom/local_settings.py` to override default settings for both Docker and single server installations.
 
-Edit `custom/local_settings.py` to override default settings.
-
-### Single Server Installation
-
-Edit `cms/local_settings.py` to override default settings.
-
-**Important**: Never edit `cms/settings.py` directly. Always use `local_settings.py` to override settings.
+**Important**: Never edit `cms/settings.py` directly. Always use `custom/local_settings.py` to override settings.
 
 ## Configuration Sections
 

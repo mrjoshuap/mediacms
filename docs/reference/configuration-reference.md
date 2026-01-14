@@ -4,15 +4,9 @@ Complete reference for all MediaCMS configuration options.
 
 ## Configuration Files
 
-### Docker Installation
+Edit `custom/local_settings.py` for both Docker and single server installations.
 
-Edit `custom/local_settings.py`
-
-### Single Server Installation
-
-Edit `cms/local_settings.py`
-
-**Important**: Never edit `cms/settings.py` directly. Always use `local_settings.py`.
+**Important**: Never edit `cms/settings.py` directly. Always use `custom/local_settings.py`.
 
 ## Portal Settings
 

@@ -1,0 +1,20 @@
+[Unit]
+Description=MediaCMS Database Migrations
+After=network.target postgresql.service redis.service
+Before=mediacms-api.service
+RequiredBy=mediacms-api.service
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+WorkingDirectory=/home/mediacms.io/mediacms
+Environment="PATH=/home/mediacms.io/bin"
+Environment="VIRTUAL_ENV=/home/mediacms.io"
+ExecStart=/bin/sh /home/mediacms.io/mediacms/scripts/run-migrations.sh
+RemainAfterExit=yes
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=mediacms.target

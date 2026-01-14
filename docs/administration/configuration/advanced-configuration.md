@@ -66,7 +66,7 @@ Modify `files/helpers.py` for advanced FFmpeg options:
 
 ### Connection Settings
 
-For single server installation, configure in `cms/local_settings.py`:
+Configure in `custom/local_settings.py`:
 
 ```python
 DATABASES = {

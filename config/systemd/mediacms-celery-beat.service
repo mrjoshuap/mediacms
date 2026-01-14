@@ -1,6 +1,6 @@
 [Unit]
-Description=MediaCMS celery beat
-After=network.target
+Description=MediaCMS Celery Beat
+After=network.target postgresql.service redis.service mediacms-migrations.service
 
 [Service]
 Type=simple
@@ -18,5 +18,4 @@ ExecStart=/bin/sh -c '${CELERY_BIN} -A cms beat --pidfile=${CELERYD_PID_FILE} --
 ExecStop=/bin/kill -s TERM $MAINPID
 
 [Install]
-WantedBy=multi-user.target
-
+WantedBy=mediacms.target

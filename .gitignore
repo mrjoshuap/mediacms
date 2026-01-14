@@ -38,3 +38,7 @@ static/chapters_editor/videos/sample-video.mp3
 static/video_editor/videos/sample-video.mp3
 templates/todo-MS4.md
 custom/local_settings.py
+custom/ssl/**
+custom/static/css/**
+custom/static/images/**
+custom/templates/**
