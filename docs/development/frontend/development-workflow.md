@@ -11,14 +11,23 @@ make dev-up-attach
 ```
 
 This starts:
-- Django development server (port 8000, proxied via port 80)
-- React development server (port 8088)
+- Django development server on port 8000 (NO nginx - direct access)
+- React development server on port 8088
 - All backend services
 
 ### Access Points
 
-- **Main Application**: http://localhost (Django + React dev server)
-- **React Dev Server**: http://localhost:8088 (React only, hot reloading)
+**Important**: Development mode has NO nginx. There is no port 80.
+
+- **Django Dev Server (Full Application)**: http://localhost:8000
+  - Serves Django templates with React components
+  - Full functionality, POST requests, uploads
+  - Use for testing complete workflows
+  
+- **React Dev Server (Hot Reloading)**: http://localhost:8088
+  - React only, hot reloading
+  - Use for rapid frontend iteration
+  - CORS limitations for POST requests
 
 ## Making Changes
 
@@ -32,7 +41,7 @@ This starts:
 
 1. Edit templates in `templates/`
 2. Django auto-reloads on template changes
-3. Changes appear on http://localhost immediately
+3. Changes appear on http://localhost:8000 immediately
 
 ### Static Files
 
@@ -80,7 +89,7 @@ make dev-restart api
 ### Production Testing
 
 1. Build frontend: `make build-frontend`
-2. Test on http://localhost
+2. Test on http://localhost:8000 (Django dev server)
 3. Verify production build works
 4. Check for issues
 
@@ -89,8 +98,9 @@ make dev-restart api
 ### Development
 
 - React dev server (port 8088) may have CORS issues
-- Use main application (port 80) for POST requests
+- **Use Django dev server (port 8000) for POST requests** - Not port 8088
 - Configure `frontend/.env` if URLs differ
+- POST requests, uploads, and API calls must use port 8000
 
 ### Production
 
@@ -164,9 +174,10 @@ Install React DevTools browser extension for:
 
 ### CORS Errors
 
-- Use main application (port 80) for API calls
+- **Use Django dev server (port 8000) for API calls** - Not port 8088
 - Check `frontend/.env` configuration
 - Verify CORS settings
+- Remember: Port 8088 has CORS limitations
 
 ## Next Steps
 

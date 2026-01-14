@@ -34,13 +34,21 @@ docker compose -f docker-compose-dev.yaml up
 
 ### Step 3: Access Application
 
-- **Main Application**: http://localhost (port 80)
-- **React Dev Server**: http://localhost:8088
-- **Django API**: http://localhost:8000
+**Important**: Development mode has NO nginx server. There is no port 80.
 
-**Login Credentials**:
-- Username: `admin`
-- Password: `admin`
+- **Django Dev Server (Full Application)**: http://localhost:8000
+  - Serves Django templates with React components
+  - Handles all POST requests and API calls
+  - Full functionality, including media uploads
+  - Use for most development work
+  - Login: admin/admin
+
+- **React Dev Server (Hot Reloading)**: http://localhost:8088
+  - Hot reloading for React component development
+  - View React component changes instantly
+  - May have CORS issues for POST requests
+  - Use for frontend-only development
+  - Does NOT handle uploads or POST requests
 
 ## Development Environment Overview
 
@@ -62,15 +70,55 @@ And starts all required services:
 
 **Django**:
 - Runs in debug mode with `python manage.py runserver`
-- No nginx (Django dev server handles requests)
+- **No nginx** - Django dev server handles requests directly on port 8000
 - Debug Toolbar enabled
 - Static files loaded from `static/` folder
 - CORS headers configured for all origins
+- Port 8000 is exposed directly (no reverse proxy)
 
 **React**:
 - Runs `npm start` for hot reloading
 - Available on port 8088
 - Changes reflect immediately
+- Separate from Django server
+
+## Port Usage Guide
+
+### Port 8000: Django Dev Server (Full Application)
+
+Use port 8000 for:
+- **Backend development**: Django views, models, API endpoints
+- **Django templates**: Template changes and rendering
+- **Full functionality**: All features work correctly
+- **POST requests**: API calls, form submissions
+- **Media uploads**: File uploads work properly
+- **Authentication**: Login, logout, sessions
+- **Testing workflows**: Complete user flows
+
+**Access**: http://localhost:8000
+
+### Port 8088: React Dev Server (Hot Reloading)
+
+Use port 8088 for:
+- **React component development**: Component changes
+- **Frontend styling**: CSS and styling updates
+- **Rapid iteration**: See changes instantly
+- **UI development**: Frontend-only work
+
+**Limitations**:
+- **CORS issues**: POST requests may fail
+- **No uploads**: File uploads don't work
+- **Limited functionality**: Some features may not work
+- **Template changes**: Django template changes not reflected
+
+**Access**: http://localhost:8088
+
+### Recommended Workflow
+
+1. **Backend/Django work**: Use http://localhost:8000
+2. **React component work**: Use http://localhost:8088 for rapid iteration
+3. **Testing**: Use http://localhost:8000 for full functionality
+4. **Production build**: Build frontend and test on http://localhost:8000
 
 ## Backend Development
 
@@ -163,18 +211,19 @@ MediaCMS uses React as a library, not a standalone SPA:
 ### Development Workflow
 
 1. Edit `frontend/src/` files
-2. Check changes on http://localhost:8088/
+2. Check changes on http://localhost:8088/ (hot reloading)
 3. Build frontend: `make build-frontend`
 4. Restart Django: `make dev-restart api`
-5. Test on http://localhost
+5. Test on http://localhost:8000 (full application)
 6. Commit changes
 
 ### CORS Issues
 
 Some pages may have CORS issues when developing:
-- Use main application (port 80) for POST requests
-- React dev server (port 8088) for viewing changes
+- **Use Django dev server (port 8000) for POST requests** - Full functionality
+- **React dev server (port 8088) for viewing changes** - Hot reloading only
 - Configure `frontend/.env` if URLs differ from localhost
+- POST requests, uploads, and API calls must use port 8000
 
 ## Testing
 
@@ -301,9 +350,10 @@ make test                # Run all tests
 
 ### CORS Errors
 
-- Use main application (port 80) for API calls
+- **Use Django dev server (port 8000) for API calls** - Not port 8088
 - Check CORS configuration
 - Verify `frontend/.env` settings
+- Remember: Port 8088 has CORS limitations for POST requests
 
 ## Next Steps
 

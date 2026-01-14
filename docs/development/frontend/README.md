@@ -34,7 +34,7 @@ MediaCMS doesn't use React as a standalone SPA:
 1. Edit `frontend/src/` files
 2. Changes appear on http://localhost:8088 (hot reloading)
 3. Build for production: `make build-frontend`
-4. Test on http://localhost
+4. Test on http://localhost:8000 (Django dev server with full functionality)
 
 ### Building Frontend
 
@@ -56,9 +56,13 @@ cp -r frontend/dist/static/* static/
 React dev server runs on port 8088:
 - Hot reloading enabled
 - Changes reflect immediately
-- Use for development
+- Use for frontend development
 
-**Note**: POST requests must go through main application (port 80).
+**Important**: 
+- **POST requests must use Django dev server (port 8000)** - Not port 8088
+- Port 8088 has CORS limitations
+- Uploads and API calls require port 8000
+- Development mode has NO nginx - no port 80
 
 ## Component Structure
 

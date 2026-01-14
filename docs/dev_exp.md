@@ -25,7 +25,9 @@ Or using docker compose directly:
 docker compose -f docker-compose-dev.yaml up
 ```
 
-In a few minutes the app will be available at http://localhost . Login via admin/admin
+In a few minutes the app will be available at http://localhost:8000 (Django dev server). Login via admin/admin
+
+**Note**: Development mode has NO nginx server. Access Django directly on port 8000.
 
 ### What does docker-compose-dev.yaml do?
 It build the two images used for backend and frontend.
@@ -47,7 +49,7 @@ For React, it will run `npm start` in the frontend folder, which will start the 
 Check it on http://localhost:8088/
 
 ### How to develop in Django
-Django starts at http://localhost:8000 (accessed via nginx proxy on port 80) and is reloading automatically. Making any change to the python code should refresh Django.
+Django starts at http://localhost:8000 (NO nginx in dev mode - direct access) and is reloading automatically. Making any change to the python code should refresh Django.
 
 If Django breaks due to an error (eg SyntaxError, while editing the code), you might have to restart it
 

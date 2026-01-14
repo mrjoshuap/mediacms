@@ -55,7 +55,7 @@ Checkout the [Code of conduct page](../CODE_OF_CONDUCT.md) if you want to contri
 
 ## 5. Working with Docker tips
 
-To perform the Docker installation, follow instructions in the [Administrators documentation](admins_docs.md#3-docker-installation) and then build/start the development environment. This will run the frontend application on port 8088 on top of all other containers (including the Django API application on port 8000, served by nginx on port 80).
+To perform the Docker installation, follow instructions in the [Administrators documentation](admins_docs.md#3-docker-installation) and then build/start the development environment. This will run the frontend application on port 8088 on top of all other containers (including the Django API application on port 8000, **NO nginx in dev mode**).
 
 Use the Makefile:
 
@@ -92,11 +92,12 @@ docker compose -f docker-compose-dev.yaml exec -T frontend npm run dist
 cp -r frontend/dist/static/* static/
 ```
 
-POST calls: cannot be performed through the dev server, you have to make through the normal application (port 80) and then see changes on the dev application on port 8088.
+POST calls: cannot be performed through the React dev server (port 8088), you have to make through the Django dev server (port 8000) and then see changes on the React dev server on port 8088.
 Make sure the urls are set on `frontend/.env` if different than localhost
 
+**Important**: Development mode has NO nginx. Use port 8000 for POST requests and uploads.
 
-Media page: need to upload content through the main application (nginx/port 80), and then use an id for page media.html, for example `http://localhost:8088/media.html?m=nc9rotyWP`
+Media page: need to upload content through the Django dev server (port 8000), and then use an id for page media.html, for example `http://localhost:8088/media.html?m=nc9rotyWP`
 
 There are some issues with CORS too to resolve, in order for some pages to function, eg the manage comments page
 

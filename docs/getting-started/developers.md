@@ -38,13 +38,25 @@ This will:
 
 ### Step 3: Access the Application
 
-- **Main Application**: http://localhost (port 80)
-- **React Dev Server**: http://localhost:8088
-- **Django API**: http://localhost:8000
+**Important**: Development mode has NO nginx server. Use these ports:
 
-Login credentials:
-- Username: `admin`
-- Password: `admin`
+- **Django Dev Server (Full Application)**: http://localhost:8000
+  - Serves Django templates with React components
+  - Handles all POST requests and API calls
+  - Full functionality, including media uploads
+  - Use for most development work
+  - Login: admin/admin
+
+- **React Dev Server (Hot Reloading)**: http://localhost:8088
+  - Hot reloading for React component development
+  - View React component changes instantly
+  - May have CORS issues for POST requests
+  - Use for frontend-only development
+  - Does NOT handle uploads or POST requests
+
+**When to use which port**:
+- **Port 8000**: Backend development, Django templates, API testing, uploads, POST requests
+- **Port 8088**: React component development, frontend styling, rapid iteration on UI components
 
 ## Understanding the Codebase Structure
 
