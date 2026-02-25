@@ -8,8 +8,6 @@ import { translateString } from '../../utils/helpers/';
 
 function downloadOptionsList() {
   const media_data = MediaPageStore.get('media-data');
-
-  const title = media_data.title;
   const encodings_info = media_data.encodings_info;
 
   const optionsList = {};
@@ -21,16 +19,12 @@ function downloadOptionsList() {
         for (g in encodings_info[k]) {
           if (encodings_info[k].hasOwnProperty(g)) {
             if ('success' === encodings_info[k][g].status && 100 === encodings_info[k][g].progress && null !== encodings_info[k][g].url) {
-              // Use original media URL for download instead of encoded version
-              const originalUrl = media_data.original_media_url;
-              const originalFilename = originalUrl ? originalUrl.substring(originalUrl.lastIndexOf('/') + 1) : media_data.title;
-
               optionsList[encodings_info[k][g].title] = {
                 text: k + ' - ' + g.toUpperCase() + ' (' + encodings_info[k][g].size + ')',
-                link: formatInnerLink(media_data.original_media_url, SiteContext._currentValue.url),
+                link: formatInnerLink(encodings_info[k][g].url, SiteContext._currentValue.url),
                 linkAttr: {
                   target: '_blank',
-                  download: originalFilename,
+                  download: media_data.title + '_' + k + '_' + g.toUpperCase(),
                 },
               };
             }
