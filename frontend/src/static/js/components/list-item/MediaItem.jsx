@@ -1,7 +1,8 @@
 import React from 'react';
 import { useMediaItem } from '../../utils/hooks/';
 import { inSelectMediaEmbedMode } from '../../utils/helpers/';
-import { MediaItemThumbnailLink, itemClassname } from './includes/items/';
+import { MediaPlaylistOptions } from '../media-playlist-options/MediaPlaylistOptions.jsx';
+import { MediaItemThumbnailLink, MediaItemPlaylistIndex, itemClassname } from './includes/items/';
 import { Item } from './Item';
 import { applyDefaultProps } from '../../utils/helpers/applyDefaultProps';
 
@@ -49,6 +50,24 @@ export function MediaItem(rawProps) {
     return <MediaItemThumbnailLink src={thumbnailUrl} title={props.title} link={props.link} />;
   }
 
+  function playlistOrderNumberComponent() {
+    return props.hidePlaylistOrderNumber ? null : (
+      <MediaItemPlaylistIndex
+        index={props.playlistOrder}
+        inPlayback={props.inPlaylistView}
+        activeIndex={props.playlistActiveItem}
+      />
+    );
+  }
+
+  function playlistOptionsComponent() {
+    let mediaId = props.link.split('=')[1];
+    mediaId = mediaId ? mediaId.split('&')[0] : null;
+    return props.hidePlaylistOptions || !mediaId ? null : (
+      <MediaPlaylistOptions key="options" media_id={mediaId} playlist_id={props.playlist_id} />
+    );
+  }
+
   const containerClassname = itemClassname(
     'item ' + type + '-item',
     props.class_name.trim(),
@@ -81,6 +100,8 @@ export function MediaItem(rawProps) {
 
   return (
     <div className={finalClassname} onClick={handleItemClick}>
+      {playlistOrderNumberComponent()}
+
       <div className="item-content">
         {props.showSelection && (
           <div className="item-selection-checkbox" onClick={(e) => e.stopPropagation()}>
@@ -112,6 +133,8 @@ export function MediaItem(rawProps) {
             {descriptionComponent()}
           </UnderThumbWrapper>
         )}
+
+        {playlistOptionsComponent()}
       </div>
     </div>
   );
@@ -130,4 +153,5 @@ MediaItem.defaultPropValues = {
   playlistActiveItem: 1,
   inPlaylistView: false,
   hidePlaylistOrderNumber: true,
+  hidePlaylistOptions: true,
 };

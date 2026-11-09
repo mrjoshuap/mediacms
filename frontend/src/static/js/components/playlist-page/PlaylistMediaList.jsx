@@ -1,6 +1,6 @@
 import React from 'react';
 import Sortable from 'sortablejs';
-import { PlaylistPageActions } from '../../utils/actions';
+import { PageActions, PlaylistPageActions } from '../../utils/actions';
 import { apiUrlConfig } from '../../utils/contexts';
 import { putRequest, csrfToken } from '../../utils/helpers';
 import { PlaylistPageMedia } from './PlaylistPageMedia';
@@ -11,9 +11,18 @@ export class PlaylistMediaList extends React.PureComponent {
 
         this.state = {
             media: props.media,
+            listVersion: 0,
         };
         this.containerRef = React.createRef();
+        this.sortable = null;
         this.onItemsLoad = this.onItemsLoad.bind(this);
+    }
+
+    componentWillUnmount() {
+        if (this.sortable) {
+            this.sortable.destroy();
+            this.sortable = null;
+        }
     }
 
     onItemsLoad() {
@@ -21,21 +30,18 @@ export class PlaylistMediaList extends React.PureComponent {
             return;
         }
 
-        const container = this.containerRef.current.querySelector('.items-list');
+        const container = this.containerRef.current && this.containerRef.current.querySelector('.items-list');
 
         if (!container) {
             return;
         }
 
+        if (this.sortable) {
+            this.sortable.destroy();
+            this.sortable = null;
+        }
+
         const playlistId = this.props.id;
-
-        function onPutMediaOrderingSuccess(response) {
-            // TODO: Continue here
-        }
-
-        function onPutMediaOrderingFail(response) {
-            // TODO: Continue here
-        }
 
         const getMediaArray = function (index) {
             return this.state.media[index];
@@ -49,9 +55,11 @@ export class PlaylistMediaList extends React.PureComponent {
                 i += 1;
             }
 
+            // Remount the list so React DOM matches Sortable's order (avoids broken options menus).
             this.setState(
                 {
                     media: newMediadata,
+                    listVersion: this.state.listVersion + 1,
                 },
                 () => {
                     PlaylistPageActions.reorderedMediaInPlaylist(this.state.media);
@@ -59,12 +67,16 @@ export class PlaylistMediaList extends React.PureComponent {
             );
         }.bind(this);
 
-        Sortable.create(container, {
+        this.sortable = Sortable.create(container, {
+            handle: '.item-order-number',
+            draggable: '.item',
+            animation: 150,
             onStart: function (evt) {
                 container.classList.add('on-dragging');
             },
             onEnd: function (evt) {
                 const newMediaOrder = [];
+                const reorderRequests = [];
 
                 const itemsOrderNumElems = container.querySelectorAll('.item-order-number div div');
                 let oldOrdering, newOrdering, friendly_token;
@@ -76,21 +88,29 @@ export class PlaylistMediaList extends React.PureComponent {
                     if (newOrdering !== oldOrdering) {
                         friendly_token = getMediaArray(oldOrdering - 1).friendly_token;
 
-                        putRequest(
-                            apiUrlConfig.playlists + '/' + playlistId,
-                            {
-                                type: 'ordering',
-                                ordering: newOrdering,
-                                media_friendly_token: friendly_token,
-                            },
-                            {
-                                headers: {
-                                    'X-CSRFToken': csrfToken(),
-                                },
-                            },
-                            false,
-                            onPutMediaOrderingSuccess,
-                            onPutMediaOrderingFail
+                        reorderRequests.push(
+                            new Promise(function (resolve) {
+                                putRequest(
+                                    apiUrlConfig.playlists + '/' + playlistId,
+                                    {
+                                        type: 'ordering',
+                                        ordering: newOrdering,
+                                        media_friendly_token: friendly_token,
+                                    },
+                                    {
+                                        headers: {
+                                            'X-CSRFToken': csrfToken(),
+                                        },
+                                    },
+                                    false,
+                                    function () {
+                                        resolve(true);
+                                    },
+                                    function () {
+                                        resolve(false);
+                                    }
+                                );
+                            })
                         );
                     }
 
@@ -105,6 +125,18 @@ export class PlaylistMediaList extends React.PureComponent {
                 container.classList.remove('on-dragging');
 
                 updateMediaData(newMediaOrder);
+
+                if (reorderRequests.length) {
+                    Promise.all(reorderRequests).then(function (results) {
+                        setTimeout(function () {
+                            if (results.every(Boolean)) {
+                                PageActions.addNotification('Playlist order saved', 'playlistReorder');
+                            } else {
+                                PageActions.addNotification('Playlist reorder failed', 'playlistReorderFail');
+                            }
+                        }, 100);
+                    });
+                }
             },
         });
     }
@@ -117,6 +149,7 @@ export class PlaylistMediaList extends React.PureComponent {
             >
                 {this.state.media.length ? (
                     <PlaylistPageMedia
+                        key={'playlist-media-' + this.state.listVersion}
                         itemsLoadCallback={this.onItemsLoad}
                         playlistId={this.props.id}
                         media={this.state.media}

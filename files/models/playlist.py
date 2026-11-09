@@ -29,6 +29,8 @@ class Playlist(models.Model):
 
     @property
     def media_count(self):
+        if hasattr(self, "annotated_media_count"):
+            return self.annotated_media_count
         return self.media.filter(listable=True).count()
 
     def get_absolute_url(self, api=False):
@@ -76,6 +78,10 @@ class Playlist(models.Model):
 
     @property
     def thumbnail_url(self):
+        if hasattr(self, "annotated_thumbnail"):
+            if self.annotated_thumbnail:
+                return helpers.url_from_path(self.annotated_thumbnail)
+            return None
         pm = self.playlistmedia_set.filter(media__listable=True).first()
         if pm and pm.media.thumbnail:
             return helpers.url_from_path(pm.media.thumbnail.path)

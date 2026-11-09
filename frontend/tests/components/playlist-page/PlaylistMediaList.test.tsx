@@ -2,7 +2,8 @@ import '../../_support/setupMediaCMS';
 import React from 'react';
 import axios from 'axios';
 import { renderIntoContainer, act } from '../../_support/render';
-import { PlaylistPageActions } from '../../../src/static/js/utils/actions';
+import { flush } from '../../_support/compD_dom';
+import { PageActions, PlaylistPageActions } from '../../../src/static/js/utils/actions';
 import { PlaylistMediaList } from '../../../src/static/js/components/playlist-page/PlaylistMediaList';
 
 jest.mock('axios');
@@ -39,9 +40,14 @@ describe('components/playlist-page', () => {
         const media = [{ friendly_token: 'a' }, { friendly_token: 'b' }, { friendly_token: 'c' }];
 
         beforeEach(() => {
+            jest.useFakeTimers();
             jest.clearAllMocks();
             mockedAxios.put.mockResolvedValue({} as any);
             document.cookie = 'csrftoken=tok';
+        });
+
+        afterEach(() => {
+            jest.useRealTimers();
         });
 
         test('Renders nothing inside the list for an empty playlist', () => {
@@ -57,12 +63,14 @@ describe('components/playlist-page', () => {
             unmount();
         });
 
-        test('Persists drag reordering for own playlists', () => {
+        test('Persists drag reordering for own playlists', async () => {
             const { container, unmount } = renderIntoContainer(<List id="p1" media={media} loggedinUserPlaylist />);
             expect(container.firstElementChild?.className).toBe('playlist-videos-list draggable');
             expect(container.querySelector('.items-list')?.getAttribute('data-hide-options')).toBe('false');
             const [listEl, options] = createMock.mock.calls[0];
             expect(listEl).toBe(container.querySelector('.items-list'));
+            expect(options.handle).toBe('.item-order-number');
+            expect(options.draggable).toBe('.item');
 
             options.onStart();
             expect(listEl.classList.contains('on-dragging')).toBe(true);
@@ -74,8 +82,6 @@ describe('components/playlist-page', () => {
             });
 
             expect(listEl.classList.contains('on-dragging')).toBe(false);
-            const orders = Array.from(listEl.querySelectorAll('.item-order-number div div')).map((d: any) => d.getAttribute('data-order'));
-            expect(orders).toEqual(['1', '2', '3']);
             expect(mockedAxios.put.mock.calls.map((c) => c[1])).toEqual([
                 { type: 'ordering', ordering: 1, media_friendly_token: 'c' },
                 { type: 'ordering', ordering: 2, media_friendly_token: 'a' },
@@ -88,6 +94,39 @@ describe('components/playlist-page', () => {
                 { friendly_token: 'a' },
                 { friendly_token: 'b' },
             ]);
+            // Remount recreates Sortable against the new React order
+            expect(createMock).toHaveBeenCalledTimes(2);
+            const remountedOrders = Array.from(container.querySelectorAll('.item-order-number div div')).map((d: any) =>
+                d.getAttribute('data-order')
+            );
+            expect(remountedOrders).toEqual(['1', '2', '3']);
+            expect(
+                Array.from(container.querySelectorAll('.item-order-number')).map((el: any) => el.textContent)
+            ).toEqual(['1', '2', '3']);
+
+            await flush();
+            act(() => {
+                jest.advanceTimersByTime(100);
+            });
+            expect((PageActions as any).addNotification).toHaveBeenCalledWith('Playlist order saved', 'playlistReorder');
+            unmount();
+        });
+
+        test('Notifies when playlist reorder fails', async () => {
+            mockedAxios.put.mockRejectedValue(new Error('fail'));
+            const { container, unmount } = renderIntoContainer(<List id="p1" media={media} loggedinUserPlaylist />);
+            const [, options] = createMock.mock.calls[0];
+            const listEl = container.querySelector('.items-list') as HTMLElement;
+            const items = listEl.querySelectorAll('.item-order-number');
+            listEl.insertBefore(items[2], items[0]);
+            act(() => {
+                options.onEnd();
+            });
+            await flush();
+            act(() => {
+                jest.advanceTimersByTime(100);
+            });
+            expect((PageActions as any).addNotification).toHaveBeenCalledWith('Playlist reorder failed', 'playlistReorderFail');
             unmount();
         });
     });

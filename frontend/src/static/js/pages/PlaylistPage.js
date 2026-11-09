@@ -3,13 +3,7 @@ import { PageActions, PlaylistPageActions } from '../utils/actions/';
 import { memberConfig } from '../utils/contexts/';
 import { usePopup } from '../utils/hooks/';
 import { PlaylistPageStore } from '../utils/stores/';
-import {
-  CircleIconButton,
-  MaterialIcon,
-  NavigationContentApp,
-  NavigationMenuList,
-  PopupMain,
-} from '../components/_shared/';
+import { CircleIconButton, MaterialIcon, PopupMain } from '../components/_shared/';
 import { PlaylistCreationForm } from '../components/playlist-form/PlaylistCreationForm';
 import { PlaylistMediaList } from '../components/playlist-page/PlaylistMediaList';
 
@@ -117,55 +111,8 @@ function PlaylistMeta(props) {
   );
 }
 
-function playlistOptionsList() {
-  const items = {
-    deleteMedia: {
-      itemType: 'open-subpage',
-      text: 'Delete',
-      icon: 'delete',
-      buttonAttr: {
-        className: 'change-page',
-        'data-page-id': 'proceedPlaylistRemovalPopup',
-      },
-    },
-  };
-
-  return items;
-}
-
-function playlistOptionsPopupPages(proceedPlaylistRemoval, cancelPlaylistRemoval) {
-  const optionsList = playlistOptionsList();
-
-  return {
-    main: (
-      <PopupMain>
-        <NavigationMenuList items={[optionsList.deleteMedia]} />
-      </PopupMain>
-    ),
-    proceedPlaylistRemovalPopup: (
-      <PopupMain>
-        <div className="popup-message">
-          <span className="popup-message-title">Playlist removal</span>
-          <span className="popup-message-main">You're willing to remove playlist permanently?</span>
-        </div>
-        <hr />
-        <span className="popup-message-bottom">
-          <button className="button-link cancel-playlist-removal" onClick={cancelPlaylistRemoval}>
-            CANCEL
-          </button>
-          <button className="button-link proceed-playlist-removal" onClick={proceedPlaylistRemoval}>
-            PROCEED
-          </button>
-        </span>
-      </PopupMain>
-    ),
-  };
-}
-
-function PlaylistOptions(props) {
+export function PlaylistDelete() {
   const [popupContentRef, PopupContent, PopupTrigger] = usePopup();
-
-  const [popupCurrentPage, setPopupCurrentPage] = useState('main');
 
   function proceedPlaylistRemoval() {
     PlaylistPageActions.removePlaylist();
@@ -176,23 +123,57 @@ function PlaylistOptions(props) {
     popupContentRef.current.toggle();
   }
 
+  function playlistRemovalCompleted() {
+    // FIXME: Without delay creates conflict [ Uncaught Error: Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch. ].
+    setTimeout(function () {
+      PageActions.addNotification('Playlist removed. Redirecting...', 'playlistDelete');
+      setTimeout(function () {
+        window.location.href = memberConfig.pages.playlists;
+      }, 2000);
+    }, 100);
+  }
+
+  function playlistRemovalFailed() {
+    // FIXME: Without delay creates conflict [ Uncaught Error: Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch. ].
+    setTimeout(function () {
+      PageActions.addNotification('Playlist removal failed', 'playlistDeleteFail');
+    }, 100);
+  }
+
+  useEffect(() => {
+    PlaylistPageStore.on('playlist_removal_completed', playlistRemovalCompleted);
+    PlaylistPageStore.on('playlist_removal_failed', playlistRemovalFailed);
+    return () => {
+      PlaylistPageStore.removeListener('playlist_removal_completed', playlistRemovalCompleted);
+      PlaylistPageStore.removeListener('playlist_removal_failed', playlistRemovalFailed);
+    };
+  }, []);
+
   return (
-    <div className={'playlist-options-wrap' + ('main' === popupCurrentPage ? ' playlist-options-main' : '')}>
+    <div className="delete-playlist">
       <PopupTrigger contentRef={popupContentRef}>
         <CircleIconButton>
-          <MaterialIcon type="more_horiz" />
+          <MaterialIcon type="delete" />
+          <span>DELETE</span>
         </CircleIconButton>
       </PopupTrigger>
 
       <PopupContent contentRef={popupContentRef}>
-        <NavigationContentApp
-          pageChangeCallback={setPopupCurrentPage}
-          initPage="main"
-          focusFirstItemOnPageChange={false}
-          pages={playlistOptionsPopupPages(proceedPlaylistRemoval, cancelPlaylistRemoval)}
-          pageChangeSelector={'.change-page'}
-          pageIdSelectorAttr={'data-page-id'}
-        />
+        <PopupMain>
+          <div className="popup-message">
+            <span className="popup-message-title">Playlist removal</span>
+            <span className="popup-message-main">You're willing to remove playlist permanently?</span>
+          </div>
+          <hr />
+          <span className="popup-message-bottom">
+            <button className="button-link cancel-playlist-removal" onClick={cancelPlaylistRemoval}>
+              CANCEL
+            </button>
+            <button className="button-link proceed-playlist-removal" onClick={proceedPlaylistRemoval}>
+              PROCEED
+            </button>
+          </span>
+        </PopupMain>
       </PopupContent>
     </div>
   );
@@ -225,33 +206,12 @@ function PlaylistEdit(props) {
     }, 100);
   }
 
-  function playlistRemovalCompleted(playlistId) {
-    // FIXME: Without delay creates conflict [ Uncaught Error: Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch. ].
-    setTimeout(function () {
-      PageActions.addNotification('Playlist removed. Redirecting...', 'playlistDelete');
-      setTimeout(function () {
-        window.location.href = memberConfig.pages.playlists;
-      }, 2000);
-    }, 100);
-  }
-
-  function playlistRemovalFailed(playlistId) {
-    // FIXME: Without delay creates conflict [ Uncaught Error: Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch. ].
-    setTimeout(function () {
-      PageActions.addNotification('Playlist removal failed', 'playlistDeleteFail');
-    }, 100);
-  }
-
   useEffect(() => {
     PlaylistPageStore.on('playlist_update_completed', playlistUpdateCompleted);
     PlaylistPageStore.on('playlist_update_failed', playlistUpdateFailed);
-    PlaylistPageStore.on('playlist_removal_completed', playlistRemovalCompleted);
-    PlaylistPageStore.on('playlist_removal_failed', playlistRemovalFailed);
     return () => {
       PlaylistPageStore.removeListener('playlist_update_completed', playlistUpdateCompleted);
       PlaylistPageStore.removeListener('playlist_update_failed', playlistUpdateFailed);
-      PlaylistPageStore.removeListener('playlist_removal_completed', playlistRemovalCompleted);
-      PlaylistPageStore.removeListener('playlist_removal_failed', playlistRemovalFailed);
     };
   }, []);
 
@@ -289,13 +249,7 @@ function PlaylistEdit(props) {
   );
 }
 
-function PlaylistActions(props) {
-  return props.loggedinUserPlaylist ? (
-    <div className="playlist-actions">{props.loggedinUserPlaylist ? <PlaylistOptions /> : null}</div>
-  ) : null;
-}
-
-function PlaylistAuthor(props) {
+export function PlaylistAuthor(props) {
   return (
     <div className="playlist-author">
       <div>
@@ -317,7 +271,12 @@ function PlaylistAuthor(props) {
             {props.name}
           </a>
         </div>
-        {props.loggedinUserPlaylist ? <PlaylistEdit /> : null}
+        {props.loggedinUserPlaylist ? (
+          <div className="playlist-author-actions">
+            <PlaylistEdit />
+            <PlaylistDelete />
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -424,11 +383,6 @@ export class PlaylistPage extends Page {
 							<span>{ PlaylistPageStore.get('visibility-icon') }</span>
 							<div>{ PlaylistPageStore.get('visibility') }</div>
 						</div>*/}
-
-        <PlaylistActions
-          loggedinUserPlaylist={this.state.loggedinUserPlaylist}
-          savedPlaylist={this.state.savedPlaylist}
-        />
 
         {this.state.description ? <div className="playlist-description">{this.state.description}</div> : null}
 

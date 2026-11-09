@@ -48,6 +48,13 @@ class PlaylistListTest(TestCase):
         self.assertEqual([p['title'] for p in response.data['results']], ['owner playlist'])
         self.assertEqual(response.data['results'][0]['user'], self.owner.username)
 
+    def test_listing_is_ordered_newest_first(self):
+        Playlist.objects.create(title='another owner playlist', user=self.owner)
+        response = Client().get(PLAYLISTS_URL)
+        self.assertEqual(response.status_code, 200)
+        dates = [p['add_date'] for p in response.data['results']]
+        self.assertEqual(dates, sorted(dates, reverse=True))
+
     def test_anonymous_users_cannot_create_playlists(self):
         response = Client().post(PLAYLISTS_URL, {'title': 'nope'})
         self.assertEqual(response.status_code, 403)
@@ -272,6 +279,37 @@ class PlaylistEditTest(TestCase):
         response = put_json(logged_in(self.owner), playlist_url(self.playlist), {'type': 'ordering', 'media_friendly_token': self.public_media.friendly_token, 'ordering': '3'})
         self.assertEqual(response.status_code, 201)
         self.assertEqual([m.title for m in self.playlist.media.order_by('playlistmedia__ordering')], ['second media', 'public media'])
+
+    def test_owner_detail_returns_media_in_playlist_ordering(self):
+        PlaylistMedia.objects.create(playlist=self.playlist, media=self.public_media, ordering=2)
+        PlaylistMedia.objects.create(playlist=self.playlist, media=self.second_media, ordering=1)
+        detail = logged_in(self.owner).get(playlist_url(self.playlist))
+        self.assertEqual(detail.status_code, 200)
+        self.assertEqual(
+            [item['friendly_token'] for item in detail.data['playlist_media']],
+            [self.second_media.friendly_token, self.public_media.friendly_token],
+        )
+
+    def test_owner_reorder_is_reflected_on_subsequent_detail_get(self):
+        PlaylistMedia.objects.create(playlist=self.playlist, media=self.public_media, ordering=1)
+        PlaylistMedia.objects.create(playlist=self.playlist, media=self.second_media, ordering=2)
+        client = logged_in(self.owner)
+        response = put_json(
+            client,
+            playlist_url(self.playlist),
+            {'type': 'ordering', 'media_friendly_token': self.public_media.friendly_token, 'ordering': '2'},
+        )
+        self.assertEqual(response.status_code, 201)
+        put_json(
+            client,
+            playlist_url(self.playlist),
+            {'type': 'ordering', 'media_friendly_token': self.second_media.friendly_token, 'ordering': '1'},
+        )
+        detail = client.get(playlist_url(self.playlist))
+        self.assertEqual(
+            [item['friendly_token'] for item in detail.data['playlist_media']],
+            [self.second_media.friendly_token, self.public_media.friendly_token],
+        )
 
     def test_non_numeric_ordering_is_rejected(self):
         PlaylistMedia.objects.create(playlist=self.playlist, media=self.public_media, ordering=1)

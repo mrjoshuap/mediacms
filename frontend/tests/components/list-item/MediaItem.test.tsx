@@ -235,6 +235,24 @@ describe('components/list-item', () => {
         });
     });
 
+    describe('MediaItem playlist page controls', () => {
+        test('Shows order number and playlist options for image items', () => {
+            const { container, unmount } = renderIntoContainer(
+                <MediaItem
+                    {...baseProps}
+                    type="image"
+                    hidePlaylistOrderNumber={false}
+                    hidePlaylistOptions={false}
+                    playlistOrder={2}
+                    playlist_id="pl1"
+                />
+            );
+            expect(container.querySelector('.item-order-number [data-order]')?.textContent).toBe('2');
+            expect(container.querySelector('.item-playlist-options-wrap')).not.toBeNull();
+            unmount();
+        });
+    });
+
     describe('MediaItemVideo', () => {
         test('Renders video preview from preview thumbnail', () => {
             const { container, unmount } = renderIntoContainer(

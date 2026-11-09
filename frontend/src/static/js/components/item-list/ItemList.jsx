@@ -41,7 +41,7 @@ export function ItemList(rawProps) {
       <div ref={itemsListWrapperRef} className="items-list-wrap">
         <div ref={itemsListRef} className={classname.list}>
           {items.map((itm, index) => (
-            <ListItem key={index} {...listItemProps(props, itm, index)} />
+            <ListItem key={itm.friendly_token || itm.id || index} {...listItemProps(props, itm, index)} />
           ))}
         </div>
       </div>

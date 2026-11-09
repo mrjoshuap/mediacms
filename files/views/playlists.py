@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Count, OuterRef, Q, Subquery
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, status
@@ -39,7 +39,17 @@ class PlaylistList(APIView):
     def get(self, request, format=None):
         pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
         paginator = pagination_class()
-        playlists = Playlist.objects.filter().prefetch_related("user")
+        first_thumbnail = (
+            PlaylistMedia.objects.filter(playlist_id=OuterRef("pk"), media__listable=True).exclude(media__thumbnail="").order_by("ordering", "-action_date").values("media__thumbnail")[:1]
+        )
+        playlists = (
+            Playlist.objects.select_related("user")
+            .annotate(
+                annotated_media_count=Count("media", filter=Q(media__listable=True), distinct=True),
+                annotated_thumbnail=Subquery(first_thumbnail),
+            )
+            .order_by("-add_date")
+        )
 
         if "author" in self.request.query_params:
             author = self.request.query_params["author"].strip()
@@ -107,7 +117,8 @@ class PlaylistDetail(APIView):
                     accessible |= Q(media__category__in=request.user.get_rbac_categories_as_member())
             playlist_media = base_qs.filter(accessible)
 
-        playlist_media = playlist_media.prefetch_related("media__user").select_related("media").distinct()
+        # Keep PlaylistMedia.ordering after permission joins + distinct().
+        playlist_media = playlist_media.prefetch_related("media__user").select_related("media").order_by("ordering", "-action_date").distinct()
 
         playlist_media = [c.media for c in playlist_media]
 
