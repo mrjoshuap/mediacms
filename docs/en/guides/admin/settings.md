@@ -144,12 +144,14 @@ See [Custom pages and appearance](pages-appearance.md).
 | `SERVER_EMAIL` | Same as `DEFAULT_FROM_EMAIL` | Sender for errors |
 | `EMAIL_HOST`, `EMAIL_PORT` | `mediacms.io`, `587` | Mail server |
 | `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` | Example values | Mail credentials |
-| `EMAIL_USE_TLS` | `True` | Do not set it on together with `EMAIL_USE_SSL` |
+| `EMAIL_USE_TLS` | `True` | Mutually exclusive with `EMAIL_USE_SSL` (STARTTLS, typical port 587) |
+| `EMAIL_USE_SSL` | `False` | Mutually exclusive with `EMAIL_USE_TLS` (implicit SSL, typical port 465) |
+| `EMAIL_TIMEOUT` | `10` | Seconds for SMTP connect/send on interactive mail (contact form, auth mail) |
 | `ADMIN_EMAIL_LIST` | `["info@mediacms.io"]` | Addresses for admin notices |
 | `USERS_NOTIFICATIONS` | `MEDIA_ADDED`, `MEDIA_REPORTED` on | Notices to users |
 | `ADMINS_NOTIFICATIONS` | `NEW_USER`, `MEDIA_ADDED`, `MEDIA_REPORTED` on | Notices to admins |
 
-Change `DEFAULT_FROM_EMAIL` and the mail credentials before production. The **Health** page warns when `DEFAULT_FROM_EMAIL` is empty and fails when `EMAIL_USE_TLS` and `EMAIL_USE_SSL` are both on.
+Change `DEFAULT_FROM_EMAIL` and the mail credentials before production. The **Health** page warns when `DEFAULT_FROM_EMAIL` is empty and fails when `EMAIL_USE_TLS` and `EMAIL_USE_SSL` are both on. Contact and profile contact forms, and django-allauth mail, send synchronously with `EMAIL_TIMEOUT` so failures surface to the user instead of failing silently.
 
 ## Integrations
 

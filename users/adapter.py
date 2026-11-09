@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.urls import reverse
 
 from cms.utils import get_client_ip_for_logging
+from files.methods import get_interactive_email_connection
 
 from .models import User
 
@@ -34,7 +35,8 @@ class MyAccountAdapter(DefaultAccountAdapter):
 
     def send_mail(self, template_prefix, email, context):
         msg = self.render_mail(template_prefix, email, context)
-        msg.send(fail_silently=True)
+        msg.connection = get_interactive_email_connection()
+        msg.send(fail_silently=False)
 
     def login(self, request, user):
         """Override login - django-allauth will send user_logged_in signal"""

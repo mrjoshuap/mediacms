@@ -1,4 +1,5 @@
 import logging
+import smtplib
 
 from allauth.account.adapter import get_adapter
 from django.conf import settings
@@ -27,7 +28,11 @@ from rest_framework.views import APIView
 
 from cms.permissions import IsUserOrManager
 from cms.utils import get_client_ip_for_logging
-from files.methods import is_mediacms_editor, is_mediacms_manager
+from files.methods import (
+    get_interactive_email_connection,
+    is_mediacms_editor,
+    is_mediacms_manager,
+)
 
 from .forms import ChannelForm, UserForm
 from .models import Channel, User
@@ -195,8 +200,21 @@ Sender email: %s\n
             settings.DEFAULT_FROM_EMAIL,
             [user.email],
             reply_to=[from_email],
+            connection=get_interactive_email_connection(),
         )
-        email.send(fail_silently=True)
+        try:
+            sent = email.send(fail_silently=False)
+        except (OSError, smtplib.SMTPException, ValueError):
+            logger.exception("Failed to send profile contact email to %s", username)
+            return Response(
+                {"detail": "Message could not be sent. Please try again later."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+        if not sent:
+            return Response(
+                {"detail": "Message could not be sent. Please try again later."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
 
     return Response(status=status.HTTP_204_NO_CONTENT)
 

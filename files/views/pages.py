@@ -1,6 +1,8 @@
 import json
+import logging
 import os
 import re
+import smtplib
 from functools import wraps
 
 from django.conf import settings
@@ -13,7 +15,7 @@ from django.utils.html import strip_tags
 from django.views.decorators.csrf import csrf_exempt
 
 from cms.version import VERSION
-from files.methods import user_allowed_to_upload, user_is_pending_approval
+from files.methods import get_interactive_email_connection, user_allowed_to_upload, user_is_pending_approval
 from users.models import User
 
 from .. import helpers
@@ -40,6 +42,8 @@ from ..methods import (
 )
 from ..models import Category, Media, Page, Playlist, Subtitle, Tag, VideoTrimRequest
 from ..tasks import save_user_action, video_trim_task
+
+logger = logging.getLogger(__name__)
 
 
 def refuse_pending(view):
@@ -246,8 +250,6 @@ def contact(request):
     context = {}
     if request.method == "GET":
         form = ContactForm(request.user)
-        context["form"] = form
-
     else:
         form = ContactForm(request.user, request.POST)
         if form.is_valid():
@@ -277,11 +279,20 @@ Sender email: %s\n
                 settings.DEFAULT_FROM_EMAIL,
                 settings.ADMIN_EMAIL_LIST,
                 reply_to=[from_email],
+                connection=get_interactive_email_connection(),
             )
-            email.send(fail_silently=True)
-            success_msg = "Message was sent! Thanks for contacting"
-            context["success_msg"] = success_msg
+            try:
+                sent = email.send(fail_silently=False)
+            except (OSError, smtplib.SMTPException, ValueError):
+                logger.exception("Failed to send contact form email")
+                context["error_msg"] = "Message could not be sent. Please try again later."
+            else:
+                if sent:
+                    context["success_msg"] = "Message was sent! Thanks for contacting"
+                else:
+                    context["error_msg"] = "Message could not be sent. Please try again later."
 
+    context["form"] = form
     return render(request, "cms/contact.html", context)
 
 
