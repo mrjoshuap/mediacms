@@ -2,7 +2,6 @@ import logging
 from datetime import datetime, timedelta
 
 from django.conf import settings
-from django.contrib.postgres.search import SearchQuery
 from django.db.models import Count, F, Prefetch, Q, prefetch_related_objects
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -52,7 +51,6 @@ from ..models import (
     Tag,
 )
 from ..serializers import MediaSearchSerializer, MediaSerializer, SingleMediaSerializer
-from ..stop_words import STOP_WORDS
 from ..tasks import save_user_action
 
 logger = logging.getLogger(__name__)
@@ -231,16 +229,9 @@ class MediaList(APIView):
                 already_sorted = True
 
         if query:
-            query = helpers.clean_query(query)
-            q_parts = [q_part.rstrip("y") for q_part in query.split() if q_part not in STOP_WORDS]
-            if q_parts:
-                query = SearchQuery(q_parts[0] + ":*", search_type="raw")
-                for part in q_parts[1:]:
-                    query &= SearchQuery(part + ":*", search_type="raw")
-            else:
-                query = None
-        if query:
-            media = media.filter(search=query)
+            search_filter = helpers.prepare_media_search_filter(query)
+            if search_filter:
+                media = media.filter(search_filter)
 
         if tag:
             media = media.filter(tags__title=tag)
@@ -1294,17 +1285,9 @@ class MediaSearch(APIView):
         media = Media.objects.filter(basic_query).distinct()
 
         if query:
-            # move this processing to a prepare_query function
-            query = helpers.clean_query(query)
-            q_parts = [q_part.rstrip("y") for q_part in query.split() if q_part not in STOP_WORDS]
-            if q_parts:
-                query = SearchQuery(q_parts[0] + ":*", search_type="raw")
-                for part in q_parts[1:]:
-                    query &= SearchQuery(part + ":*", search_type="raw")
-            else:
-                query = None
-        if query:
-            media = media.filter(search=query)
+            search_filter = helpers.prepare_media_search_filter(query)
+            if search_filter:
+                media = media.filter(search_filter)
 
         if tag:
             media = media.filter(tags__title=tag)

@@ -286,3 +286,46 @@ class MediaSearchEdgeCasesTest(TestCase):
         self.assertTrue(item["api_url"].endswith(f"/api/v1/media/{self.foreign.friendly_token}"))
         self.assertEqual(item["categories_info"], [])
         self.assertNotIn("state", item)
+
+
+class MediaSearchCJKTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.owner = create_account()
+        cls.infix = create_media(cls.owner, title="東京都庁", state="public")
+        cls.prefix = create_media(cls.owner, title="京都観光", state="public")
+        cls.latin = create_media(cls.owner, title="Zebra ancient", state="public")
+        cls.desc = create_media(cls.owner, title="Plain latin title", description="案内は東京都庁です", state="public")
+        cls.mixed = create_media(cls.owner, title="京都 festival", state="public")
+        for media in (cls.infix, cls.prefix, cls.latin, cls.desc, cls.mixed):
+            media.update_search_vector()
+
+    def search(self, **params):
+        client = APIClient()
+        response = client.get(SEARCH_URL, params)
+        self.assertEqual(response.status_code, 200)
+        return response
+
+    def found(self, **params):
+        return [item["title"] for item in self.search(**params).data["results"]]
+
+    def test_cjk_infix_match_in_title(self):
+        self.assertIn("東京都庁", self.found(q="京都"))
+
+    def test_cjk_prefix_match_in_title(self):
+        self.assertIn("京都観光", self.found(q="京都"))
+
+    def test_cjk_infix_match_in_description(self):
+        self.assertIn("Plain latin title", self.found(q="東京都庁"))
+
+    def test_latin_prefix_matching_is_unchanged(self):
+        self.assertIn("Zebra ancient", self.found(q="ancie"))
+
+    def test_multi_word_latin_and_still_requires_all_words(self):
+        self.assertEqual(self.found(q="zebra ancient"), ["Zebra ancient"])
+        self.assertEqual(self.found(q="zebra festival"), [])
+
+    def test_mixed_cjk_and_latin_query_ands_tokens(self):
+        self.assertEqual(self.found(q="京都 festival"), ["京都 festival"])
+        self.assertNotIn("東京都庁", self.found(q="京都 festival"))
+        self.assertNotIn("Zebra ancient", self.found(q="京都 festival"))
