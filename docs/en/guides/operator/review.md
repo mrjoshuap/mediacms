@@ -68,6 +68,16 @@ Add **ENCODING STATUS**: **Success** to see only media that is ready.
 
 To remove media from public listings, clear **Is reviewed**, or change the state. Then select **Publish Media**.
 
+## Set or clear a media password
+
+1. Open the media page.
+2. Select **EDIT**.
+3. Open the **Publish** tab.
+4. Under **Password protection**, enter a password, or select **Remove password protection** when one is already set.
+5. Select **Publish Media**.
+
+Use a password with **Unlisted** when you share a link and want an extra check. Leave the field blank for no password.
+
 !!! note
     Only editors and managers can change **Is reviewed**, **Featured**, and **Reported times**. For other users these fields are read-only.
 

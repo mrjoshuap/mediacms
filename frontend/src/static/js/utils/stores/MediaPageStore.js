@@ -213,6 +213,15 @@ class MediaPageStore extends EventEmitter {
   dataErrorResponse(response) {
     if (void 0 !== response.type) {
       switch (response.type) {
+        case 'password':
+          MediaPageStoreData[this.id].passwordRequired = true;
+          MediaPageStoreData[this.id].passwordUnlockError = null;
+          MediaPageStoreData[this.id].passwordUnlocking = false;
+          if (response.data && response.data.title) {
+            MediaPageStoreData[this.id].passwordMediaTitle = response.data.title;
+          }
+          this.emit('loaded_media_password_required');
+          break;
         case 'network':
         case 'private':
         case 'unavailable':
@@ -223,6 +232,42 @@ class MediaPageStore extends EventEmitter {
           break;
       }
     }
+  }
+
+  unlockPassword(password) {
+    if (!MediaPageStoreData[this.id].mediaId) {
+      return;
+    }
+    MediaPageStoreData[this.id].passwordUnlocking = true;
+    MediaPageStoreData[this.id].passwordUnlockError = null;
+    this.emit('media_password_unlock_pending');
+
+    const unlockUrl = this.mediacms_config.api.media + '/' + MediaPageStoreData[this.id].mediaId + '/unlock';
+    postRequest(
+      unlockUrl,
+      { password: password },
+      {
+        headers: {
+          'X-CSRFToken': csrfToken(),
+        },
+      },
+      false,
+      () => {
+        MediaPageStoreData[this.id].passwordRequired = false;
+        MediaPageStoreData[this.id].passwordUnlocking = false;
+        MediaPageStoreData[this.id].passwordUnlockError = null;
+        this.emit('media_password_unlocked');
+        this.loadData();
+      },
+      (error) => {
+        MediaPageStoreData[this.id].passwordUnlocking = false;
+        MediaPageStoreData[this.id].passwordUnlockError =
+          error && error.response && error.response.status === 403
+            ? 'Incorrect password'
+            : 'Could not unlock media';
+        this.emit('media_password_unlock_failed');
+      }
+    );
   }
 
   commentsResponse(response) {
@@ -438,6 +483,18 @@ class MediaPageStore extends EventEmitter {
       case 'media-load-error-message':
         r =
           void 0 !== MediaPageStoreData[this.id].loadErrorMessage ? MediaPageStoreData[this.id].loadErrorMessage : null;
+        break;
+      case 'password-required':
+        r = !!MediaPageStoreData[this.id].passwordRequired;
+        break;
+      case 'password-unlocking':
+        r = !!MediaPageStoreData[this.id].passwordUnlocking;
+        break;
+      case 'password-unlock-error':
+        r = MediaPageStoreData[this.id].passwordUnlockError || null;
+        break;
+      case 'password-media-title':
+        r = MediaPageStoreData[this.id].passwordMediaTitle || null;
         break;
       case 'media-comments':
         r = MediaPageStoreData[this.id].comments || [];
@@ -703,6 +760,10 @@ class MediaPageStore extends EventEmitter {
         MediaPageStoreData[this.id].likedMedia = false;
         MediaPageStoreData[this.id].dislikedMedia = false;
         MediaPageStoreData[this.id].reported_times = 0;
+        MediaPageStoreData[this.id].passwordRequired = false;
+        MediaPageStoreData[this.id].passwordUnlocking = false;
+        MediaPageStoreData[this.id].passwordUnlockError = null;
+        MediaPageStoreData[this.id].passwordMediaTitle = null;
 
         // Keep existing playlist context; next/prev URLs recompute from the new mediaId.
         this.pagePlaylistId = extractPlaylistId();
@@ -718,6 +779,9 @@ class MediaPageStore extends EventEmitter {
           this.loadData();
         }
 
+        break;
+      case 'UNLOCK_MEDIA_PASSWORD':
+        this.unlockPassword(action.password);
         break;
       case 'LIKE_MEDIA':
         if (!MediaPageStoreData[this.id].likedMedia && !MediaPageStoreData[this.id].dislikedMedia) {

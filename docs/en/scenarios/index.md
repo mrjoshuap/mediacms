@@ -28,6 +28,7 @@ To write a new scenario, use the [scenario template](../contributing/scenario-te
 | [Viewer comment](viewer-comment.md) | Add one comment to a public video |
 | [Viewer playlist](viewer-playlist.md) | Create a playlist from a media page and find it in My playlists |
 | [Viewer share](viewer-share.md) | Copy a share link that starts at a chosen time in a video |
+| [Viewer password media](viewer-password-media.md) | Open password-protected unlisted media with the correct password |
 
 ## Editor
 

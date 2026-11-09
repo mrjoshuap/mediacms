@@ -33,6 +33,21 @@ Each media item has one state.
 
 Listable media is public, encoded, and reviewed. See [Review and publish](review.md).
 
+### Password protection
+
+An owner can set a password on the **Publish** tab. The portal stores a hash, not the clear password.
+
+| Who | Opens without the password |
+|-----|----------------------------|
+| Owner | Yes |
+| Editor | Yes |
+| User with MediaPermission or RBAC member access | Yes |
+| Anyone else with the link | No — must enter the password once per browser session |
+
+Password protection works with **Unlisted** or **Public**. It does not replace **Private**. Private media still needs owner, permission, or RBAC access before the password step.
+
+Unlock uses `POST /api/v1/media/{token}/unlock` and stores the media token in the session. Failed and successful unlocks are logged without the password value.
+
 ## Layer 2: MediaPermission (direct share)
 
 A **MediaPermission** gives one user access to one media item. The owner of the media or a user with the **owner** permission creates it.

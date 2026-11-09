@@ -35,6 +35,10 @@ See [Site health and database](../guides/admin/site.md), [Admin portal map](../g
 * **encoding:** `cleanup_encoding_chunks` beat task and `ENCODING_CHUNKS_RETENTION_HOURS` for orphan chunk cleanup
 * **playlists:** annotated media counts/thumbnails aligned with detail visibility; delete confirmation UI
 * **tags:** alphabetical tag/category lists and M2M search-vector/count sync (#1207)
+* **hls:** incremental HLS packaging with Redis lock and optional full rebuild
+* **upload:** FineUploader and API accept optional title, description, and related metadata on create
+* **player:** soft-nav next/prev keeps fullscreen and continues autoplay
+* **media:** session unlock for password-protected media (`POST /api/v1/media/{token}/unlock`) with hashed `Media.password`
 
 ## Bug Fixes
 

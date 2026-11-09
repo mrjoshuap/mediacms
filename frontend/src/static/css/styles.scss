@@ -586,6 +586,50 @@ button {
       text-align: center;
     }
   }
+
+  .media-password-help {
+    margin: 0.75rem 0 1rem;
+    font-size: 0.9rem;
+    opacity: 0.85;
+  }
+
+  .media-password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 20rem;
+    margin: 1rem auto 0;
+
+    input[type='password'] {
+      width: 100%;
+      padding: 0.65rem 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 0.65rem 0.75rem;
+      border: 0;
+      border-radius: 4px;
+      background: #fff;
+      color: #111;
+      cursor: pointer;
+      font-weight: 600;
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+    }
+  }
+
+  .media-password-error {
+    color: #ffb4b4;
+    font-size: 0.85rem;
+  }
 }
 
 .alert {

@@ -11,6 +11,7 @@ import subprocess
 from datetime import datetime
 
 from django.conf import settings
+from django.contrib.auth.hashers import check_password, identify_hasher, make_password
 from django.core.cache import cache
 from django.core.files import File
 from django.core.mail import EmailMessage, get_connection
@@ -27,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 CELERY_EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend"
 SMTP_EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+PASSWORD_UNLOCKED_SESSION_KEY = "password_unlocked_media"
 
 
 def get_interactive_email_connection():
@@ -295,6 +297,76 @@ def media_has_original_file(media):
     """True when the original media_file exists on disk."""
     path = _original_media_file_path(media)
     return bool(path and os.path.isfile(path))
+
+
+def media_requires_password(media):
+    """Whether media has password protection enabled."""
+    return bool(getattr(media, "password", None))
+
+
+def user_bypasses_media_password(user, media):
+    """Owners, editors, and users with member access skip the password gate."""
+    if not user or not getattr(user, "is_authenticated", False):
+        return False
+    if user == media.user or is_mediacms_editor(user):
+        return True
+    return user.has_member_access_to_media(media)
+
+
+def media_password_unlocked(request, media):
+    """Whether the requester may view password-protected media."""
+    if not media_requires_password(media):
+        return True
+    if user_bypasses_media_password(request.user, media):
+        return True
+    unlocked = request.session.get(PASSWORD_UNLOCKED_SESSION_KEY, [])
+    return media.friendly_token in unlocked
+
+
+def verify_media_password(media, raw_password):
+    """Check a submitted password against the stored Media.password value."""
+    if not media.password:
+        return True
+    if not raw_password:
+        return False
+    try:
+        identify_hasher(media.password)
+    except ValueError:
+        # Legacy plaintext values written before hashing was added.
+        return media.password == raw_password
+    return check_password(raw_password, media.password)
+
+
+def set_media_password(media, raw_password):
+    """Store a hashed media password, or clear protection when empty."""
+    if raw_password:
+        media.password = make_password(raw_password)
+    else:
+        media.password = ""
+    # Drop auth cache so password enable/disable takes effect immediately.
+    if getattr(media, "uid", None):
+        cache.delete(f"xaccel:state:{media.uid.hex}")
+
+
+def unlock_media_password(request, media, raw_password):
+    """Validate password and mark media unlocked in the session."""
+    if not verify_media_password(media, raw_password):
+        logger.info(
+            "Media password unlock failed - friendly_token=%s",
+            getattr(media, "friendly_token", None),
+        )
+        return False
+    if not request.session.session_key:
+        request.session.save()
+    unlocked = set(request.session.get(PASSWORD_UNLOCKED_SESSION_KEY, []))
+    unlocked.add(media.friendly_token)
+    request.session[PASSWORD_UNLOCKED_SESSION_KEY] = list(unlocked)
+    request.session.modified = True
+    logger.info(
+        "Media password unlocked - friendly_token=%s",
+        getattr(media, "friendly_token", None),
+    )
+    return True
 
 
 def can_edit_category(user, category):

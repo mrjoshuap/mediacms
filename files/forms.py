@@ -6,11 +6,17 @@ from crispy_forms.layout import HTML, Field, Layout, Submit
 from django import forms
 from django.conf import settings
 
-from .methods import get_next_state, is_mediacms_editor
+from .methods import (
+    get_next_state,
+    is_mediacms_editor,
+    media_requires_password,
+    set_media_password,
+)
 from .models import MEDIA_STATES, Category, Media, MediaPermission, Subtitle
 from .widgets import CategoryModalWidget
 
 _PUBLISH_STATE_HTML = (Path(__file__).parent.parent / 'templates/cms/partials/media_publish_state.html').read_text()
+_PUBLISH_PASSWORD_HTML = (Path(__file__).parent.parent / 'templates/cms/partials/media_publish_password.html').read_text()
 
 
 class CustomField(Field):
@@ -121,6 +127,18 @@ class MediaMetadataForm(forms.ModelForm):
 class MediaPublishForm(forms.ModelForm):
     confirm_state = forms.BooleanField(required=False, initial=False, label="Acknowledge sharing status", help_text="")
     shared = forms.BooleanField(required=False, initial=False, label="Shared")
+    password = forms.CharField(
+        required=False,
+        label="Password protection",
+        help_text="",
+        widget=forms.PasswordInput(render_value=False, attrs={"autocomplete": "new-password"}),
+    )
+    clear_password = forms.BooleanField(
+        required=False,
+        initial=False,
+        label="Remove password protection",
+        help_text="",
+    )
 
     class Meta:
         model = Media
@@ -138,10 +156,14 @@ class MediaPublishForm(forms.ModelForm):
 
         self.was_shared = self.instance.is_shared if self.instance.pk else False
         self.had_explicit_permission = self.instance.permissions.exists() if self.instance.pk else False
+        self.has_password = media_requires_password(self.instance) if self.instance.pk else False
         is_embed_mode = self._check_embed_mode()
 
         self.fields["shared"].initial = self.was_shared
         self.initial["shared"] = self.was_shared
+        self.fields["password"].initial = ""
+        if not self.has_password:
+            self.fields.pop("clear_password")
 
         if not is_mediacms_editor(user):
             for field in ["featured", "reported_times", "is_reviewed"]:
@@ -188,6 +210,7 @@ class MediaPublishForm(forms.ModelForm):
         self.helper.layout = Layout(
             CustomField('category'),
             HTML(_PUBLISH_STATE_HTML),
+            HTML(_PUBLISH_PASSWORD_HTML),
             CustomField('featured'),
             CustomField('reported_times'),
             CustomField('is_reviewed'),
@@ -243,6 +266,11 @@ class MediaPublishForm(forms.ModelForm):
 
         if state != self.initial.get("state"):
             self.instance.state = get_next_state(self.user, self.initial.get("state"), self.instance.state)
+
+        if data.get("clear_password"):
+            set_media_password(self.instance, "")
+        elif data.get("password"):
+            set_media_password(self.instance, data.get("password"))
 
         media = super(MediaPublishForm, self).save(*args, **kwargs)
 

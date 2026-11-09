@@ -12,7 +12,7 @@ from django.core.mail import EmailMessage
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.utils.html import strip_tags
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
 from cms.version import VERSION
 from files.methods import get_interactive_email_connection, user_allowed_to_upload, user_is_pending_approval
@@ -39,6 +39,8 @@ from ..methods import (
     handle_video_chapters,
     is_media_allowed_type,
     is_mediacms_editor,
+    media_password_unlocked,
+    media_requires_password,
 )
 from ..models import Category, Media, Page, Playlist, Subtitle, Tag, VideoTrimRequest
 from ..tasks import save_user_action, video_trim_task
@@ -656,6 +658,7 @@ def edit_video(request):
     )
 
 
+@ensure_csrf_cookie
 def embed_media(request):
     """Embed media view"""
 
@@ -828,6 +831,7 @@ def upload_media(request):
     return render(request, "cms/add-media.html", context)
 
 
+@ensure_csrf_cookie
 def view_media(request):
     """View media view"""
 
@@ -838,12 +842,16 @@ def view_media(request):
         context["media"] = None
         return render(request, "cms/media.html", context)
 
-    user_or_session = get_user_or_session(request)
-    save_user_action.delay(user_or_session, friendly_token=friendly_token, action="watch")
     context = {}
     context["media"] = friendly_token
     can_view = media.state != "private" or (request.user.is_authenticated and (request.user.has_member_access_to_media(media) or is_mediacms_editor(request.user)))
-    context["media_object"] = media if can_view else None
+    password_ok = media_password_unlocked(request, media)
+    context["password_required"] = can_view and media_requires_password(media) and not password_ok
+    context["media_object"] = media if (can_view and password_ok) else None
+
+    if can_view and password_ok:
+        user_or_session = get_user_or_session(request)
+        save_user_action.delay(user_or_session, friendly_token=friendly_token, action="watch")
 
     context["CAN_DELETE_MEDIA"] = False
     context["CAN_EDIT_MEDIA"] = False

@@ -4,6 +4,7 @@ import { PageStore, MediaPageStore, VideoViewerStore } from '../utils/stores/';
 import { MediaPageActions } from '../utils/actions/';
 import ViewerInfoVideo from '../components/media-page/ViewerInfoVideo';
 import ViewerError from '../components/media-page/ViewerError';
+import ViewerPassword from '../components/media-page/ViewerPassword';
 import ViewerSidebar from '../components/media-page/ViewerSidebar';
 import { Page } from './_Page';
 import '../components/media-page/MediaPage.scss';
@@ -18,6 +19,7 @@ export class _VideoMediaPage extends Page {
             wideLayout: wideLayoutBreakpoint <= window.innerWidth,
             mediaLoaded: false,
             mediaLoadFailed: false,
+            passwordRequired: false,
             isVideoMedia: false,
             theaterMode: false, // FIXME: Used only in case of video media, but is included in every media page code.
             pagePlaylistLoaded: false,
@@ -27,10 +29,12 @@ export class _VideoMediaPage extends Page {
         this.onWindowResize = this.onWindowResize.bind(this);
         this.onMediaLoad = this.onMediaLoad.bind(this);
         this.onMediaLoadError = this.onMediaLoadError.bind(this);
+        this.onPasswordRequired = this.onPasswordRequired.bind(this);
         this.onPagePlaylistLoad = this.onPagePlaylistLoad.bind(this);
 
         MediaPageStore.on('loaded_media_data', this.onMediaLoad);
         MediaPageStore.on('loaded_media_error', this.onMediaLoadError);
+        MediaPageStore.on('loaded_media_password_required', this.onPasswordRequired);
         MediaPageStore.on('loaded_page_playlist_data', this.onPagePlaylistLoad);
     }
 
@@ -64,12 +68,16 @@ export class _VideoMediaPage extends Page {
 
             this.setState({
                 mediaLoaded: true,
+                passwordRequired: false,
+                mediaLoadFailed: false,
                 isVideoMedia: isVideoMedia,
                 theaterMode: VideoViewerStore.get('in-theater-mode'),
             });
         } else {
             this.setState({
                 mediaLoaded: true,
+                passwordRequired: false,
+                mediaLoadFailed: false,
                 isVideoMedia: isVideoMedia,
             });
         }
@@ -79,13 +87,25 @@ export class _VideoMediaPage extends Page {
         this.setState({ theaterMode: VideoViewerStore.get('in-theater-mode') });
     }
 
-    onMediaLoadError(_a) {
-        this.setState({ mediaLoadFailed: true });
+    onMediaLoadError(a) {
+        this.setState({ mediaLoadFailed: true, passwordRequired: false });
+    }
+
+    onPasswordRequired() {
+        this.setState({ passwordRequired: true, mediaLoadFailed: false, mediaLoaded: false });
     }
 
     pageContent() {
         const viewerClassname = 'cf viewer-section' + (this.state.theaterMode ? ' theater-mode' : ' viewer-wide');
         const viewerNestedClassname = 'viewer-section-nested' + (this.state.theaterMode ? ' viewer-section' : '');
+
+        if (this.state.passwordRequired) {
+            return (
+                <div className={viewerClassname}>
+                    <ViewerPassword />
+                </div>
+            );
+        }
 
         return this.state.mediaLoadFailed ? (
             <div className={viewerClassname}>

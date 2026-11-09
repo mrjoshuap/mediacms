@@ -142,7 +142,11 @@ class Media(models.Model):
         default="video",
     )
 
-    password = models.CharField(max_length=100, blank=True, help_text="password for private media")
+    password = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Hashed password for password-protected media (Django password hashers)",
+    )
 
     preview_file_path = models.CharField(
         max_length=500,

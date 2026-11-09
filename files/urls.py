@@ -63,6 +63,11 @@ urlpatterns = [
         views.MediaDetail.as_view(),
         name="api_get_media",
     ),
+    re_path(
+        rf"^api/v1/media/{friendly_token}/unlock$",
+        views.MediaPasswordUnlock.as_view(),
+        name="api_media_password_unlock",
+    ),
     re_path(r"^api/v1/search$", views.MediaSearch.as_view()),
     re_path(
         rf"^api/v1/media/{friendly_token}/share$",

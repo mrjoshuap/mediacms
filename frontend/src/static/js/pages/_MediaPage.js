@@ -2,6 +2,7 @@ import React from 'react';
 import { PageStore, MediaPageStore } from '../utils/stores/';
 import { MediaPageActions } from '../utils/actions/';
 import ViewerError from '../components/media-page/ViewerError';
+import ViewerPassword from '../components/media-page/ViewerPassword';
 import ViewerInfo from '../components/media-page/ViewerInfo';
 import ViewerSidebar from '../components/media-page/ViewerSidebar';
 import { Page } from './_Page';
@@ -18,6 +19,7 @@ export class _MediaPage extends Page {
         this.state = {
             mediaLoaded: false,
             mediaLoadFailed: false,
+            passwordRequired: false,
             wideLayout: isWideLayout,
             infoAndSidebarViewType: !isWideLayout ? 0 : 1,
             viewerClassname: 'cf viewer-section viewer-wide',
@@ -28,10 +30,12 @@ export class _MediaPage extends Page {
         this.onWindowResize = this.onWindowResize.bind(this);
         this.onMediaLoad = this.onMediaLoad.bind(this);
         this.onMediaLoadError = this.onMediaLoadError.bind(this);
+        this.onPasswordRequired = this.onPasswordRequired.bind(this);
         this.onPagePlaylistLoad = this.onPagePlaylistLoad.bind(this);
 
         MediaPageStore.on('loaded_media_data', this.onMediaLoad);
         MediaPageStore.on('loaded_media_error', this.onMediaLoadError);
+        MediaPageStore.on('loaded_media_password_required', this.onPasswordRequired);
         MediaPageStore.on('loaded_page_playlist_data', this.onPagePlaylistLoad);
     }
 
@@ -57,11 +61,15 @@ export class _MediaPage extends Page {
     }
 
     onMediaLoad() {
-        this.setState({ mediaLoaded: true });
+        this.setState({ mediaLoaded: true, passwordRequired: false, mediaLoadFailed: false });
     }
 
     onMediaLoadError() {
-        this.setState({ mediaLoadFailed: true });
+        this.setState({ mediaLoadFailed: true, passwordRequired: false });
+    }
+
+    onPasswordRequired() {
+        this.setState({ passwordRequired: true, mediaLoadFailed: false, mediaLoaded: false });
     }
 
     viewerContainerContent() {
@@ -73,6 +81,14 @@ export class _MediaPage extends Page {
     }
 
     pageContent() {
+        if (this.state.passwordRequired) {
+            return (
+                <div className={this.state.viewerClassname}>
+                    <ViewerPassword />
+                </div>
+            );
+        }
+
         return this.state.mediaLoadFailed ? (
             <div className={this.state.viewerClassname}>
                 <ViewerError />
