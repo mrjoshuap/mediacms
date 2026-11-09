@@ -1141,7 +1141,8 @@ def finalise_encodings(media, encodings):
     """Set the media's encoding status and trigger HLS packaging exactly once"""
     h264 = next((encoding for encoding in encodings if encoding.profile.codec == "h264"), None)
     if h264:
-        media.post_encode_actions(encoding=h264, action="add")
+        # Full rebuild: all flavors are already attached; package them together once.
+        media.post_encode_actions(encoding=h264, action="add", hls_full=True)
     else:
         media.set_encoding_status()
         media.save(update_fields=["encoding_status", "listable"])
