@@ -258,23 +258,37 @@ def encoding_file_save(sender, instance, created, **kwargs):
     elif instance.chunk and instance.status == "fail":
         encoding = Encoding(media=instance.media, profile=instance.profile, status="fail", progress=100)
 
-        chunks = Encoding.objects.filter(media=instance.media, chunks_info=instance.chunks_info, chunk=True).order_by("add_date")
+        chunks = Encoding.objects.filter(
+            media=instance.media,
+            profile=instance.profile,
+            chunks_info=instance.chunks_info,
+            chunk=True,
+        ).order_by("add_date")
 
-        chunks_paths = [f.media_file.path for f in chunks]
+        # Failed chunks often have no media_file; never call .path on an empty FileField
+        chunks_paths = [f.media_file.path for f in chunks if f.media_file]
 
         all_logs = "\n".join([st.logs for st in chunks])
         encoding.logs = f"{chunks_paths}\n{all_logs}"
         workers = list(set([st.worker for st in chunks]))
         encoding.worker = json.dumps({"workers": workers})
-        start_date = min([st.add_date for st in chunks])
-        end_date = max([st.update_date for st in chunks])
-        encoding.total_run_time = (end_date - start_date).seconds
+        if chunks:
+            start_date = min([st.add_date for st in chunks])
+            end_date = max([st.update_date for st in chunks])
+            encoding.total_run_time = (end_date - start_date).seconds
         encoding.save()
 
         who = Encoding.objects.filter(media=encoding.media, profile=encoding.profile).exclude(id=encoding.id)
-
         who.delete()
-        # TODO: merge with above if, do not repeat code
+
+        # Source .mkv segments are shared across profiles; delete only when nothing
+        # still references this chunks_info (same gate as the success path).
+        if instance.chunks_info and not Encoding.objects.filter(chunks_info=instance.chunks_info):
+            try:
+                for chunk in json.loads(instance.chunks_info).keys():
+                    helpers.rm_file(chunk)
+            except (TypeError, ValueError, json.JSONDecodeError):
+                pass
     else:
         if instance.status in ["fail", "success"]:
             instance.media.post_encode_actions(encoding=instance, action="add")

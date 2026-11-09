@@ -228,6 +228,9 @@ FRIENDLY_TOKEN_LEN = 9
 CHUNKIZE_VIDEO_DURATION = 60 * 5
 # aparently this has to be smaller than VIDEO_CHUNKIZE_DURATION
 VIDEO_CHUNKS_DURATION = 60 * 4
+# orphan encoding .mkv segments (and stuck chunk Encoding rows) older than this
+# are removed by the cleanup_encoding_chunks beat task
+ENCODING_CHUNKS_RETENTION_HOURS = 24
 
 # always get these two, even if upscaling
 MINIMUM_RESOLUTIONS_TO_ENCODE = [144, 240]
@@ -469,9 +472,12 @@ CELERY_BEAT_SCHEDULE = {
         "task": "update_listings_thumbnails",
         "schedule": crontab(minute=2, hour="*/30"),
     },
+    "cleanup_encoding_chunks": {
+        "task": "cleanup_encoding_chunks",
+        "schedule": crontab(hour=3, minute=15),
+    },
 }
-# TODO: beat, delete chunks from media root
-# chunks_dir after xx days...(also uploads_dir)
+# TODO: beat, delete upload chunks_dir after xx days...(also uploads_dir)
 
 
 LOCAL_INSTALL = False

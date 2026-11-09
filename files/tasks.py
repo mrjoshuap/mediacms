@@ -16,6 +16,7 @@ from django.core.cache import cache
 from django.core.files import File
 from django.db import DatabaseError
 from django.db.models import Q
+from django.utils import timezone
 
 from actions.models import USER_MEDIA_ACTIONS, MediaAction
 from users.models import User
@@ -1192,10 +1193,131 @@ def video_trim_task(self, trim_request_id):
     return True
 
 
-# TODO LIST
-# 1 chunks are deleted from original server when file is fully encoded.
-# however need to enter this logic in cases of fail as well
-# 2 script to delete chunks in fail status
-# (and check for their encdings, and delete them as well, along with
-# all chunks)
-# 3 beat task, remove chunks
+def _rm_aged_encoding_chunk_file(path, cutoff):
+    """Delete a source encoding segment if it exists and its mtime is before cutoff."""
+    if not path or not os.path.isfile(path):
+        return False
+    try:
+        mtime = datetime.fromtimestamp(os.path.getmtime(path), tz=timezone.get_current_timezone())
+        if mtime > cutoff:
+            return False
+        return rm_file(path)
+    except OSError:
+        return False
+
+
+def _delete_unreferenced_chunks_info_files(chunks_info, cutoff):
+    """Remove source .mkv paths listed in chunks_info when nothing references it."""
+    if not chunks_info:
+        return
+    if Encoding.objects.filter(chunks_info=chunks_info).exists():
+        return
+    try:
+        for chunk_path in json.loads(chunks_info).keys():
+            _rm_aged_encoding_chunk_file(chunk_path, cutoff)
+    except (TypeError, ValueError, json.JSONDecodeError):
+        pass
+
+
+def _referenced_encoding_chunk_paths():
+    """Paths still pointed to by Encoding.chunk_file_path or chunks_info JSON keys."""
+    referenced = set()
+    for enc in Encoding.objects.exclude(chunk_file_path="").only("chunk_file_path"):
+        referenced.add(enc.chunk_file_path)
+    for chunks_info in Encoding.objects.exclude(chunks_info="").values_list("chunks_info", flat=True).distinct():
+        try:
+            referenced.update(json.loads(chunks_info).keys())
+        except (TypeError, ValueError, json.JSONDecodeError):
+            continue
+    return referenced
+
+
+@task(name="cleanup_encoding_chunks", queue="short_tasks")
+def cleanup_encoding_chunks():
+    """Remove stuck chunk Encoding rows and orphan source .mkv segment files.
+
+    Source segments are shared across EncodeProfiles. Files are only deleted when
+    no Encoding still references them via chunks_info / chunk_file_path and they
+    are older than ENCODING_CHUNKS_RETENTION_HOURS.
+    """
+    retention_hours = getattr(settings, "ENCODING_CHUNKS_RETENTION_HOURS", 24)
+    cutoff = timezone.now() - timedelta(hours=retention_hours)
+    deleted_chunks_infos = set()
+
+    # 1. Leftover chunk rows when a terminal non-chunk Encoding already exists
+    terminals = Encoding.objects.filter(chunk=False, status__in=["fail", "success"]).only("id", "media_id", "profile_id")
+    for terminal in terminals.iterator():
+        leftovers = Encoding.objects.filter(media_id=terminal.media_id, profile_id=terminal.profile_id, chunk=True)
+        for chunks_info in leftovers.exclude(chunks_info="").values_list("chunks_info", flat=True).distinct():
+            deleted_chunks_infos.add(chunks_info)
+        leftovers.delete()
+
+    for chunks_info in deleted_chunks_infos:
+        _delete_unreferenced_chunks_info_files(chunks_info, cutoff)
+
+    # 2. Aged failed chunk groups that never collapsed to a non-chunk Encoding
+    #    (e.g. historical fail-handler crashes on empty media_file.path)
+    group_values = Encoding.objects.filter(chunk=True).values("media_id", "profile_id", "chunks_info").distinct()
+    for group in group_values:
+        qs = Encoding.objects.filter(
+            media_id=group["media_id"],
+            profile_id=group["profile_id"],
+            chunks_info=group["chunks_info"],
+            chunk=True,
+        )
+        if not qs.exists():
+            continue
+        if qs.filter(status__in=["pending", "running"]).exists():
+            continue
+        if not qs.filter(status="fail").exists():
+            continue
+        latest = qs.order_by("-update_date").first()
+        if latest.update_date > cutoff:
+            continue
+        if Encoding.objects.filter(media_id=group["media_id"], profile_id=group["profile_id"], chunk=False, status__in=["fail", "success"]).exists():
+            # covered by step 1 on a later pass; delete leftovers now
+            chunks_info = group["chunks_info"]
+            qs.delete()
+            _delete_unreferenced_chunks_info_files(chunks_info, cutoff)
+            continue
+
+        chunks = list(qs.order_by("add_date"))
+        chunks_paths = [c.media_file.path for c in chunks if c.media_file]
+        all_logs = "\n".join([c.logs for c in chunks])
+        workers = list(set([c.worker for c in chunks]))
+        start_date = min([c.add_date for c in chunks])
+        end_date = max([c.update_date for c in chunks])
+        chunks_info = group["chunks_info"]
+
+        encoding = Encoding(
+            media_id=group["media_id"],
+            profile_id=group["profile_id"],
+            status="fail",
+            progress=100,
+            logs=f"{chunks_paths}\n{all_logs}",
+            worker=json.dumps({"workers": workers}),
+            total_run_time=(end_date - start_date).seconds,
+        )
+        encoding.save()
+        Encoding.objects.filter(
+            media_id=group["media_id"],
+            profile_id=group["profile_id"],
+            chunk=True,
+        ).exclude(id=encoding.id).delete()
+        _delete_unreferenced_chunks_info_files(chunks_info, cutoff)
+
+    # 3. Filesystem sweep: aged segment-named .mkv files with no DB reference
+    referenced = _referenced_encoding_chunk_paths()
+    original_root = os.path.join(settings.MEDIA_ROOT, settings.MEDIA_UPLOAD_DIR)
+    segment_name = re.compile(r"^\d{2}_.+\.mkv$")
+    if os.path.isdir(original_root):
+        for root, _dirs, files in os.walk(original_root):
+            for name in files:
+                if not segment_name.match(name):
+                    continue
+                path = os.path.join(root, name)
+                if path in referenced:
+                    continue
+                _rm_aged_encoding_chunk_file(path, cutoff)
+
+    return True
