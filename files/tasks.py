@@ -5,6 +5,7 @@ import shutil
 import tempfile
 from datetime import datetime, timedelta
 
+import m3u8
 from celery import Task
 from celery import shared_task as task
 from celery.signals import task_revoked
@@ -649,9 +650,131 @@ def produce_sprite_from_video(friendly_token):
     return True
 
 
-@task(name="create_hls", queue="long_tasks")
-def create_hls(friendly_token):
-    """Creates HLS file for media, uses Bento4 mp4hls command"""
+HLS_LOCK_TIMEOUT = 120
+HLS_LOCK_RETRY_COUNTDOWN = 5
+HLS_LOCK_MAX_RETRIES = 60
+
+
+def _hls_lock_key(uid_hex):
+    return f"create_hls_lock_{uid_hex}"
+
+
+def _acquire_hls_lock(uid_hex):
+    return cache.add(_hls_lock_key(uid_hex), "1", timeout=HLS_LOCK_TIMEOUT)
+
+
+def _release_hls_lock(uid_hex):
+    cache.delete(_hls_lock_key(uid_hex))
+
+
+def _hls_variant_dir_name(resolution):
+    if resolution is None:
+        return "media-1"
+    return f"media-{resolution}"
+
+
+def _run_mp4hls(media_files, output_dir):
+    """Run Bento4 mp4hls; return True when master.m3u8 was produced."""
+    os.makedirs(os.path.dirname(output_dir), exist_ok=True)
+    cmd = [settings.MP4HLS_COMMAND, "--segment-duration=4", f"--output-dir={output_dir}", *media_files]
+    result = run_command(cmd)
+    master = os.path.join(output_dir, "master.m3u8")
+    if not os.path.exists(master):
+        logger.error("bento failed to produce master.m3u8: %s", result.get("error", ""))
+        return False
+    return True
+
+
+def _rewrite_master_variant_prefix(master_path, old_prefix, new_prefix):
+    with open(master_path, "r", encoding="utf-8") as handle:
+        content = handle.read()
+    content = content.replace(f"{old_prefix}/", f"{new_prefix}/")
+    with open(master_path, "w", encoding="utf-8") as handle:
+        handle.write(content)
+
+
+def _prepare_incremental_variant(temp_dir, resolution):
+    """Rename Bento's media-1 directory to a stable media-<resolution> name."""
+    variant_name = _hls_variant_dir_name(resolution)
+    media_dirs = sorted(name for name in os.listdir(temp_dir) if name.startswith("media-") and os.path.isdir(os.path.join(temp_dir, name)))
+    if not media_dirs:
+        logger.error("bento output missing media-* directory in %s", temp_dir)
+        return None
+
+    old_name = media_dirs[0]
+    old_path = os.path.join(temp_dir, old_name)
+    new_path = os.path.join(temp_dir, variant_name)
+    if old_name != variant_name:
+        if os.path.exists(new_path):
+            shutil.rmtree(new_path)
+        os.rename(old_path, new_path)
+        master = os.path.join(temp_dir, "master.m3u8")
+        if os.path.exists(master):
+            _rewrite_master_variant_prefix(master, old_name, variant_name)
+    return variant_name
+
+
+def _uri_belongs_to_variant(uri, variant_name):
+    return bool(uri) and (uri == variant_name or str(uri).startswith(f"{variant_name}/"))
+
+
+def _merge_master_playlist(permanent_master, incoming_master, variant_name):
+    """Replace any existing entries for variant_name with those from incoming_master."""
+    existing = m3u8.load(permanent_master)
+    incoming = m3u8.load(incoming_master)
+
+    existing.playlists[:] = [playlist for playlist in existing.playlists if not _uri_belongs_to_variant(playlist.uri, variant_name)]
+    existing.iframe_playlists[:] = [playlist for playlist in existing.iframe_playlists if not _uri_belongs_to_variant(getattr(playlist, "uri", None), variant_name)]
+
+    existing.playlists.extend(incoming.playlists)
+    existing.iframe_playlists.extend(incoming.iframe_playlists)
+
+    with open(permanent_master, "w", encoding="utf-8") as handle:
+        handle.write(existing.dumps())
+
+
+def _install_incremental_hls(permanent_dir, temp_dir, variant_name):
+    """Copy one variant into the permanent HLS tree and merge master.m3u8."""
+    os.makedirs(permanent_dir, exist_ok=True)
+    src_variant = os.path.join(temp_dir, variant_name)
+    dst_variant = os.path.join(permanent_dir, variant_name)
+    if os.path.exists(dst_variant):
+        shutil.rmtree(dst_variant)
+    shutil.copytree(src_variant, dst_variant)
+
+    permanent_master = os.path.join(permanent_dir, "master.m3u8")
+    incoming_master = os.path.join(temp_dir, "master.m3u8")
+    if not os.path.exists(permanent_master):
+        shutil.copy2(incoming_master, permanent_master)
+    else:
+        _merge_master_playlist(permanent_master, incoming_master, variant_name)
+    return permanent_master
+
+
+def _install_full_hls(permanent_dir, temp_dir):
+    """Atomically replace the permanent HLS tree with a full Bento rebuild."""
+    parent = os.path.dirname(permanent_dir) or settings.HLS_DIR
+    os.makedirs(parent, exist_ok=True)
+    replace_dir = os.path.join(parent, f".{os.path.basename(permanent_dir)}.replace-{produce_friendly_token()}")
+    old_dir = os.path.join(parent, f".{os.path.basename(permanent_dir)}.old-{produce_friendly_token()}")
+
+    shutil.copytree(temp_dir, replace_dir)
+    if os.path.exists(permanent_dir):
+        os.rename(permanent_dir, old_dir)
+    os.rename(replace_dir, permanent_dir)
+    if os.path.exists(old_dir):
+        shutil.rmtree(old_dir, ignore_errors=True)
+    return os.path.join(permanent_dir, "master.m3u8")
+
+
+@task(name="create_hls", bind=True, queue="long_tasks", soft_time_limit=settings.CELERY_SOFT_TIME_LIMIT)
+def create_hls(self, friendly_token, encoding_id=None):
+    """Create or update HLS for media using Bento4 mp4hls.
+
+    When encoding_id is set, package only that encoding and merge it into the
+    existing HLS tree. When encoding_id is None, rebuild from all successful
+    h264 MP4 encodings (trim / migration / recovery).
+    """
 
     if not hasattr(settings, "MP4HLS_COMMAND"):
         logger.info("Bento4 mp4hls command is missing from configuration")
@@ -663,39 +786,56 @@ def create_hls(friendly_token):
 
     try:
         media = Media.objects.get(friendly_token=friendly_token)
-    except BaseException:
-        logger.info(f"failed to get media with friendly_token {friendly_token}")
+    except Media.DoesNotExist:
+        logger.info("failed to get media with friendly_token %s", friendly_token)
         return False
 
-    p = media.uid.hex
-    output_dir = os.path.join(settings.HLS_DIR, p)
-    encodings = media.encodings.filter(profile__extension="mp4", status="success", chunk=False, profile__codec="h264")
+    uid_hex = media.uid.hex
+    permanent_dir = os.path.join(settings.HLS_DIR, uid_hex)
+    media_files = []
+    resolution = None
 
-    if encodings:
-        existing_output_dir = None
-        if os.path.exists(output_dir):
-            existing_output_dir = output_dir
-            output_dir = os.path.join(settings.HLS_DIR, p + produce_friendly_token())
-        files = [f.media_file.path for f in encodings if f.media_file]
-        cmd = [settings.MP4HLS_COMMAND, '--segment-duration=4', f'--output-dir={output_dir}', *files]
-        run_command(cmd)
+    if encoding_id is not None:
+        try:
+            encoding = Encoding.objects.select_related("profile").get(pk=encoding_id, media=media)
+        except Encoding.DoesNotExist:
+            logger.info("failed to get encoding %s for media %s", encoding_id, friendly_token)
+            return False
+        if encoding.status != "success" or encoding.chunk or encoding.profile.extension != "mp4" or encoding.profile.codec != "h264" or not encoding.media_file:
+            logger.info("encoding %s is not ready for HLS packaging", encoding_id)
+            return False
+        media_files = [encoding.media_file.path]
+        resolution = encoding.profile.resolution
+    else:
+        encodings = media.encodings.filter(profile__extension="mp4", status="success", chunk=False, profile__codec="h264")
+        media_files = [encoding.media_file.path for encoding in encodings if encoding.media_file]
+        if not media_files:
+            return True
 
-        if existing_output_dir:
-            # override content with -T !
-            cmd = ["cp", "-rT", output_dir, existing_output_dir]
-            run_command(cmd)
+    with tempfile.TemporaryDirectory(dir=settings.TEMP_DIRECTORY) as temp_parent:
+        temp_dir = os.path.join(temp_parent, "hls-out")
+        if not _run_mp4hls(media_files, temp_dir):
+            return False
 
-            try:
-                shutil.rmtree(output_dir)
-            except:  # noqa
-                # this was breaking in some cases where it was already deleted
-                # because create_hls was running multiple times
-                pass
-            output_dir = existing_output_dir
-        pp = os.path.join(output_dir, "master.m3u8")
-        if os.path.exists(pp):
-            if media.hls_file != pp:
-                Media.objects.filter(pk=media.pk).update(hls_file=pp)
+        variant_name = None
+        if encoding_id is not None:
+            variant_name = _prepare_incremental_variant(temp_dir, resolution)
+            if not variant_name:
+                return False
+
+        if not _acquire_hls_lock(uid_hex):
+            raise self.retry(countdown=HLS_LOCK_RETRY_COUNTDOWN, max_retries=HLS_LOCK_MAX_RETRIES)
+
+        try:
+            if encoding_id is not None:
+                master_path = _install_incremental_hls(permanent_dir, temp_dir, variant_name)
+            else:
+                master_path = _install_full_hls(permanent_dir, temp_dir)
+        finally:
+            _release_hls_lock(uid_hex)
+
+    if os.path.exists(master_path) and media.hls_file != master_path:
+        Media.objects.filter(pk=media.pk).update(hls_file=master_path)
     return True
 
 

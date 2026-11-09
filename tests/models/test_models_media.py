@@ -417,7 +417,7 @@ class MediaEncodingStatusTests(TestCase):
         with mock.patch.object(tasks.create_hls, "delay") as create_hls, mock.patch.object(tasks.post_trim_action, "delay") as post_trim:
             self.media.post_encode_actions(encoding=encoding, action="add")
 
-        create_hls.assert_called_once_with(self.media.friendly_token)
+        create_hls.assert_called_once_with(self.media.friendly_token, encoding.id)
         post_trim.assert_called_once_with(self.media.friendly_token)
         trim.refresh_from_db()
         self.assertEqual(trim.status, "success")

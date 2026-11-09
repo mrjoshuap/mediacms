@@ -244,8 +244,10 @@ class TestImportMediaEntry(TestCase):
 
     def test_hls_is_triggered_exactly_once(self):
         with mock.patch("files.tasks.create_hls") as create_hls:
-            import_media_entry(self.service, self.provider, "1_a")
+            media = import_media_entry(self.service, self.provider, "1_a")
         self.assertEqual(create_hls.delay.call_count, 1)
+        # Full rebuild: friendly_token only, never once-per-flavor encoding ids.
+        create_hls.delay.assert_called_once_with(media.friendly_token)
 
     def test_encoding_status_ends_up_successful(self):
         media = import_media_entry(self.service, self.provider, "1_a")

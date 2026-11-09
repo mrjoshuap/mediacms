@@ -642,9 +642,13 @@ class Media(models.Model):
         for field, value in stored.items():
             setattr(self, field, value)
 
-    def post_encode_actions(self, encoding=None, action=None):
+    def post_encode_actions(self, encoding=None, action=None, *, hls_full=False):
         """perform things after encode has run
         whether it has failed or succeeded
+
+        By default each successful h264 encoding packages only itself into HLS
+        (incremental). Pass hls_full=True to rebuild from all successful encodings
+        (used by migration import after attaching every flavor).
         """
 
         self.set_encoding_status()
@@ -664,9 +668,11 @@ class Media(models.Model):
         if encoding and encoding.status == "success" and encoding.profile.codec == "h264" and action == "add" and not encoding.chunk:
             from .. import tasks
 
-            tasks.create_hls.delay(self.friendly_token)
+            if hls_full:
+                tasks.create_hls.delay(self.friendly_token)
+            else:
+                tasks.create_hls.delay(self.friendly_token, encoding.id)
 
-            # TODO: ideally would ensure this is run only at the end when the last encoding is done...
             vt_request = VideoTrimRequest.objects.filter(media=self, status="running").first()
             if vt_request:
                 tasks.post_trim_action.delay(self.friendly_token)
