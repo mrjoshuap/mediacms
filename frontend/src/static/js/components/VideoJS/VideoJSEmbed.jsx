@@ -24,7 +24,7 @@ const VideoJSEmbed = ({
     version,
     isPlayList,
     playerVolume,
-    _playerSoundMuted,
+    playerSoundMuted,
     videoQuality,
     videoPlaybackSpeed,
     inTheaterMode,
@@ -66,8 +66,9 @@ const VideoJSEmbed = ({
     useEffect(() => {
         // Update the ref whenever inEmbed changes
         inEmbedRef.current = inEmbed;
-
-        // Set the global MEDIA_DATA that the video js expects
+        
+        // Set the global MEDIA_DATA that the video js expects.
+        // Merge onto any existing payload so soft next/autoplay transitions keep player helpers.
         if (typeof window !== 'undefined') {
             // Get URL parameters for autoplay, muted, and timestamp
             const urlTimestamp = getUrlParameter('t');
@@ -75,63 +76,79 @@ const VideoJSEmbed = ({
             const urlShowRelated = getUrlParameter('showRelated');
             const urlShowUserAvatar = getUrlParameter('showUserAvatar');
             const urlLinkTitle = getUrlParameter('linkTitle');
+            const previousMediaData = window.MEDIA_DATA || {};
+            const incomingToken = data?.friendly_token;
+            const liveToken = previousMediaData?.data?.friendly_token;
 
-            window.MEDIA_DATA = {
-                data: data || {},
-                useRoundedCorners: useRoundedCorners,
-                version: version,
-                isPlayList: isPlayList,
-                playerVolume: playerVolume || 0.5,
-                playerSoundMuted: urlMuted === '1',
-                videoQuality: videoQuality || 'auto',
-                videoPlaybackSpeed: videoPlaybackSpeed || 1,
-                inTheaterMode: inTheaterMode || false,
-                siteId: siteId || '',
-                siteUrl: siteUrl || '',
-                info: info || {},
-                cornerLayers: cornerLayers || [],
-                sources: sources || [],
-                poster: poster || '',
-                previewSprite: previewSprite || null,
-                subtitlesInfo: subtitlesInfo || [],
-                inEmbed: inEmbed || false,
-                parentMediaBase: parentMediaBase || null,
-                showTitle: showTitle || false,
-                showRelated:
-                    showRelated !== undefined
-                        ? showRelated
-                        : urlShowRelated === '1' || urlShowRelated === 'true' || urlShowRelated === null,
-                showUserAvatar:
-                    showUserAvatar !== undefined
-                        ? showUserAvatar
-                        : urlShowUserAvatar === '1' || urlShowUserAvatar === 'true' || urlShowUserAvatar === null,
-                linkTitle:
-                    linkTitle !== undefined
-                        ? linkTitle
-                        : urlLinkTitle === '1' || urlLinkTitle === 'true' || urlLinkTitle === null,
-                hasTheaterMode: hasTheaterMode || false,
-                hasNextLink: hasNextLink || false,
-                nextLink: nextLink || null,
-                hasPreviousLink: hasPreviousLink || false,
-                errorMessage: errorMessage || '',
-                // URL parameters
-                urlTimestamp: urlTimestamp ? parseInt(urlTimestamp, 10) : null,
-                urlMuted: urlMuted === '1',
-                urlShowRelated: urlShowRelated === '1' || urlShowRelated === 'true',
-                urlShowUserAvatar: urlShowUserAvatar === '1' || urlShowUserAvatar === 'true',
-                urlLinkTitle: urlLinkTitle === '1' || urlLinkTitle === 'true',
-                onClickNextCallback: onClickNextCallback || null,
-                onClickPreviousCallback: onClickPreviousCallback || null,
-                onStateUpdateCallback: onStateUpdateCallback || null,
-                onPlayerInitCallback: (instance, elem) => {
-                    // Store the player instance for timestamp functionality
-                    playerInstanceRef.current = instance;
-                    // Call the original callback if provided
-                    if (onPlayerInitCallback) {
-                        onPlayerInitCallback(instance, elem);
-                    }
-                },
-            };
+            // Soft next updates MEDIA_DATA imperatively before React props catch up.
+            // Never clobber a newer live payload with stale viewer props.
+            if (liveToken && incomingToken && liveToken !== incomingToken) {
+                window.MEDIA_DATA = {
+                    ...previousMediaData,
+                    onClickNextCallback: onClickNextCallback || previousMediaData.onClickNextCallback || null,
+                    onClickPreviousCallback:
+                        onClickPreviousCallback || previousMediaData.onClickPreviousCallback || null,
+                    onStateUpdateCallback: onStateUpdateCallback || previousMediaData.onStateUpdateCallback || null,
+                };
+            } else {
+                window.MEDIA_DATA = {
+                    ...previousMediaData,
+                    data: data || {},
+                    useRoundedCorners: useRoundedCorners,
+                    version: version,
+                    isPlayList: isPlayList,
+                    playerVolume: playerVolume || 0.5,
+                    playerSoundMuted: urlMuted === '1',
+                    videoQuality: videoQuality || 'auto',
+                    videoPlaybackSpeed: videoPlaybackSpeed || 1,
+                    inTheaterMode: inTheaterMode || false,
+                    siteId: siteId || '',
+                    siteUrl: siteUrl || '',
+                    info: info || {},
+                    cornerLayers: cornerLayers || [],
+                    sources: sources || [],
+                    poster: poster || '',
+                    previewSprite: previewSprite || null,
+                    subtitlesInfo: subtitlesInfo || [],
+                    inEmbed: inEmbed || false,
+                    parentMediaBase: parentMediaBase || null,
+                    showTitle: showTitle || false,
+                    showRelated:
+                        showRelated !== undefined
+                            ? showRelated
+                            : urlShowRelated === '1' || urlShowRelated === 'true' || urlShowRelated === null,
+                    showUserAvatar:
+                        showUserAvatar !== undefined
+                            ? showUserAvatar
+                            : urlShowUserAvatar === '1' || urlShowUserAvatar === 'true' || urlShowUserAvatar === null,
+                    linkTitle:
+                        linkTitle !== undefined
+                            ? linkTitle
+                            : urlLinkTitle === '1' || urlLinkTitle === 'true' || urlLinkTitle === null,
+                    hasTheaterMode: hasTheaterMode || false,
+                    hasNextLink: hasNextLink || false,
+                    nextLink: nextLink || null,
+                    hasPreviousLink: hasPreviousLink || false,
+                    errorMessage: errorMessage || '',
+                    // URL parameters
+                    urlTimestamp: urlTimestamp ? parseInt(urlTimestamp, 10) : null,
+                    urlMuted: urlMuted === '1',
+                    urlShowRelated: urlShowRelated === '1' || urlShowRelated === 'true',
+                    urlShowUserAvatar: urlShowUserAvatar === '1' || urlShowUserAvatar === 'true',
+                    urlLinkTitle: urlLinkTitle === '1' || urlLinkTitle === 'true',
+                    onClickNextCallback: onClickNextCallback || null,
+                    onClickPreviousCallback: onClickPreviousCallback || null,
+                    onStateUpdateCallback: onStateUpdateCallback || null,
+                    onPlayerInitCallback: (instance, elem) => {
+                        // Store the player instance for timestamp functionality
+                        playerInstanceRef.current = instance;
+                        // Call the original callback if provided
+                        if (onPlayerInitCallback) {
+                            onPlayerInitCallback(instance, elem);
+                        }
+                    },
+                };
+            }
         }
 
         // Load assets only once
@@ -139,7 +156,8 @@ const VideoJSEmbed = ({
             loadVideoJSAssets();
             assetsLoadedRef.current = true;
         }
-    }, [data, siteUrl, inEmbed]);
+        // Include next/prev + sources so soft-nav prop updates refresh MEDIA_DATA without remounting the player root.
+    }, [data, siteUrl, inEmbed, sources, nextLink, hasNextLink, hasPreviousLink, poster, isPlayList]);
 
     // New effect to manually trigger VideoJS mounting for embed players
     useEffect(() => {
@@ -148,10 +166,10 @@ const VideoJSEmbed = ({
             const timer = setTimeout(() => {
                 // Try to trigger the VideoJS mount by dispatching a custom event
                 const event = new CustomEvent('triggerVideoJSMount', {
-                    detail: { targetId: 'video-js-root-embed' },
+                    detail: { targetId: 'video-js-root-embed' }
                 });
                 document.dispatchEvent(event);
-
+                
                 // Also try to trigger by calling the global function if it exists
                 if (typeof window !== 'undefined' && window.triggerVideoJSMount) {
                     window.triggerVideoJSMount();
@@ -171,18 +189,18 @@ const VideoJSEmbed = ({
 
                 // Try to get the player from multiple sources
                 let player = null;
-
+                
                 // First try: from our stored instance
                 if (playerInstanceRef.current && playerInstanceRef.current.player) {
                     player = playerInstanceRef.current.player;
                 }
-
+                
                 // Second try: from global window.videojsPlayers
                 if (!player && typeof window !== 'undefined' && window.videojsPlayers) {
                     const videoId = inEmbedRef.current ? 'video-embed' : 'video-main';
                     player = window.videojsPlayers[videoId];
                 }
-
+                
                 // Third try: from the global videojs function looking for existing players
                 if (!player && typeof window !== 'undefined' && window.videojs) {
                     const videoElement = document.querySelector(inEmbedRef.current ? '#video-embed' : '#video-main');
@@ -190,7 +208,7 @@ const VideoJSEmbed = ({
                         player = videoElement.player;
                     }
                 }
-
+                
                 // If we found a player, seek to the timestamp
                 if (player) {
                     if (timestamp >= 0 && timestamp < player.duration()) {
@@ -198,19 +216,19 @@ const VideoJSEmbed = ({
                     } else if (timestamp >= 0) {
                         player.play();
                     }
-
+                    
                     // Scroll to the video player with smooth behavior
                     const videoElement = document.querySelector(inEmbedRef.current ? '#video-embed' : '#video-main');
                     if (videoElement) {
                         const urlScroll = getUrlParameter('scroll');
                         const isIframe = window.parent !== window;
-
+                        
                         // Only scroll if not in an iframe, OR if explicitly requested via scroll=1 parameter
                         if (!isIframe || urlScroll === '1' || urlScroll === 'true') {
-                            videoElement.scrollIntoView({
-                                behavior: 'smooth',
+                            videoElement.scrollIntoView({ 
+                                behavior: 'smooth', 
                                 block: 'center',
-                                inline: 'nearest',
+                                inline: 'nearest'
                             });
                         }
                     }
@@ -257,7 +275,10 @@ const VideoJSEmbed = ({
     return (
         <div className="video-js-wrapper" ref={containerRef}>
             {inEmbed ? (
-                <div id="video-js-root-embed" className="video-js-root-embed" />
+                <div 
+                    id="video-js-root-embed" 
+                    className="video-js-root-embed"
+                />
             ) : (
                 <div id="video-js-root-main" className="video-js-root-main" />
             )}

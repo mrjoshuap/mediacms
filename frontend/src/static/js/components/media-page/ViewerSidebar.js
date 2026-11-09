@@ -5,55 +5,73 @@ import { RelatedMedia } from './RelatedMedia';
 import PlaylistView from './PlaylistView';
 
 export default class ViewerSidebar extends React.PureComponent {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            playlistData: props.playlistData,
-            isPlaylistPage: !!props.playlistData,
-            activeItem: 0,
-            mediaType: MediaPageStore.get('media-type'),
-        };
+    this.state = {
+      playlistData: props.playlistData,
+      isPlaylistPage: !!props.playlistData,
+      activeItem: 0,
+      mediaType: MediaPageStore.get('media-type'),
+    };
 
-        if (props.playlistData) {
-            let i = 0;
-            while (i < props.playlistData.playlist_media.length) {
-                if (props.mediaId === props.playlistData.playlist_media[i].friendly_token) {
-                    this.state.activeItem = i + 1;
-                    break;
-                }
-
-                i += 1;
-            }
+    if (props.playlistData) {
+      let i = 0;
+      while (i < props.playlistData.playlist_media.length) {
+        if (props.mediaId === props.playlistData.playlist_media[i].friendly_token) {
+          this.state.activeItem = i + 1;
+          break;
         }
 
-        this.onMediaLoad = this.onMediaLoad.bind(this);
+        i += 1;
+      }
     }
 
-    componentDidMount() {
-        MediaPageStore.on('loaded_media_data', this.onMediaLoad);
+    this.onMediaLoad = this.onMediaLoad.bind(this);
+  }
+
+  componentDidMount() {
+    MediaPageStore.on('loaded_media_data', this.onMediaLoad);
+  }
+
+  componentWillUnmount() {
+    MediaPageStore.removeListener('loaded_media_data', this.onMediaLoad);
+  }
+
+  onMediaLoad() {
+    const mediaId = MediaPageStore.get('media-id');
+    let activeItem = this.state.activeItem;
+    const playlistData = this.props.playlistData || this.state.playlistData;
+
+    if (playlistData && playlistData.playlist_media) {
+      let i = 0;
+      activeItem = 0;
+      while (i < playlistData.playlist_media.length) {
+        if (mediaId === playlistData.playlist_media[i].friendly_token) {
+          activeItem = i + 1;
+          break;
+        }
+        i += 1;
+      }
     }
 
-    componentWillUnmount() {
-        MediaPageStore.removeListener('loaded_media_data', this.onMediaLoad);
-    }
+    this.setState({
+      mediaType: MediaPageStore.get('media-type'),
+      activeItem,
+      mediaId,
+    });
+  }
 
-    onMediaLoad() {
-        this.setState({
-            mediaType: MediaPageStore.get('media-type'),
-        });
-    }
-
-    render() {
-        return (
-            <div className="viewer-sidebar">
-                {this.state.isPlaylistPage ? (
-                    <PlaylistView activeItem={this.state.activeItem} playlistData={this.props.playlistData} />
-                ) : 'video' === this.state.mediaType || 'audio' === this.state.mediaType ? (
-                    <AutoPlay />
-                ) : null}
-                <RelatedMedia hideFirst={!this.state.isPlaylistPage} />
-            </div>
-        );
-    }
+  render() {
+    return (
+      <div className="viewer-sidebar">
+        {this.state.isPlaylistPage ? (
+          <PlaylistView activeItem={this.state.activeItem} playlistData={this.props.playlistData} />
+        ) : 'video' === this.state.mediaType || 'audio' === this.state.mediaType ? (
+          <AutoPlay />
+        ) : null}
+        <RelatedMedia hideFirst={!this.state.isPlaylistPage} />
+      </div>
+    );
+  }
 }

@@ -21,6 +21,7 @@ import VideoContextMenu from '../overlays/VideoContextMenu';
 import UserPreferences from '../../utils/UserPreferences';
 import PlayerConfig from '../../config/playerConfig';
 import { AutoplayHandler } from '../../utils/AutoplayHandler';
+import { applyMediaToPlayer } from '../../utils/MediaTransition';
 import { OrientationHandler } from '../../utils/OrientationHandler';
 import { EndScreenHandler } from '../../utils/EndScreenHandler';
 import KeyboardHandler from '../../utils/KeyboardHandler';
@@ -764,10 +765,12 @@ function VideoJSPlayer({
           }))
         : [];
 
-    // Function to navigate to next video
+    // Function to navigate to next video (prefer live MEDIA_DATA after soft transitions)
     const goToNextVideo = () => {
-        if (mediaData.onClickNextCallback && typeof mediaData.onClickNextCallback === 'function') {
-            mediaData.onClickNextCallback();
+        const liveMediaData =
+            typeof window !== 'undefined' && window.MEDIA_DATA ? window.MEDIA_DATA : mediaData;
+        if (liveMediaData.onClickNextCallback && typeof liveMediaData.onClickNextCallback === 'function') {
+            liveMediaData.onClickNextCallback();
         }
     };
 
@@ -1329,9 +1332,16 @@ function VideoJSPlayer({
                         linkTitle: finalLinkTitle,
                     });
                     customComponents.current.endScreenHandler = endScreenHandler; // Store for cleanup
+                    // Expose early so soft next/autoplay can clean overlays before later control-bar wiring.
+                    playerRef.current.customComponents = customComponents.current;
 
                     // Inside your ready callback, replace the existing handleAutoplay code with:
                     const autoplayHandler = new AutoplayHandler(playerRef.current, mediaData, userPreferences.current);
+
+                    // Soft media transitions (autoplay/next) keep this player instance alive for fullscreen.
+                    playerRef.current.mediacmsUserPreferences = userPreferences.current;
+                    playerRef.current.mediacmsLoadMedia = (nextMediaData) =>
+                        applyMediaToPlayer(playerRef.current, nextMediaData);
 
                     // Expose the player instance globally for timestamp functionality
                     if (typeof window !== 'undefined') {
