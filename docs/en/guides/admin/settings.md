@@ -42,7 +42,7 @@ MediaCMS reads `local_settings.py` after `settings.py`. A few values are changed
 | `MASK_IPS_FOR_ACTIONS` | `True` | Masks IP addresses in action records |
 | `REPORTED_TIMES_THRESHOLD` | `10` | Number of reports that sets media to private |
 | `ALLOW_ANONYMOUS_USER_LISTING` | `True` | `False`: only signed-in users can list users |
-| `CAN_SEE_MEMBERS_PAGE` | `all` | Who sees the members page. `all`, `editors`, or `admins` |
+| `CAN_SEE_MEMBERS_PAGE` | `all` | Who sees the members page. `anonymous` (anyone), `all` (signed-in), `editors`, or `admins`. For anonymous members, keep `ALLOW_ANONYMOUS_USER_LISTING = True` |
 | `USER_SEARCH_FIELD` | `name_username` | `name_username` or `name_username_email`. The second also searches and shows email |
 
 ## Sign-in and registration

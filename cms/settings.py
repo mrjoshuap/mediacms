@@ -670,7 +670,7 @@ ALLOW_ANONYMOUS_USER_LISTING = True
 ALLOW_POPULATE_FAKE_MEDIA = None
 
 # Who can see the members page
-# valid choices are all, editors, admins
+# valid choices are anonymous, all, editors, admins
 CAN_SEE_MEMBERS_PAGE = "all"
 
 # User search field setting
