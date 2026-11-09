@@ -1012,10 +1012,13 @@ class MediaDetail(APIView):
             media.encode(profiles=valid_profiles)
             return Response({"detail": "media will be encoded"}, status=status.HTTP_201_CREATED)
         elif action == "review":
-            if result is False:
-                set_media_reviewed(media, False, user=request.user)
+            # Multipart/form posts send strings; "false" must not be treated as truthy.
+            if result is False or (isinstance(result, str) and result.strip().lower() in ("false", "0", "no")):
+                reviewed = False
             else:
-                set_media_reviewed(media, True, user=request.user)
+                reviewed = True
+            # set_media_reviewed saves the media so listable stays in sync (#1275 / #1280).
+            set_media_reviewed(media, reviewed, user=request.user)
             return Response({"detail": "media reviewed set"}, status=status.HTTP_201_CREATED)
         return Response(
             {"detail": "not valid action or no action specified"},
