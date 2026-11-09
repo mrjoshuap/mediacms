@@ -4,7 +4,7 @@ from allauth.account.admin import EmailAddressAdmin as AllauthEmailAddressAdmin
 from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib import admin, messages
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 
@@ -87,7 +87,6 @@ class UserAdmin(OpenOnSiteMixin, admin.ModelAdmin):
         "last_name",
         "date_joined",
         "is_approved",
-        "media_count",
     ]
     list_display = [
         "date_added",
@@ -211,6 +210,16 @@ class UserAdmin(OpenOnSiteMixin, admin.ModelAdmin):
         list_filter.append("is_approved")
         list_editable = ["is_approved"]
         exclude.remove("is_approved")
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if "media_count" in self.get_list_display(request):
+            qs = qs.annotate(media_count_annot=Count("media", filter=Q(media__listable=True)))
+        return qs
+
+    @admin.display(description="Media count", ordering="media_count_annot")
+    def media_count(self, obj):
+        return getattr(obj, "media_count_annot", Media.objects.filter(user=obj, listable=True).count())
 
     def get_fieldsets(self, request, obj=None):
         """Organize the change form into purpose-based Jazzmin tabs."""
