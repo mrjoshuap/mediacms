@@ -5,7 +5,8 @@ from django.contrib.postgres.search import SearchQuery
 from django.db.models import Count, F, Prefetch, Q, prefetch_related_objects
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -32,8 +33,11 @@ from ..methods import (
     copy_media,
     get_user_or_session,
     is_mediacms_editor,
+    media_password_unlocked,
+    media_requires_password,
     show_recommended_media,
     show_related_media,
+    unlock_media_password,
     update_user_ratings,
 )
 from ..models import (
@@ -821,6 +825,7 @@ class MediaBulkUserActions(APIView):
         return Response({"detail": "Course cleanup completed successfully"})
 
 
+@method_decorator(ensure_csrf_cookie, name="dispatch")
 class MediaDetail(APIView):
     """
     Retrieve, update or delete a media instance.
@@ -864,10 +869,19 @@ class MediaDetail(APIView):
     )
     def get(self, request, friendly_token, format=None):
         # Get media details
-        # password = request.GET.get("password")
         media = self.get_object(friendly_token)
         if isinstance(media, Response):
             return media
+
+        if not media_password_unlocked(request, media):
+            return Response(
+                {
+                    "friendly_token": media.friendly_token,
+                    "title": media.title,
+                    "password_required": True,
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         serializer = SingleMediaSerializer(media, context={"request": request})
         related_media = show_related_media(media, request=request, limit=100)
@@ -1003,6 +1017,45 @@ class MediaDetail(APIView):
             return media
         media.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class MediaPasswordUnlock(APIView):
+    """Unlock password-protected media for the current session."""
+
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = (JSONParser, FormParser, MultiPartParser)
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(name='friendly_token', type=openapi.TYPE_STRING, in_=openapi.IN_PATH, description='unique identifier', required=True),
+        ],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['password'],
+            properties={'password': openapi.Schema(type=openapi.TYPE_STRING)},
+        ),
+        tags=['Media'],
+        operation_summary='Unlock password-protected media',
+        operation_description='Validates a media password and stores unlock state in the session cookie.',
+        responses={200: 'unlocked', 403: 'invalid password', 404: 'not found'},
+    )
+    def post(self, request, friendly_token, format=None):
+        try:
+            media = Media.objects.select_related("user").get(friendly_token=friendly_token)
+        except Media.DoesNotExist:
+            return Response({"detail": "media file does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+        if media.state == "private":
+            if not (request.user.is_authenticated and (request.user.has_member_access_to_media(media) or is_mediacms_editor(request.user))):
+                return Response({"detail": "media is private"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if not media_requires_password(media):
+            return Response({"detail": "ok"})
+
+        password = request.data.get("password") or ""
+        if unlock_media_password(request, media, password):
+            return Response({"detail": "ok"})
+        return Response({"detail": "invalid password", "password_required": True}, status=status.HTTP_403_FORBIDDEN)
 
 
 class MediaActions(APIView):

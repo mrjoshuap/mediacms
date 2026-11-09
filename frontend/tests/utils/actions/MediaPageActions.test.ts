@@ -34,6 +34,8 @@ describe('utils/actions', () => {
             ['addMediaToPlaylist', ['p1', 'm1'], { type: 'ADD_MEDIA_TO_PLAYLIST', playlist_id: 'p1', media_id: 'm1' }],
             ['removeMediaFromPlaylist', ['p1', 'm1'], { type: 'REMOVE_MEDIA_FROM_PLAYLIST', playlist_id: 'p1', media_id: 'm1' }],
             ['addNewPlaylist', [{ title: 'N' }], { type: 'APPEND_NEW_PLAYLIST', playlist_data: { title: 'N' } }],
+            ['unlockMediaPassword', ['secret'], { type: 'UNLOCK_MEDIA_PASSWORD', password: 'secret' }],
+            ['unlockMediaPassword', [undefined], { type: 'UNLOCK_MEDIA_PASSWORD', password: '' }],
         ] as [string, any[], any][])('%s dispatches the expected payload', (name, args, expected) => {
             (MediaPageActions as any)[name](...args);
             expect(received).toStrictEqual([expected]);

@@ -6,6 +6,13 @@ export function loadMediaData() {
   });
 }
 
+export function unlockMediaPassword(password) {
+  Dispatcher.dispatch({
+    type: 'UNLOCK_MEDIA_PASSWORD',
+    password: password || '',
+  });
+}
+
 export function likeMedia() {
   Dispatcher.dispatch({
     type: 'LIKE_MEDIA',

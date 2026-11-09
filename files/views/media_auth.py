@@ -13,7 +13,12 @@ from django.utils.http import content_disposition_header
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_safe
 
-from ..methods import is_mediacms_editor
+from ..methods import (
+    PASSWORD_UNLOCKED_SESSION_KEY,
+    is_mediacms_editor,
+    media_requires_password,
+    user_bypasses_media_password,
+)
 from ..models import Category, Media, Subtitle
 
 UID_RE = re.compile(r"^[0-9a-f]{32}$")
@@ -128,24 +133,30 @@ def _decide_category(relpath, user):
 
 
 def _lookup_state(uid):
-    """Return (state, owner_id) for a uid, or (None, None) if missing.
+    """Return (state, owner_id, friendly_token, has_password) or Nones if missing.
 
-    Cached on uid alone since state/ownership do not depend on the requester.
+    Cached on uid alone since these fields do not depend on the requester.
     Uses .values() rather than .only() because Media.__init__ touches deferred
     file fields, which would otherwise recurse via refresh_from_db.
     """
     state_key = f"xaccel:state:{uid}"
     cached = cache.get(state_key)
     if cached is not None:
-        return cached
-    row = Media.objects.filter(uid=uid).values("state", "user_id").first()
-    value = (row["state"], row["user_id"]) if row else (None, None)
+        # Older cache entries were (state, owner_id); treat them as a miss.
+        if isinstance(cached, tuple) and len(cached) == 4:
+            return cached
+    row = Media.objects.filter(uid=uid).values("state", "user_id", "friendly_token", "password").first()
+    if row:
+        value = (row["state"], row["user_id"], row["friendly_token"], bool(row["password"]))
+    else:
+        value = (None, None, None, False)
     cache.set(state_key, value, _ttl())
     return value
 
 
-def _cached_decision(subject, user, decide):
-    cache_key = f"xaccel:auth:{subject}:{user.id if user.is_authenticated else 'anon'}"
+def _cached_decision(subject, user, decide, unlocked=False):
+    # Include unlock status so a successful password entry is not stuck behind a deny cache.
+    cache_key = f"xaccel:auth:{subject}:{user.id if user.is_authenticated else 'anon'}:{int(bool(unlocked))}"
     cached = cache.get(cache_key)
     if cached is not None:
         return cached
@@ -154,10 +165,32 @@ def _cached_decision(subject, user, decide):
     return allowed
 
 
-def _decide(uid, user):
-    state, owner_id = _lookup_state(uid)
+def _session_unlocked(request, friendly_token):
+    if not request or not friendly_token:
+        return False
+    return friendly_token in request.session.get(PASSWORD_UNLOCKED_SESSION_KEY, [])
+
+
+def _decide(uid, user, request=None):
+    state, owner_id, friendly_token, has_password = _lookup_state(uid)
     if state is None:
         return False
+
+    if has_password:
+        unlocked = _session_unlocked(request, friendly_token)
+        if not unlocked:
+            if not user.is_authenticated:
+                return False
+            if owner_id == user.id or is_mediacms_editor(user):
+                pass
+            else:
+                try:
+                    media = Media.objects.get(uid=uid)
+                except Media.DoesNotExist:
+                    return False
+                if not user_bypasses_media_password(user, media):
+                    return False
+
     if state in ("public", "unlisted"):
         return True
     # private
@@ -208,7 +241,9 @@ def media_auth(request):
     if not uid:
         return HttpResponse(status=403)
 
-    allowed = _cached_decision(uid, user, lambda: _decide(uid, user))
+    _, _, friendly_token, has_password = _lookup_state(uid)
+    unlocked = _session_unlocked(request, friendly_token) if has_password else False
+    allowed = _cached_decision(uid, user, lambda: _decide(uid, user, request), unlocked=unlocked)
     return HttpResponse(status=204 if allowed else 403)
 
 
@@ -216,6 +251,8 @@ def media_auth(request):
 def view_pdf(request, friendly_token):
     media = get_object_or_404(Media.objects.select_related("user"), friendly_token=friendly_token, media_type="pdf")
     if media.state == "private" and not (request.user.is_authenticated and (request.user.has_member_access_to_media(media) or is_mediacms_editor(request.user))):
+        return HttpResponse(status=403)
+    if media_requires_password(media) and not (user_bypasses_media_password(request.user, media) or _session_unlocked(request, media.friendly_token)):
         return HttpResponse(status=403)
     if not settings.SHOW_ORIGINAL_MEDIA or not media.media_file or not media.media_file.storage.exists(media.media_file.name):
         raise Http404

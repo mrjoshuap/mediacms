@@ -30,6 +30,22 @@ export async function getRequest(url, sync, callback, errorCallback) {
               message: 'Media is private',
             };
             break;
+          case 403:
+            if (error.response.data && error.response.data.password_required) {
+              err = {
+                type: 'password',
+                error: error,
+                message: 'Password required',
+                data: error.response.data,
+              };
+            } else {
+              err = {
+                type: 'private',
+                error: error,
+                message: 'Media is private',
+              };
+            }
+            break;
           case 400:
             err = {
               type: 'unavailable',

@@ -4,6 +4,7 @@ import { MediaPageStore } from '../utils/stores/';
 import { MediaPageActions } from '../utils/actions/';
 import { getParentMediaBase } from '../utils/helpers/';
 import VideoViewer from '../components/media-viewer/VideoViewer';
+import ViewerPassword from '../components/media-page/ViewerPassword';
 
 const wrapperStyles = {
   position: 'fixed',
@@ -22,27 +23,40 @@ const containerStyles = {
 export const EmbedPage: React.FC = () => {
   const [loadedVideo, setLoadedVideo] = useState(false);
   const [failedMediaLoad, setFailedMediaLoad] = useState(false);
+  const [passwordRequired, setPasswordRequired] = useState(false);
 
   const onLoadedVideoData = () => {
+    setPasswordRequired(false);
     setLoadedVideo(true);
   };
 
   const onMediaLoadError = () => {
+    setPasswordRequired(false);
     setFailedMediaLoad(true);
+  };
+
+  const onPasswordRequired = () => {
+    setFailedMediaLoad(false);
+    setLoadedVideo(false);
+    setPasswordRequired(true);
   };
 
   useEffect(() => {
     MediaPageStore.on('loaded_video_data', onLoadedVideoData);
     MediaPageStore.on('loaded_media_error', onMediaLoadError);
+    MediaPageStore.on('loaded_media_password_required', onPasswordRequired);
     MediaPageActions.loadMediaData();
     return () => {
       MediaPageStore.removeListener('loaded_video_data', onLoadedVideoData);
       MediaPageStore.removeListener('loaded_media_error', onMediaLoadError);
+      MediaPageStore.removeListener('loaded_media_password_required', onPasswordRequired);
     };
   }, []);
 
   return (
     <div className="embed-wrap media-embed-wrap" style={wrapperStyles}>
+      {passwordRequired && <ViewerPassword />}
+
       {failedMediaLoad && (
         <div className="player-container player-container-error" style={containerStyles}>
           <div className="player-container-inner" style={containerStyles}>
