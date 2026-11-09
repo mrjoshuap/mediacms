@@ -162,7 +162,17 @@ class FineUploaderView(generic.FormView):
                     new.friendly_token,
                     self.upload.file_path,
                 )
-            return self.make_response({"success": True, "media_url": new.get_absolute_url()})
+            # Refresh so media_init thumbnail/poster fields are visible for FineUploader.
+            new.refresh_from_db()
+            response_data = {
+                "success": True,
+                "media_url": new.get_absolute_url(),
+                "friendly_token": new.friendly_token,
+            }
+            # FineUploader replaces the queue preview when this key is present.
+            if new.thumbnail_url:
+                response_data["thumbnailUrl"] = self.request.build_absolute_uri(new.thumbnail_url)
+            return self.make_response(response_data)
         except Exception:
             logger.exception(
                 "Error creating media from upload - user_id=%s, filename=%s, file_size=%s bytes, file_path=%s",

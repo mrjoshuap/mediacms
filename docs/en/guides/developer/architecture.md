@@ -99,6 +99,8 @@ All apps are listed in `INSTALLED_APPS` in `cms/settings.py`.
 | Migration service | `migrationservice/` | Content migration from other platforms: models, providers, scheduling, Celery tasks, and views. |
 | Admin customizations | `admin_customizations/` | Extra pages for the admin portal: health, database stats, processing stats, backup, restore, and the support bundle. |
 
+Uploads can POST optional metadata with the file to `/api/v1/media`: `state`, `category_uids` / `category_titles`, `tag_titles`, `enable_comments`, `allow_download`, and editor-only `owner`. The same fields work on `PUT /api/v1/media/{friendly_token}`. FineUploader success responses include `friendly_token` and optional `thumbnailUrl`.
+
 Other apps in `INSTALLED_APPS` are `actions` (user actions such as watch and like), `identity_providers`, `lti`, `saml_auth`, and `uploader`.
 
 ## Data stores
