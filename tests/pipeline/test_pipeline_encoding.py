@@ -1,6 +1,8 @@
 import contextlib
 import json
 import os
+import time
+from datetime import timedelta
 from unittest import mock
 
 import pytest
@@ -9,6 +11,7 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models.signals import post_save
 from django.test import TestCase, override_settings
+from django.utils import timezone
 
 from files import helpers, tasks
 from files.models import (
@@ -317,6 +320,126 @@ class VideoChapterDataTest(TestCase):
 
     def test_media_without_chapters_has_empty_chapter_data(self):
         self.assertEqual(self.media.chapter_data, [])
+
+
+class EncodingChunkFailCleanupTest(TestCase):
+    fixtures = FIXTURES
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = create_account()
+
+    def setUp(self):
+        self.video = create_media(self.user, SMALL_VIDEO)
+        self.profile = profile("h264-144")
+        self.other_profile = profile("h264-240")
+        source_dir = os.path.dirname(self.video.media_file.path)
+        self.chunk_paths = []
+        for index in range(2):
+            path = os.path.join(source_dir, f"{index:02d}_tokenseg_pipeline.mkv")
+            with open(path, "wb") as handle:
+                handle.write(b"chunk-bytes")
+            self.chunk_paths.append(path)
+        self.chunks_info = json.dumps({path: f"md5{index}" for index, path in enumerate(self.chunk_paths)})
+
+    def tearDown(self):
+        for path in self.chunk_paths:
+            if os.path.exists(path):
+                os.remove(path)
+
+    def _create_chunk_encoding(self, profile_obj, chunk_path, status="pending", logs=""):
+        return Encoding.objects.create(
+            media=self.video,
+            profile=profile_obj,
+            chunk=True,
+            chunk_file_path=chunk_path,
+            chunks_info=self.chunks_info,
+            status=status,
+            logs=logs,
+            worker="localhost",
+        )
+
+    def test_a_failed_chunk_collapses_to_one_fail_encoding_and_removes_source_segments(self):
+        first = self._create_chunk_encoding(self.profile, self.chunk_paths[0], status="running", logs="chunk0 ok-ish")
+        second = self._create_chunk_encoding(self.profile, self.chunk_paths[1], status="running", logs="about to fail")
+
+        second.status = "fail"
+        second.logs = "ffmpeg killed"
+        second.save()
+
+        self.assertFalse(Encoding.objects.filter(media=self.video, profile=self.profile, chunk=True).exists())
+        final = Encoding.objects.get(media=self.video, profile=self.profile, chunk=False)
+        self.assertEqual(final.status, "fail")
+        self.assertIn("ffmpeg killed", final.logs)
+        self.assertFalse(Encoding.objects.filter(pk=first.pk).exists())
+        for path in self.chunk_paths:
+            self.assertFalse(os.path.exists(path))
+
+    def test_source_segments_are_kept_while_another_profile_still_references_them(self):
+        failing = self._create_chunk_encoding(self.profile, self.chunk_paths[0], status="running", logs="boom")
+        self._create_chunk_encoding(self.profile, self.chunk_paths[1], status="pending")
+        self._create_chunk_encoding(self.other_profile, self.chunk_paths[0], status="pending")
+        self._create_chunk_encoding(self.other_profile, self.chunk_paths[1], status="pending")
+
+        failing.status = "fail"
+        failing.logs = "ffmpeg killed"
+        failing.save()
+
+        self.assertFalse(Encoding.objects.filter(media=self.video, profile=self.profile, chunk=True).exists())
+        self.assertEqual(Encoding.objects.filter(media=self.video, profile=self.other_profile, chunk=True).count(), 2)
+        for path in self.chunk_paths:
+            self.assertTrue(os.path.exists(path))
+
+    @override_settings(ENCODING_CHUNKS_RETENTION_HOURS=0)
+    def test_cleanup_task_removes_leftover_chunk_rows_beside_a_terminal_encoding(self):
+        Encoding.objects.create(media=self.video, profile=self.profile, status="fail", progress=100)
+        leftover = self._create_chunk_encoding(self.profile, self.chunk_paths[0], status="pending", logs="stale")
+        other = self._create_chunk_encoding(self.profile, self.chunk_paths[1], status="pending", logs="stale2")
+        # Bypass post_save so we simulate historical leftovers next to a terminal row
+        Encoding.objects.filter(pk__in=[leftover.pk, other.pk]).update(status="fail")
+        old = time.time() - 60
+        for path in self.chunk_paths:
+            os.utime(path, (old, old))
+
+        self.assertTrue(tasks.cleanup_encoding_chunks())
+
+        self.assertFalse(Encoding.objects.filter(pk=leftover.pk).exists())
+        self.assertFalse(Encoding.objects.filter(media=self.video, profile=self.profile, chunk=True).exists())
+        for path in self.chunk_paths:
+            self.assertFalse(os.path.exists(path))
+
+    @override_settings(ENCODING_CHUNKS_RETENTION_HOURS=24)
+    def test_cleanup_task_leaves_in_use_segments_alone(self):
+        self._create_chunk_encoding(self.profile, self.chunk_paths[0], status="running")
+        self._create_chunk_encoding(self.profile, self.chunk_paths[1], status="pending")
+        old = time.time() - 60 * 60 * 48
+        for path in self.chunk_paths:
+            os.utime(path, (old, old))
+
+        self.assertTrue(tasks.cleanup_encoding_chunks())
+
+        self.assertEqual(Encoding.objects.filter(media=self.video, profile=self.profile, chunk=True).count(), 2)
+        for path in self.chunk_paths:
+            self.assertTrue(os.path.exists(path))
+
+    @override_settings(ENCODING_CHUNKS_RETENTION_HOURS=0)
+    def test_cleanup_task_collapses_aged_failed_chunk_groups_without_a_terminal_row(self):
+        first = self._create_chunk_encoding(self.profile, self.chunk_paths[0], status="pending", logs="fail0")
+        second = self._create_chunk_encoding(self.profile, self.chunk_paths[1], status="pending", logs="fail1")
+        aged = timezone.now() - timedelta(hours=48)
+        Encoding.objects.filter(pk__in=[first.pk, second.pk]).update(status="fail", update_date=aged)
+        old = time.time() - 60
+        for path in self.chunk_paths:
+            os.utime(path, (old, old))
+
+        self.assertTrue(tasks.cleanup_encoding_chunks())
+
+        self.assertFalse(Encoding.objects.filter(media=self.video, profile=self.profile, chunk=True).exists())
+        final = Encoding.objects.get(media=self.video, profile=self.profile, chunk=False)
+        self.assertEqual(final.status, "fail")
+        self.assertIn("fail0", final.logs)
+        for path in self.chunk_paths:
+            self.assertFalse(os.path.exists(path))
 
 
 class EncodeMediaGuardsTest(TestCase):
