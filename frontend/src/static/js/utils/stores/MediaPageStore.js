@@ -689,6 +689,37 @@ class MediaPageStore extends EventEmitter {
         }
 
         break;
+      case 'LOAD_MEDIA_DATA_BY_ID':
+        if (!action.mediaId) {
+          break;
+        }
+
+        MediaPageStoreData[this.id].mediaId = action.mediaId;
+        if (typeof window !== 'undefined' && window.MediaCMS) {
+          window.MediaCMS.mediaId = action.mediaId;
+        }
+
+        delete MediaPageStoreData[this.id].loadErrorType;
+        delete MediaPageStoreData[this.id].loadErrorMessage;
+        MediaPageStoreData[this.id].likedMedia = false;
+        MediaPageStoreData[this.id].dislikedMedia = false;
+        MediaPageStoreData[this.id].reported_times = 0;
+
+        // Keep existing playlist context; next/prev URLs recompute from the new mediaId.
+        this.pagePlaylistId = extractPlaylistId();
+
+        if (this.pagePlaylistId && !this.pagePlaylistData) {
+          this.loadPlaylistData();
+          this.loadData();
+        } else {
+          if (!this.pagePlaylistId) {
+            this.pagePlaylistData = null;
+          }
+          this.emit('loaded_page_playlist_data');
+          this.loadData();
+        }
+
+        break;
       case 'LIKE_MEDIA':
         if (!MediaPageStoreData[this.id].likedMedia && !MediaPageStoreData[this.id].dislikedMedia) {
           this.requestMediaLike();

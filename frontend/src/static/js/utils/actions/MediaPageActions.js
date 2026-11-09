@@ -6,6 +6,13 @@ export function loadMediaData() {
   });
 }
 
+export function loadMediaDataById(mediaId) {
+  Dispatcher.dispatch({
+    type: 'LOAD_MEDIA_DATA_BY_ID',
+    mediaId,
+  });
+}
+
 export function likeMedia() {
   Dispatcher.dispatch({
     type: 'LIKE_MEDIA',

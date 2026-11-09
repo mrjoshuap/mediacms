@@ -72,6 +72,7 @@ export default class ViewerInfoTitleBanner extends React.PureComponent {
     MediaPageStore.on('unliked_media', this.updateStateValues);
     MediaPageStore.on('disliked_media', this.updateStateValues);
     MediaPageStore.on('undisliked_media', this.updateStateValues);
+    MediaPageStore.on('loaded_media_data', this.updateStateValues);
 
     const tooltips = document.querySelectorAll('[data-tooltip]');
 
@@ -87,6 +88,12 @@ export default class ViewerInfoTitleBanner extends React.PureComponent {
   }
 
   componentWillUnmount() {
+    MediaPageStore.removeListener('liked_media', this.updateStateValues);
+    MediaPageStore.removeListener('unliked_media', this.updateStateValues);
+    MediaPageStore.removeListener('disliked_media', this.updateStateValues);
+    MediaPageStore.removeListener('undisliked_media', this.updateStateValues);
+    MediaPageStore.removeListener('loaded_media_data', this.updateStateValues);
+
     if (this.actionsObserver) {
       this.actionsObserver.disconnect();
     }

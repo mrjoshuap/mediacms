@@ -39,8 +39,26 @@ export default class ViewerSidebar extends React.PureComponent {
   }
 
   onMediaLoad() {
+    const mediaId = MediaPageStore.get('media-id');
+    let activeItem = this.state.activeItem;
+    const playlistData = this.props.playlistData || this.state.playlistData;
+
+    if (playlistData && playlistData.playlist_media) {
+      let i = 0;
+      activeItem = 0;
+      while (i < playlistData.playlist_media.length) {
+        if (mediaId === playlistData.playlist_media[i].friendly_token) {
+          activeItem = i + 1;
+          break;
+        }
+        i += 1;
+      }
+    }
+
     this.setState({
       mediaType: MediaPageStore.get('media-type'),
+      activeItem,
+      mediaId,
     });
   }
 

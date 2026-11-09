@@ -9,6 +9,7 @@ export default class ViewerInfo extends React.PureComponent {
 
     this.state = {
       videoLoaded: false,
+      mediaId: null,
     };
 
     this.onVideoLoad = this.onVideoLoad.bind(this);
@@ -19,6 +20,7 @@ export default class ViewerInfo extends React.PureComponent {
   onVideoLoad() {
     this.setState({
       videoLoaded: true,
+      mediaId: MediaPageStore.get('media-id'),
     });
   }
 
