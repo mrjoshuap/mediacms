@@ -6,6 +6,7 @@ import json
 import logging
 import os
 import random
+import re
 import shutil
 import subprocess
 import tempfile
@@ -13,6 +14,8 @@ from fractions import Fraction
 
 import filetype
 from django.conf import settings
+from django.contrib.postgres.search import SearchQuery
+from django.db.models import Q
 from django.utils.safestring import mark_safe
 
 CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -794,6 +797,44 @@ def clean_query(query):
         query = query.replace(char, "")
 
     return query.lower()
+
+
+# Hiragana, Katakana, CJK Unified Ideographs (+ common extensions), Hangul
+_CJK_RE = re.compile(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff" r"\uac00-\ud7af\u1100-\u11ff]")
+
+
+def contains_cjk(text):
+    """Return True if text contains CJK (Chinese/Japanese/Korean) characters."""
+    if not text:
+        return False
+    return bool(_CJK_RE.search(text))
+
+
+def prepare_media_search_filter(raw_query):
+    """Build a Q filter for media search.
+
+    Latin tokens keep Postgres FTS prefix matching (term:*). Tokens that
+    contain CJK characters use title/description substring matching so
+    mid-string queries work in scripts without word spaces.
+
+    :param raw_query: str - user search query
+    :return: django.db.models.Q or None if there is nothing to filter on
+    """
+    from .stop_words import STOP_WORDS
+
+    query = clean_query(raw_query)
+    q_parts = [q_part.rstrip("y") for q_part in query.split() if q_part not in STOP_WORDS]
+    if not q_parts:
+        return None
+
+    combined = None
+    for part in q_parts:
+        if contains_cjk(part):
+            part_filter = Q(title__icontains=part) | Q(description__icontains=part)
+        else:
+            part_filter = Q(search=SearchQuery(part + ":*", search_type="raw"))
+        combined = part_filter if combined is None else combined & part_filter
+    return combined
 
 
 def timestamp_to_seconds(timestamp):

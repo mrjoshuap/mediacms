@@ -95,6 +95,10 @@ class SearchFeedTest(TestCase):
         self.assertEqual(self.search(q="watercol"), {"watercolour painting"})
         self.assertEqual(self.search(q="guitar song"), {"guitar song"})
 
+    def test_cjk_query_matches_mid_string_title(self):
+        create_media(self.user, title="東京都庁")
+        self.assertEqual(self.search(q="京都"), {"東京都庁"})
+
     def test_query_made_only_of_stop_words_returns_all_listable_media(self):
         self.assertEqual(self.search(q="the"), {"watercolour painting", "guitar song"})
 

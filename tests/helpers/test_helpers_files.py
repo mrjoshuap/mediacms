@@ -271,6 +271,40 @@ class TextCleanupTests(SimpleTestCase):
         self.assertEqual(helpers.get_alphanumeric_and_spaces("  Hello,   World!!  Ελλάδα\t2 "), "Hello World Ελλάδα 2")
 
 
+class MediaSearchFilterTests(SimpleTestCase):
+    def test_contains_cjk_detects_cjk_scripts(self):
+        self.assertTrue(helpers.contains_cjk("東京都庁"))
+        self.assertTrue(helpers.contains_cjk("ひらがな"))
+        self.assertTrue(helpers.contains_cjk("カタカナ"))
+        self.assertTrue(helpers.contains_cjk("한국어"))
+        self.assertTrue(helpers.contains_cjk("mix京都latin"))
+        self.assertFalse(helpers.contains_cjk("hello world"))
+        self.assertFalse(helpers.contains_cjk(""))
+        self.assertFalse(helpers.contains_cjk(None))
+
+    def test_prepare_media_search_filter_returns_none_for_empty_or_stop_words(self):
+        self.assertIsNone(helpers.prepare_media_search_filter(""))
+        self.assertIsNone(helpers.prepare_media_search_filter("the"))
+
+    def test_prepare_media_search_filter_uses_icontains_for_cjk_tokens(self):
+        search_filter = helpers.prepare_media_search_filter("京都")
+        children = search_filter.children
+        self.assertEqual(len(children), 2)
+        self.assertIn(("title__icontains", "京都"), children)
+        self.assertIn(("description__icontains", "京都"), children)
+
+    def test_prepare_media_search_filter_strips_operators_before_building_q(self):
+        search_filter = helpers.prepare_media_search_filter("京&都")
+        self.assertIn(("title__icontains", "京都"), search_filter.children)
+
+    def test_prepare_media_search_filter_uses_fts_prefix_for_latin_tokens(self):
+        search_filter = helpers.prepare_media_search_filter("ancie")
+        self.assertEqual(len(search_filter.children), 1)
+        field, value = search_filter.children[0]
+        self.assertEqual(field, "search")
+        self.assertIn("ancie:*", str(value))
+
+
 class JsonForScriptTests(SimpleTestCase):
     def test_markup_characters_are_escaped_so_a_string_cannot_end_the_script_block(self):
         rendered = helpers.json_for_script([{"title": "</script x"}, {"title": "a > b & c"}])
