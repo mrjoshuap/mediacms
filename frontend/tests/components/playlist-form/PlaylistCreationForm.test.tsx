@@ -96,7 +96,10 @@ describe('components/playlist-form', () => {
                 });
             });
             jest.advanceTimersByTime(100);
-            expect((PageActions as any).addNotification).toHaveBeenCalledWith('Playlist created', 'playlistCreationCompleted');
+            expect((PageActions as any).addNotification).toHaveBeenCalledWith(
+                'Playlist created. Open a media item and use Save to add it to this playlist.',
+                'playlistCreationCompleted'
+            );
             expect(onPlaylistSave).toHaveBeenCalledWith({ playlist_id: 'abc123', add_date: '2024-01-01', description: 'd', title: 't', media_list: [] });
             unmount();
             jest.useRealTimers();

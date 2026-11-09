@@ -55,6 +55,28 @@ class PlaylistListTest(TestCase):
         dates = [p['add_date'] for p in response.data['results']]
         self.assertEqual(dates, sorted(dates, reverse=True))
 
+    def test_listing_media_count_includes_unlisted_and_matches_detail(self):
+        public_media = create_media(self.owner, title='list public', state='public')
+        unlisted_media = create_media(self.owner, title='list unlisted', state='unlisted')
+        private_media = create_media(self.owner, title='list private', state='private')
+        playlist = Playlist.objects.create(title='counted playlist', user=self.owner)
+        for ordering, media in enumerate([public_media, unlisted_media, private_media], start=1):
+            PlaylistMedia.objects.create(playlist=playlist, media=media, ordering=ordering)
+
+        anon_list = Client().get(PLAYLISTS_URL, {'author': self.owner.username})
+        counted = next(p for p in anon_list.data['results'] if p['title'] == 'counted playlist')
+        self.assertEqual(counted['media_count'], 2)
+
+        anon_detail = Client().get(playlist_url(playlist))
+        self.assertEqual(len(anon_detail.data['playlist_media']), 2)
+
+        owner_list = logged_in(self.owner).get(PLAYLISTS_URL, {'author': self.owner.username})
+        owner_counted = next(p for p in owner_list.data['results'] if p['title'] == 'counted playlist')
+        self.assertEqual(owner_counted['media_count'], 3)
+
+        owner_detail = logged_in(self.owner).get(playlist_url(playlist))
+        self.assertEqual(len(owner_detail.data['playlist_media']), 3)
+
     def test_anonymous_users_cannot_create_playlists(self):
         response = Client().post(PLAYLISTS_URL, {'title': 'nope'})
         self.assertEqual(response.status_code, 403)

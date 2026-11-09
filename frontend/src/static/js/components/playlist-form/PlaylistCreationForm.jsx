@@ -86,7 +86,10 @@ export function PlaylistCreationForm(props) {
     // FIXME: Without delay creates conflict [ Uncaught Error: Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch. ].
 
     setTimeout(function () {
-      PageActions.addNotification('Playlist created', 'playlistCreationCompleted');
+      PageActions.addNotification(
+        'Playlist created. Open a media item and use Save to add it to this playlist.',
+        'playlistCreationCompleted'
+      );
       const plistData = {
         playlist_id: (function (_url_) {
           let ret = _url_.split('/');

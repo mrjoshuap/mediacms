@@ -21,6 +21,16 @@ from ..models import Media, Playlist, PlaylistMedia
 from ..serializers import MediaSerializer, PlaylistDetailSerializer, PlaylistSerializer
 
 
+def playlist_media_accessible_q(user):
+    """Visibility filter for playlist media, matching PlaylistDetail.get."""
+    accessible = Q(media__state__in=["public", "unlisted"])
+    if user and getattr(user, "is_authenticated", False):
+        accessible |= Q(media__user=user) | Q(media__permissions__user=user)
+        if getattr(settings, "USE_RBAC", False):
+            accessible |= Q(media__category__in=user.get_rbac_categories_as_member())
+    return accessible
+
+
 class PlaylistList(APIView):
     """Playlists listings and creation views"""
 
@@ -39,13 +49,19 @@ class PlaylistList(APIView):
     def get(self, request, format=None):
         pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
         paginator = pagination_class()
-        first_thumbnail = (
-            PlaylistMedia.objects.filter(playlist_id=OuterRef("pk"), media__listable=True).exclude(media__thumbnail="").order_by("ordering", "-action_date").values("media__thumbnail")[:1]
-        )
+        # Count/thumbnail use the same visibility rules as opening a playlist (not site-wide listable).
+        if is_mediacms_editor(request.user):
+            media_count = Count("media", distinct=True)
+            thumbnail_qs = PlaylistMedia.objects.filter(playlist_id=OuterRef("pk"))
+        else:
+            accessible = playlist_media_accessible_q(request.user)
+            media_count = Count("media", filter=accessible, distinct=True)
+            thumbnail_qs = PlaylistMedia.objects.filter(playlist_id=OuterRef("pk")).filter(accessible)
+        first_thumbnail = thumbnail_qs.exclude(media__thumbnail="").order_by("ordering", "-action_date").values("media__thumbnail")[:1]
         playlists = (
             Playlist.objects.select_related("user")
             .annotate(
-                annotated_media_count=Count("media", filter=Q(media__listable=True), distinct=True),
+                annotated_media_count=media_count,
                 annotated_thumbnail=Subquery(first_thumbnail),
             )
             .order_by("-add_date")
@@ -110,12 +126,7 @@ class PlaylistDetail(APIView):
         if is_mediacms_editor(request.user):
             playlist_media = base_qs
         else:
-            accessible = Q(media__state__in=["public", "unlisted"])
-            if request.user.is_authenticated:
-                accessible |= Q(media__user=request.user) | Q(media__permissions__user=request.user)
-                if getattr(settings, 'USE_RBAC', False):
-                    accessible |= Q(media__category__in=request.user.get_rbac_categories_as_member())
-            playlist_media = base_qs.filter(accessible)
+            playlist_media = base_qs.filter(playlist_media_accessible_q(request.user))
 
         # Keep PlaylistMedia.ordering after permission joins + distinct().
         playlist_media = playlist_media.prefetch_related("media__user").select_related("media").order_by("ordering", "-action_date").distinct()

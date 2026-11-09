@@ -31,7 +31,8 @@ class Playlist(models.Model):
     def media_count(self):
         if hasattr(self, "annotated_media_count"):
             return self.annotated_media_count
-        return self.media.filter(listable=True).count()
+        # Match playlist detail for anonymous viewers (not site-wide listable).
+        return self.media.filter(state__in=["public", "unlisted"]).count()
 
     def get_absolute_url(self, api=False):
         if api:
@@ -82,7 +83,7 @@ class Playlist(models.Model):
             if self.annotated_thumbnail:
                 return helpers.url_from_path(self.annotated_thumbnail)
             return None
-        pm = self.playlistmedia_set.filter(media__listable=True).first()
+        pm = self.playlistmedia_set.filter(media__state__in=["public", "unlisted"]).first()
         if pm and pm.media.thumbnail:
             return helpers.url_from_path(pm.media.thumbnail.path)
         return None

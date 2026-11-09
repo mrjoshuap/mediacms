@@ -61,11 +61,13 @@ class PlaylistTests(TestCase):
         self.assertEqual(playlist.url, f"/playlists/{playlist.friendly_token}")
         self.assertEqual(playlist.api_url, f"/api/v1/playlists/{playlist.friendly_token}")
 
-    def test_media_count_includes_only_listable_media(self):
+    def test_media_count_includes_public_and_unlisted_not_private(self):
         playlist = self.make_playlist()
-        for media in [self.first, self.second, self.hidden]:
+        unlisted = create_media(self.user, title="playlist unlisted", state="unlisted")
+        for media in [self.first, self.second, self.hidden, unlisted]:
             PlaylistMedia.objects.create(playlist=playlist, media=media)
-        self.assertEqual(playlist.media_count, 2)
+        # Private media are excluded; unlisted still counts (unlike site-wide listable).
+        self.assertEqual(playlist.media_count, 3)
 
     def test_removing_media_lowers_the_count(self):
         playlist = self.make_playlist()
@@ -95,7 +97,7 @@ class PlaylistTests(TestCase):
         self.assertFalse(playlist.set_ordering(self.first, "2"))
         self.assertEqual(playlist.playlistmedia_set.get().ordering, 1)
 
-    def test_thumbnail_comes_from_the_first_listable_media(self):
+    def test_thumbnail_comes_from_the_first_public_or_unlisted_media(self):
         playlist = self.make_playlist()
         self.assertIsNone(playlist.thumbnail_url)
 
