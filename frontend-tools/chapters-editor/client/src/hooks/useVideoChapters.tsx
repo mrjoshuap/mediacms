@@ -30,10 +30,11 @@ const useVideoChapters = () => {
         const sortedSegments = [...segments].sort((a, b) => a.startTime - b.startTime);
 
         // Renumber each segment based on its chronological position
-        // Only update titles that follow the default "Chapter X" pattern to preserve custom titles
+        // Only update empty titles or titles that follow the default "Chapter X" pattern
+        // to preserve custom titles
         return sortedSegments.map((segment, index) => {
-            const currentTitle = segment.chapterTitle || '';
-            const isDefaultTitle = /^Chapter \d+$/.test(currentTitle);
+            const currentTitle = (segment.chapterTitle || '').trim();
+            const isDefaultTitle = !currentTitle || /^Chapter \d+$/.test(currentTitle);
 
             return {
                 ...segment,
@@ -206,15 +207,16 @@ const useVideoChapters = () => {
         };
 
         const handleTimeUpdate = () => {
+            // Ignore stale timeupdates while a seek is in flight so paused seeks
+            // cannot snap React currentTime back to the pre-seek position (often 0).
             if (pendingSeekRef.current !== null) return;
             setCurrentTime(video.currentTime);
         };
 
         const handleSeeked = () => {
-            if (pendingSeekRef.current === null) return;
-            const time = pendingSeekRef.current;
+            const time = pendingSeekRef.current !== null ? pendingSeekRef.current : video.currentTime;
             pendingSeekRef.current = null;
-            video.currentTime = time;
+            setCurrentTime(time);
         };
 
         const handlePlay = () => {
@@ -297,7 +299,7 @@ const useVideoChapters = () => {
 
                             const defaultSegment: Segment = {
                                 id: 1,
-                                chapterTitle: '',
+                                chapterTitle: 'Chapter 1',
                                 startTime: 0,
                                 endTime: video.duration,
                             };
@@ -425,6 +427,7 @@ const useVideoChapters = () => {
                 // After initialization, try to seek again
                 setTimeout(() => {
                     if (video) {
+                        pendingSeekRef.current = time;
                         video.currentTime = time;
                         setCurrentTime(time);
                     }
@@ -436,12 +439,10 @@ const useVideoChapters = () => {
         // Track if the video was playing before seeking
         const wasPlaying = !video.paused;
 
-        // Update the video position
-        if (video.seeking) {
-            pendingSeekRef.current = time;
-        } else {
-            video.currentTime = time;
-        }
+        // Always gate timeupdate with pendingSeekRef so a late timeupdate cannot
+        // overwrite the optimistic currentTime before seeked fires.
+        pendingSeekRef.current = time;
+        video.currentTime = time;
         setCurrentTime(time);
 
         // Store the position in a global state accessible to iOS Safari

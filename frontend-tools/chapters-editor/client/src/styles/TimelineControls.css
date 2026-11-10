@@ -329,13 +329,19 @@
         z-index: 1000;
         min-width: 150px;
         text-align: center;
-        pointer-events: auto;
-        top: -105px !important;
-        transform: translateY(-10px);
+        /* Let clicks on empty tooltip chrome pass through to the timeline for seeking */
+        pointer-events: none;
+        /* Anchor above the timeline so taller chapter-editor content never covers it */
+        top: auto !important;
+        bottom: calc(100% + 12px);
     }
 
-    .segment-tooltip {
-        top: -165px !important;
+    .segment-tooltip .tooltip-row,
+    .segment-tooltip .tooltip-actions,
+    .segment-tooltip .tooltip-chapter-editor,
+    .empty-space-tooltip .tooltip-row,
+    .empty-space-tooltip .tooltip-actions {
+        pointer-events: auto;
     }
 
     .segment-tooltip:after,
@@ -1037,7 +1043,7 @@
     pointer-events: auto; /* Ensure it can receive clicks */
 }
 
-textarea.tooltip-chapter-input {
+input.tooltip-chapter-input {
     width: 100%;
     padding: 0.5rem;
     border: 2px solid #ccc;
@@ -1045,19 +1051,16 @@ textarea.tooltip-chapter-input {
     background-color: white;
     color: black;
     font-size: 0.75rem;
-    resize: none;
     outline: none;
     box-sizing: border-box;
-    height: 55px !important;
-    max-height: 55px !important;
-    min-height: 55px !important;
+    height: 36px;
 }
 
-textarea.tooltip-chapter-input:focus {
+input.tooltip-chapter-input:focus {
     border-color: #3b82f6;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
-textarea.tooltip-chapter-input::placeholder {
+input.tooltip-chapter-input::placeholder {
     color: #999;
 }

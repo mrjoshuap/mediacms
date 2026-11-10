@@ -489,6 +489,7 @@ const TimelineControls = ({
 
     // Calculate positions as percentages
     const currentTimePercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+    const tooltipAnchorPercent = duration > 0 ? (clickedTime / duration) * 100 : currentTimePercent;
     const trimStartPercent = duration > 0 ? (trimStart / duration) * 100 : 0;
     const trimEndPercent = duration > 0 ? (trimEnd / duration) * 100 : 0;
 
@@ -503,11 +504,11 @@ const TimelineControls = ({
 
         try {
             // Format chapters data for API request - sort by start time first
-            const chapters = clipSegments
-                .filter((segment) => segment.chapterTitle && segment.chapterTitle.trim())
+            // Apply Chapter N fallback for empty titles so save matches what the UI displays
+            const chapters = [...clipSegments]
                 .sort((a, b) => a.startTime - b.startTime) // Sort by start time chronologically
-                .map((segment) => ({
-                    chapterTitle: segment.chapterTitle || `Chapter ${segment.id}`,
+                .map((segment, index) => ({
+                    chapterTitle: segment.chapterTitle?.trim() || `Chapter ${index + 1}`,
                     from: formatDetailedTime(segment.startTime),
                     to: formatDetailedTime(segment.endTime),
                 }));
@@ -593,15 +594,11 @@ const TimelineControls = ({
 
     // Update display time and check for transitions between segments and empty spaces
     useEffect(() => {
-        // Always update display time to match current video time
         if (videoRef.current) {
-            // Always update display time when current time changes (both playing and paused)
-            setDisplayTime(currentTime);
-            
-            // If video is playing, also update the tooltip and perform segment checks
+            // Only sync dialog/click time from the playhead while playing (or just after pause).
+            // When paused, keep the click/±50ms time so a stale currentTime cannot snap the UI to 0.
             if (!videoRef.current.paused) {
-                // Also update clicked time to keep them in sync when playing
-                // This ensures correct time is shown when pausing
+                setDisplayTime(currentTime);
                 setClickedTime(currentTime);
 
                 if (selectedSegmentId !== null) {
@@ -965,14 +962,31 @@ const TimelineControls = ({
         setTimeout(loadSavedSegments, 100);
     }, []); // Run only once on mount
 
-    // Global click handler to close tooltips when clicking outside
+    // Close chapter/empty-space popup when clicking outside the timeline UI
     useEffect(() => {
-        // Remove the global click handler that closes tooltips
-        // This keeps the popup always visible, even when clicking outside the timeline
+        if (selectedSegmentId === null && !showEmptySpaceTooltip) return;
 
-        // Keeping the dependency array to avoid linting errors
-        return () => {};
-    }, [selectedSegmentId, showEmptySpaceTooltip, isPlayingSegment]);
+        const handleClickOutside = (e: MouseEvent) => {
+            const target = e.target as HTMLElement | null;
+            if (!target) return;
+
+            // Keep popup open for interactions inside the timeline / popup / marker toggle
+            if (
+                target.closest('.segment-tooltip') ||
+                target.closest('.empty-space-tooltip') ||
+                target.closest('.timeline-container') ||
+                target.closest('.timeline-marker-head')
+            ) {
+                return;
+            }
+
+            setSelectedSegmentId(null);
+            setShowEmptySpaceTooltip(false);
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [selectedSegmentId, showEmptySpaceTooltip]);
 
     // Initialize drag handlers for trim handles
     useEffect(() => {
@@ -1772,45 +1786,9 @@ const TimelineControls = ({
         // Ensure time is within segment bounds
         const boundedTime = Math.max(segment.startTime, Math.min(segment.endTime, clickTime));
 
-        // Set both clicked time and display time for UI
+        // Keep dialog time and popup position at the clicked location
         setClickedTime(boundedTime);
         setDisplayTime(boundedTime);
-
-        // Check if the video's current time is inside or outside the segment
-        // This helps with updating the tooltip correctly after dragging operations
-        if (videoRef.current) {
-            const currentVideoTime = videoRef.current.currentTime;
-            const isPlayheadInsideSegment =
-                currentVideoTime >= segment.startTime && currentVideoTime <= segment.endTime;
-
-            logger.debug(
-                `Segment click - playhead at ${formatDetailedTime(currentVideoTime)} is ${
-                    isPlayheadInsideSegment ? 'inside' : 'outside'
-                } segment (${formatDetailedTime(segment.startTime)} - ${formatDetailedTime(segment.endTime)})`
-            );
-
-            // If playhead is outside the segment, update the display time to segment boundary
-            if (!isPlayheadInsideSegment) {
-                // Adjust the display time based on which end is closer to the playhead
-                if (Math.abs(currentVideoTime - segment.startTime) < Math.abs(currentVideoTime - segment.endTime)) {
-                    // Playhead is closer to segment start
-                    logger.debug(
-                        `Playhead outside segment - adjusting to segment start: ${formatDetailedTime(
-                            segment.startTime
-                        )}`
-                    );
-                    setDisplayTime(segment.startTime);
-                    // Don't update clickedTime here since we already set it to the clicked position
-                } else {
-                    // Playhead is closer to segment end
-                    logger.debug(
-                        `Playhead outside segment - adjusting to segment end: ${formatDetailedTime(segment.endTime)}`
-                    );
-                    setDisplayTime(segment.endTime);
-                    // Don't update clickedTime here since we already set it to the clicked position
-                }
-            }
-        }
 
         // Seek to this position (this will update the video's current time)
         onSeek(boundedTime);
@@ -1946,7 +1924,9 @@ const TimelineControls = ({
                     onClick={handleSegmentClick(segment.id)}
                 >
                     <div className="clip-segment-info">
-                        <div className="clip-segment-name">Chapter {index + 1}</div>
+                        <div className="clip-segment-name">
+                            {segment.chapterTitle?.trim() || `Chapter ${index + 1}`}
+                        </div>
                         <div className="clip-segment-time">
                             {formatTime(segment.startTime)} - {formatTime(segment.endTime)}
                         </div>
@@ -2359,7 +2339,7 @@ const TimelineControls = ({
                             }`}
                             style={{
                                 position: 'absolute',
-                                ...constrainTooltipPosition(currentTimePercent),
+                                ...constrainTooltipPosition(tooltipAnchorPercent),
                             }}
                             onClick={(e) => {
                                 if (isPlayingSegments) {
@@ -2371,18 +2351,24 @@ const TimelineControls = ({
                             {/* Chapter Editor for this segment */}
                             {selectedSegmentId && (
                                 <div className="tooltip-chapter-editor">
-                                    <textarea
+                                    <input
+                                        type="text"
                                         className="tooltip-chapter-input"
                                         placeholder="Add Chapter Text"
                                         value={editingChapterTitle}
                                         onChange={(e) => handleChapterTitleChange(e.target.value)}
                                         onBlur={performAutoSave}
-                                        onMouseLeave={performAutoSave}
-                                        rows={2}
                                         maxLength={200}
                                         onClick={(e) => e.stopPropagation()}
                                         onMouseDown={(e) => e.stopPropagation()}
                                         onMouseUp={(e) => e.stopPropagation()}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                performAutoSave();
+                                                (e.target as HTMLInputElement).blur();
+                                            }
+                                        }}
                                     />
                                 </div>
                             )}
@@ -2423,7 +2409,7 @@ const TimelineControls = ({
                                         }
                                     }}
                                 >
-                                    {formatDetailedTime(displayTime)}
+                                    {formatDetailedTime(clickedTime)}
                                 </div>
                                 <button
                                     className={`tooltip-time-btn ${isPlayingSegments ? 'disabled' : ''}`}
@@ -2844,7 +2830,7 @@ const TimelineControls = ({
                             }`}
                             style={{
                                 position: 'absolute',
-                                ...constrainTooltipPosition(currentTimePercent),
+                                ...constrainTooltipPosition(tooltipAnchorPercent),
                             }}
                             onClick={(e) => {
                                 if (isPlayingSegments) {
@@ -4005,7 +3991,7 @@ const TimelineControls = ({
                         <p className="modal-message">
                             {clipSegments.length === 0 
                                 ? "Are you sure you want to clear all chapters? This will remove all existing chapters from the database."
-                                : `Are you sure you want to save the chapters? This will save ${clipSegments.filter((s) => s.chapterTitle && s.chapterTitle.trim()).length} chapters to the database.`}
+                                : `Are you sure you want to save the chapters? This will save ${clipSegments.length} chapters to the database.`}
                         </p>
                     </Modal>
 
