@@ -150,19 +150,14 @@ def write_this_version(
         owner = repo.split("/")[0]
         docker_base = f"`ghcr.io/{owner}/mediacms:beta` / `:stable`"
         docker_full = f"`ghcr.io/{owner}/mediacms-full:beta` / `:stable`"
-        docker_note = (
-            f"Fork images on [GHCR](https://github.com/{repo}/pkgs/container/mediacms). "
-            "See [Install](../getting-started/install.md#fork-beta-and-stable-images-ghcr)."
-        )
+        docker_note = f"Fork images on [GHCR](https://github.com/{repo}/pkgs/container/mediacms). " "See [Install](../getting-started/install.md#fork-beta-and-stable-images-ghcr)."
         artifact_extra = f"""| Fork version file | [`version/FORK_VERSION`](https://github.com/{repo}/blob/HEAD/version/FORK_VERSION) |
 | Date-stamped tag pattern | `v{fork_ver}.YYYYMMDD[.N]` |
 """
     else:
         docker_base = f"`mediacms/mediacms:{version}`"
         docker_full = f"`mediacms/mediacms:{version}-full`"
-        docker_note = (
-            f"{docker_base} on [Docker Hub](https://hub.docker.com/r/mediacms/mediacms) (placeholder)"
-        )
+        docker_note = f"{docker_base} on [Docker Hub](https://hub.docker.com/r/mediacms/mediacms) (placeholder)"
         artifact_extra = ""
 
     content = f"""{GENERATED_MARKER}
@@ -220,11 +215,7 @@ def write_whats_new(section: str, version: str, *, fork_ver: str | None = None) 
             "See [This version](this-version.md) for build and artifact details.\n"
         )
         body = fork_whats_new_body()
-        upstream = (
-            f"\n## Upstream base ({version})\n\n"
-            "Upstream MediaCMS release notes for the `package.json` version this branch tracks:\n\n"
-            f"{section}"
-        )
+        upstream = f"\n## Upstream base ({version})\n\n" "Upstream MediaCMS release notes for the `package.json` version this branch tracks:\n\n" f"{section}"
         content = f"""{GENERATED_MARKER}
 # What's new
 
