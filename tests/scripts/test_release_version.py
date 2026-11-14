@@ -19,22 +19,22 @@ def _load():
 
 def test_next_tag_primary():
     mod = _load()
-    tag, emergency = mod.next_tag("1.2.3", "20251114", tags=set())
-    assert tag == "v1.2.3.20251114"
+    tag, emergency = mod.next_tag("10.0.0", "20251114", tags=set())
+    assert tag == "v10.0.0.20251114"
     assert emergency is False
 
 
 def test_next_tag_emergency_increments():
     mod = _load()
-    tags = {"v1.2.3.20251114", "v1.2.3.20251114.1"}
-    tag, emergency = mod.next_tag("1.2.3", "20251114", tags=tags)
-    assert tag == "v1.2.3.20251114.2"
+    tags = {"v10.0.0.20251114", "v10.0.0.20251114.1"}
+    tag, emergency = mod.next_tag("10.0.0", "20251114", tags=tags)
+    assert tag == "v10.0.0.20251114.2"
     assert emergency is True
 
 
 def test_validate_stable_tag():
     mod = _load()
-    parsed = mod.validate_stable_tag("v1.2.3.20251114", base="1.2.3")
+    parsed = mod.validate_stable_tag("v10.0.0.20251114", base="10.0.0")
     assert parsed["stamp"] == "20251114"
     assert parsed["n"] is None
 
@@ -42,10 +42,10 @@ def test_validate_stable_tag():
 def test_validate_stable_tag_rejects_wrong_base():
     mod = _load()
     with pytest.raises(SystemExit):
-        mod.validate_stable_tag("v9.4.0.20251114", base="1.2.3")
+        mod.validate_stable_tag("v9.4.0.20251114", base="10.0.0")
 
 
 def test_parse_tag_emergency():
     mod = _load()
-    parsed = mod.parse_tag("v1.2.3.20251114.3")
-    assert parsed == {"base": "1.2.3", "stamp": "20251114", "n": 3}
+    parsed = mod.parse_tag("v10.0.0.20251114.3")
+    assert parsed == {"base": "10.0.0", "stamp": "20251114", "n": 3}

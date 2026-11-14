@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compute date-stamped fork release tags: v1.2.3.YYYYMMDD[.N]."""
+"""Compute date-stamped fork release tags: v10.0.0.YYYYMMDD[.N]."""
 
 from __future__ import annotations
 
@@ -92,7 +92,7 @@ def main() -> int:
     parser.add_argument(
         "--tag",
         default="",
-        help="Existing git tag for stable releases (e.g. v1.2.3.20251114).",
+        help="Existing git tag for stable releases (e.g. v10.0.0.20251114).",
     )
     parser.add_argument(
         "--stamp",

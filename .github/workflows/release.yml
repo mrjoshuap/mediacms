@@ -19,7 +19,7 @@ on:
           - beta
           - stable
       tag:
-        description: "Required for stable (e.g. v1.2.3.20251114). Leave empty for beta."
+        description: "Required for stable (e.g. v10.0.0.20251114). Leave empty for beta."
         required: false
         type: string
         default: ""

@@ -57,7 +57,7 @@ This fork publishes images to GitHub Container Registry. Change the Compose `ima
 | `ghcr.io/mrjoshuap/mediacms:mediacms-next` | Same digest as `:beta` (branch alias) |
 | `ghcr.io/mrjoshuap/mediacms:stable` | Latest stable **base** release |
 | `ghcr.io/mrjoshuap/mediacms-full:stable` | Latest stable **full** release |
-| `ghcr.io/mrjoshuap/mediacms:v1.2.3.YYYYMMDD` | Immutable pin for one release |
+| `ghcr.io/mrjoshuap/mediacms:v10.0.0.YYYYMMDD` | Immutable pin for one release |
 | `ghcr.io/mrjoshuap/mediacms:upgrade-audit-beta` | Base image alias for beta upgrade drills |
 | `ghcr.io/mrjoshuap/mediacms:upgrade-audit` | Base image alias for stable upgrade drills |
 
@@ -73,7 +73,7 @@ services:
     image: ghcr.io/mrjoshuap/mediacms:beta
 ```
 
-Beta builds publish a GitHub **pre-release** on every push to `mediacms-next`. Stable releases publish only when a stamp tag `v1.2.3.YYYYMMDD` (or `v1.2.3.YYYYMMDD.N` for a same-day emergency) is pushed from `main`. The product base version lives in `version/FORK_VERSION`.
+Beta builds publish a GitHub **pre-release** on every push to `mediacms-next`. Stable releases publish only when a stamp tag `v10.0.0.YYYYMMDD` (or `v10.0.0.YYYYMMDD.N` for a same-day emergency) is pushed from `main`. The product base version lives in `version/FORK_VERSION`.
 
 Upstream Docker Hub images remain `mediacms/mediacms` and `mediacms/mediacms:full`.
 

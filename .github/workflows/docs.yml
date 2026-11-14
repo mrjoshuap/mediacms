@@ -14,7 +14,7 @@ name: Documentation
 on:
   push:
     branches: [main, mediacms-next]
-    # Upstream semver (v9.4.0) and fork stamp tags (v1.2.3.20251114[.N])
+    # Upstream semver (v9.4.0) and fork stamp tags (v10.0.0.20251114[.N])
     tags: ["v*.*.*", "v*.*.*.*"]
   pull_request:
   workflow_dispatch:

@@ -11,7 +11,7 @@ on:
         required: true
         type: string
       version_tag:
-        description: "Immutable tag including v prefix (e.g. v1.2.3.20251114)"
+        description: "Immutable tag including v prefix (e.g. v10.0.0.20251114)"
         required: true
         type: string
       push:
