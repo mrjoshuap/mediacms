@@ -1,0 +1,233 @@
+name: Release
+
+# Beta: every push to mediacms-next after tests → pre-release + GHCR :beta
+# Stable: push of vMAJOR.MINOR.PATCH.YYYYMMDD[.N] on the stable line → Release + GHCR :stable
+
+on:
+  push:
+    branches:
+      - mediacms-next
+    tags:
+      - "v*.*.*.*"
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: "Channel to release"
+        required: true
+        type: choice
+        options:
+          - beta
+          - stable
+      tag:
+        description: "Required for stable (e.g. v1.2.3.20251114). Leave empty for beta."
+        required: false
+        type: string
+        default: ""
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  packages: write
+  pull-requests: read
+
+env:
+  STABLE_BRANCH: ${{ vars.MEDIACMS_STABLE_BRANCH || 'main' }}
+  BETA_BRANCH: ${{ vars.MEDIACMS_BETA_BRANCH || 'mediacms-next' }}
+  DOCS_CHANNEL: local
+
+jobs:
+  context:
+    name: Resolve channel
+    runs-on: ubuntu-latest
+    outputs:
+      channel: ${{ steps.resolve.outputs.channel }}
+      proceed: ${{ steps.resolve.outputs.proceed }}
+      tag_name: ${{ steps.resolve.outputs.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve
+        id: resolve
+        run: |
+          set -euo pipefail
+          REF="${GITHUB_REF}"
+          EVENT="${{ github.event_name }}"
+          PROCEED=true
+          CHANNEL=""
+          TAG_NAME=""
+
+          if [[ "$EVENT" == "workflow_dispatch" ]]; then
+            CHANNEL="${{ inputs.channel }}"
+            TAG_NAME="${{ inputs.tag }}"
+          elif [[ "$REF" == refs/tags/v* ]]; then
+            CHANNEL=stable
+            TAG_NAME="${REF#refs/tags/}"
+            # Only release stable from commits on the stable branch.
+            git fetch origin "${STABLE_BRANCH}" "${BETA_BRANCH}" || true
+            if ! git merge-base --is-ancestor "${GITHUB_SHA}" "origin/${STABLE_BRANCH}"; then
+              echo "Tag commit is not on ${STABLE_BRANCH}; skipping stable release (likely a beta tag)."
+              PROCEED=false
+            fi
+          elif [[ "$REF" == "refs/heads/${BETA_BRANCH}" ]]; then
+            CHANNEL=beta
+          else
+            echo "No release for ref $REF"
+            PROCEED=false
+          fi
+
+          # Ignore non-stamp tags (e.g. v9.4.0)
+          if [[ "$CHANNEL" == "stable" && "$PROCEED" == "true" ]]; then
+            if ! [[ "$TAG_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]{8}(\.[0-9]+)?$ ]]; then
+              echo "Tag $TAG_NAME is not a fork stamp tag; skipping."
+              PROCEED=false
+            fi
+          fi
+
+          echo "channel=$CHANNEL" >> "$GITHUB_OUTPUT"
+          echo "proceed=$PROCEED" >> "$GITHUB_OUTPUT"
+          echo "tag_name=$TAG_NAME" >> "$GITHUB_OUTPUT"
+          echo "channel=$CHANNEL proceed=$PROCEED tag=$TAG_NAME"
+
+  pre-commit:
+    needs: context
+    if: needs.context.outputs.proceed == 'true'
+    uses: ./.github/workflows/pre-commit.yml
+
+  test:
+    needs: [context, pre-commit]
+    if: needs.context.outputs.proceed == 'true'
+    uses: ./.github/workflows/python.yml
+
+  frontend:
+    needs: context
+    if: needs.context.outputs.proceed == 'true'
+    uses: ./.github/workflows/frontend-build-and-test.yml
+
+  version:
+    name: Compute version
+    needs: [context, test, frontend]
+    if: needs.context.outputs.proceed == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.ver.outputs.tag }}
+      version: ${{ steps.ver.outputs.version }}
+      channel: ${{ steps.ver.outputs.channel }}
+      is_emergency: ${{ steps.ver.outputs.is_emergency }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compute
+        id: ver
+        run: |
+          CHANNEL="${{ needs.context.outputs.channel }}"
+          if [[ "$CHANNEL" == "stable" ]]; then
+            python scripts/release_version.py --channel stable --tag "${{ needs.context.outputs.tag_name }}"
+          else
+            python scripts/release_version.py --channel beta
+          fi
+
+  images:
+    needs: [context, version]
+    if: needs.context.outputs.proceed == 'true'
+    uses: ./.github/workflows/docker-build-push.yml
+    with:
+      channel: ${{ needs.version.outputs.channel }}
+      version_tag: ${{ needs.version.outputs.tag }}
+      push: true
+      ghcr_owner: ${{ vars.MEDIACMS_GHCR_OWNER }}
+    secrets: inherit
+
+  assets:
+    name: Pack release assets
+    needs: [context, version, images]
+    if: needs.context.outputs.proceed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install docs tools
+        run: pip install -r requirements-docs.txt
+
+      - name: Pack
+        env:
+          DOCS_CHANNEL: ${{ needs.version.outputs.channel }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          chmod +x scripts/pack_release_assets.sh
+          scripts/pack_release_assets.sh "${{ needs.version.outputs.tag }}" "${{ needs.version.outputs.channel }}"
+
+      - name: Upload asset artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-assets-${{ needs.version.outputs.tag }}
+          path: dist/release/
+          if-no-files-found: error
+
+  publish:
+    name: GitHub Release
+    needs: [context, version, assets]
+    if: needs.context.outputs.proceed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download assets
+        uses: actions/download-artifact@v4
+        with:
+          name: release-assets-${{ needs.version.outputs.tag }}
+          path: dist/release
+
+      - name: Ensure beta git tag
+        if: needs.version.outputs.channel == 'beta'
+        env:
+          TAG: ${{ needs.version.outputs.tag }}
+        run: |
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -a "$TAG" -m "Beta release $TAG"
+            git push origin "$TAG"
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.version.outputs.tag }}
+          name: ${{ needs.version.outputs.tag }} (${{ needs.version.outputs.channel }})
+          prerelease: ${{ needs.version.outputs.channel == 'beta' }}
+          generate_release_notes: true
+          body_path: dist/release/INSTALL-${{ needs.version.outputs.channel }}.md
+          files: |
+            dist/release/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

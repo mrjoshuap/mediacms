@@ -9,7 +9,8 @@ name: Documentation
 on:
   push:
     branches: [main, mediacms-next]
-    tags: ["v*.*.*"]
+    # Upstream semver (v9.4.0) and fork stamp tags (v1.2.3.20251114[.N])
+    tags: ["v*.*.*", "v*.*.*.*"]
   pull_request:
   workflow_dispatch:
 
@@ -51,10 +52,22 @@ jobs:
         id: channel
         run: |
           REF="${{ github.ref }}"
+          DOC_VERSION=""
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             CHANNEL=pr
           elif [[ "$REF" == refs/tags/v* ]]; then
-            CHANNEL=latest
+            TAG="${REF#refs/tags/}"
+            git fetch origin "${{ env.STABLE_BRANCH }}" "${{ env.BETA_BRANCH }}" || true
+            if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]{8}(\.[0-9]+)?$ ]]; then
+              DOC_VERSION="${TAG#v}"
+              if git merge-base --is-ancestor "${GITHUB_SHA}" "origin/${{ env.STABLE_BRANCH }}"; then
+                CHANNEL=latest
+              else
+                CHANNEL=beta
+              fi
+            else
+              CHANNEL=latest
+            fi
           elif [[ "$REF" == "refs/heads/${{ env.BETA_BRANCH }}" ]]; then
             CHANNEL=beta
           elif [[ "$REF" == "refs/heads/${{ env.STABLE_BRANCH }}" ]]; then
@@ -63,7 +76,8 @@ jobs:
             CHANNEL=local
           fi
           echo "channel=$CHANNEL" >> "$GITHUB_OUTPUT"
-          echo "Docs channel: $CHANNEL"
+          echo "doc_version=$DOC_VERSION" >> "$GITHUB_OUTPUT"
+          echo "Docs channel: $CHANNEL version=${DOC_VERSION:-package.json}"
 
       - name: Export OpenAPI schema
         env:
@@ -71,6 +85,8 @@ jobs:
           SECRET_KEY: docs-build-not-a-secret
         run: |
           mkdir -p docs/en/reference
+          # Stub so mkdocstrings/griffe can import cms.settings without a real local_settings.py
+          touch cms/local_settings.py
           if python manage.py generate_swagger -f yaml -o docs/en/reference/openapi.yaml 2>/tmp/swagger.err; then
             echo "OpenAPI schema exported"
           else
@@ -130,8 +146,20 @@ jobs:
         id: channel
         run: |
           REF="${{ github.ref }}"
+          DOC_VERSION=""
           if [[ "$REF" == refs/tags/v* ]]; then
-            CHANNEL=latest
+            TAG="${REF#refs/tags/}"
+            git fetch origin "${{ env.STABLE_BRANCH }}" "${{ env.BETA_BRANCH }}" || true
+            if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]{8}(\.[0-9]+)?$ ]]; then
+              DOC_VERSION="${TAG#v}"
+              if git merge-base --is-ancestor "${GITHUB_SHA}" "origin/${{ env.STABLE_BRANCH }}"; then
+                CHANNEL=latest
+              else
+                CHANNEL=beta
+              fi
+            else
+              CHANNEL=latest
+            fi
           elif [[ "$REF" == "refs/heads/${{ env.BETA_BRANCH }}" ]]; then
             CHANNEL=beta
           elif [[ "$REF" == "refs/heads/${{ env.STABLE_BRANCH }}" ]]; then
@@ -140,6 +168,7 @@ jobs:
             CHANNEL=local
           fi
           echo "channel=$CHANNEL" >> "$GITHUB_OUTPUT"
+          echo "doc_version=$DOC_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Export OpenAPI schema
         env:
@@ -147,6 +176,8 @@ jobs:
           SECRET_KEY: docs-build-not-a-secret
         run: |
           mkdir -p docs/en/reference
+          # Stub so mkdocstrings/griffe can import cms.settings without a real local_settings.py
+          touch cms/local_settings.py
           python manage.py generate_swagger -f yaml -o docs/en/reference/openapi.yaml || python scripts/prepare_docs_build.py
 
       - name: Prepare generated pages
@@ -163,14 +194,19 @@ jobs:
         env:
           DOCS_CHANNEL: ${{ steps.channel.outputs.channel }}
         run: |
-          VERSION=$(python -c "import json; print(json.load(open('package.json'))['version'])")
+          if [[ -n "${{ steps.channel.outputs.doc_version }}" ]]; then
+            VERSION="${{ steps.channel.outputs.doc_version }}"
+          else
+            VERSION=$(python -c "import json; print(json.load(open('package.json'))['version'])")
+          fi
           REF="${{ github.ref }}"
-          if [[ "$REF" == refs/tags/v* ]]; then
+          CHANNEL="${{ steps.channel.outputs.channel }}"
+          if [[ "$CHANNEL" == "latest" ]]; then
             mike deploy --push --update-aliases "$VERSION" latest
             mike set-default --push latest
-          elif [[ "$REF" == "refs/heads/${{ env.BETA_BRANCH }}" ]]; then
+          elif [[ "$CHANNEL" == "beta" ]]; then
             mike deploy --push --update-aliases beta
-          elif [[ "$REF" == "refs/heads/${{ env.STABLE_BRANCH }}" ]]; then
+          elif [[ "$CHANNEL" == "dev" ]]; then
             mike deploy --push --update-aliases dev
           else
             mike deploy --push --update-aliases "$VERSION"

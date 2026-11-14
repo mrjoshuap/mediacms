@@ -46,13 +46,44 @@ To set your own password, remove the comment mark from `ADMIN_PASSWORD` in `dock
 
 See [First sign-in](first-sign-in.md) to use the password.
 
+## Fork beta and stable images (GHCR)
+
+This fork publishes images to GitHub Container Registry. Change the Compose `image:` lines to test beta or stable builds.
+
+| Pull tag | Meaning |
+|----------|---------|
+| `ghcr.io/mrjoshuap/mediacms:beta` | Latest successful beta **base** image |
+| `ghcr.io/mrjoshuap/mediacms-full:beta` | Latest successful beta **full** image (Whisper) |
+| `ghcr.io/mrjoshuap/mediacms:mediacms-next` | Same digest as `:beta` (branch alias) |
+| `ghcr.io/mrjoshuap/mediacms:stable` | Latest stable **base** release |
+| `ghcr.io/mrjoshuap/mediacms-full:stable` | Latest stable **full** release |
+| `ghcr.io/mrjoshuap/mediacms:v1.2.3.YYYYMMDD` | Immutable pin for one release |
+| `ghcr.io/mrjoshuap/mediacms:upgrade-audit-beta` | Base image alias for beta upgrade drills |
+| `ghcr.io/mrjoshuap/mediacms:upgrade-audit` | Base image alias for stable upgrade drills |
+
+Example Compose override for beta:
+
+```yaml
+services:
+  web:
+    image: ghcr.io/mrjoshuap/mediacms:beta
+  celery_worker:
+    image: ghcr.io/mrjoshuap/mediacms-full:beta
+  migrations:
+    image: ghcr.io/mrjoshuap/mediacms:beta
+```
+
+Beta builds publish a GitHub **pre-release** on every push to `mediacms-next`. Stable releases publish only when a stamp tag `v1.2.3.YYYYMMDD` (or `v1.2.3.YYYYMMDD.N` for a same-day emergency) is pushed from `main`. The product base version lives in `version/FORK_VERSION`.
+
+Upstream Docker Hub images remain `mediacms/mediacms` and `mediacms/mediacms:full`.
+
 ## Enable Whisper transcription (optional)
 
-Whisper creates subtitles automatically. It works only in the Docker installation. It needs the `mediacms/mediacms:full` image.
+Whisper creates subtitles automatically. It works only in the Docker installation. It needs a **full** image (`mediacms/mediacms:full` upstream, or `ghcr.io/mrjoshuap/mediacms-full:beta` / `:stable` on this fork).
 
 1. Use one of these methods.
     - Run `docker compose -f docker-compose.yaml -f docker-compose.full.yaml up`.
-    - Edit `docker-compose.yaml`. Set the image of the `celery_worker` service to `mediacms/mediacms:full`.
+    - Edit `docker-compose.yaml`. Set the image of the `celery_worker` service to the full image tag you use.
 2. Open `deploy/docker/local_settings.py`.
 3. Set `USE_WHISPER_TRANSCRIBE = True`.
 4. Restart the services.

@@ -12,10 +12,7 @@ SCENARIOS = ROOT / "docs" / "en" / "scenarios"
 
 FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---\n", re.DOTALL)
 FIGURE_RE = re.compile(
-    r'<figure class="screenshot-placeholder">\s*'
-    r'<img[^>]*alt="([^"]*)"[^>]*>\s*'
-    r"<figcaption>(.*?)</figcaption>\s*"
-    r"</figure>",
+    r'<figure class="screenshot-placeholder">\s*' r'<img[^>]*alt="([^"]*)"[^>]*>\s*' r"<figcaption>(.*?)</figcaption>\s*" r"</figure>",
     re.DOTALL,
 )
 

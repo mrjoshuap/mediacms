@@ -1,78 +1,135 @@
-name: Docker build and push
+name: Build and push GHCR images
+
+# Reusable workflow: builds base + full images and pushes to ghcr.io.
+# Inputs drive channel floating tags (:beta / :stable / :mediacms-next / upgrade-audit*).
 
 on:
   workflow_call:
-  push:
-    tags:
-      - v*.*.*
+    inputs:
+      channel:
+        description: "beta or stable"
+        required: true
+        type: string
+      version_tag:
+        description: "Immutable tag including v prefix (e.g. v1.2.3.20251114)"
+        required: true
+        type: string
+      push:
+        description: "Push images to the registry"
+        required: false
+        type: boolean
+        default: true
+      ghcr_owner:
+        description: "GHCR owner/namespace (defaults to github.repository_owner)"
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
-  release:
-    name: Build & release to DockerHub
+  build-and-push:
+    name: GHCR base + full
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2.2.0
+      - name: Resolve owner and version
+        id: meta
+        run: |
+          OWNER="${{ inputs.ghcr_owner }}"
+          if [ -z "$OWNER" ]; then
+            OWNER="${{ github.repository_owner }}"
+          fi
+          OWNER=$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')
+          TAG="${{ inputs.version_tag }}"
+          VERSION="${TAG#v}"
+          SHA7=$(echo "${{ github.sha }}" | cut -c1-7)
+          CHANNEL="${{ inputs.channel }}"
+          if [ "$CHANNEL" != "beta" ] && [ "$CHANNEL" != "stable" ]; then
+            echo "Invalid channel: $CHANNEL" >&2
+            exit 1
+          fi
+          echo "owner=$OWNER" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "sha7=$SHA7" >> "$GITHUB_OUTPUT"
+          echo "base_image=ghcr.io/${OWNER}/mediacms" >> "$GITHUB_OUTPUT"
+          echo "full_image=ghcr.io/${OWNER}/mediacms-full" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        if: inputs.push
+        uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Docker meta for base image
+      - name: Docker meta (base)
         id: meta-base
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
-          images: |
-            mediacms/mediacms
+          images: ${{ steps.meta.outputs.base_image }}
           tags: |
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
+            type=raw,value=${{ steps.meta.outputs.version }}
+            type=raw,value=sha-${{ steps.meta.outputs.sha7 }}
+            type=raw,value=beta,enable=${{ inputs.channel == 'beta' }}
+            type=raw,value=mediacms-next,enable=${{ inputs.channel == 'beta' }}
+            type=raw,value=upgrade-audit-beta,enable=${{ inputs.channel == 'beta' }}
+            type=raw,value=stable,enable=${{ inputs.channel == 'stable' }}
+            type=raw,value=upgrade-audit,enable=${{ inputs.channel == 'stable' }}
           labels: |
             org.opencontainers.image.title=MediaCMS
-            org.opencontainers.image.description=MediaCMS is a modern, fully featured open source video and media CMS, written in Python/Django and React, featuring a REST API.
-            org.opencontainers.image.vendor=MediaCMS
-            org.opencontainers.image.url=https://mediacms.io/
-            org.opencontainers.image.source=https://github.com/mediacms-io/mediacms
+            org.opencontainers.image.description=MediaCMS base image (fork GHCR builds)
+            org.opencontainers.image.vendor=MediaCMS fork
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.version=${{ steps.meta.outputs.version }}
+            org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.licenses=AGPL-3.0
 
-      - name: Docker meta for full image
+      - name: Docker meta (full)
         id: meta-full
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
-          images: |
-            mediacms/mediacms
+          images: ${{ steps.meta.outputs.full_image }}
           tags: |
-            type=raw,value=full,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
-            type=semver,pattern={{version}}-full
-            type=semver,pattern={{major}}.{{minor}}-full
-            type=semver,pattern={{major}}-full
+            type=raw,value=${{ steps.meta.outputs.version }}
+            type=raw,value=sha-${{ steps.meta.outputs.sha7 }}
+            type=raw,value=beta,enable=${{ inputs.channel == 'beta' }}
+            type=raw,value=mediacms-next,enable=${{ inputs.channel == 'beta' }}
+            type=raw,value=stable,enable=${{ inputs.channel == 'stable' }}
           labels: |
             org.opencontainers.image.title=MediaCMS Full
-            org.opencontainers.image.description=MediaCMS is a modern, fully featured open source video and media CMS, written in Python/Django and React, featuring a REST API. This is the full version with additional dependencies.
-            org.opencontainers.image.vendor=MediaCMS
-            org.opencontainers.image.url=https://mediacms.io/
-            org.opencontainers.image.source=https://github.com/mediacms-io/mediacms
+            org.opencontainers.image.description=MediaCMS full image with Whisper dependencies (fork GHCR builds)
+            org.opencontainers.image.vendor=MediaCMS fork
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.version=${{ steps.meta.outputs.version }}
+            org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.licenses=AGPL-3.0
 
-      - name: Build and push full image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          target: full
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta-full.outputs.tags }}
-          labels: ${{ steps.meta-full.outputs.labels }}
-
-      - name: Build and push base image
-        uses: docker/build-push-action@v4
+      - name: Build and push base
+        uses: docker/build-push-action@v6
         with:
           context: .
           target: base
-          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ inputs.push }}
           tags: ${{ steps.meta-base.outputs.tags }}
           labels: ${{ steps.meta-base.outputs.labels }}
+          cache-from: type=gha,scope=mediacms-base
+          cache-to: type=gha,mode=max,scope=mediacms-base
+
+      - name: Build and push full
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: full
+          push: ${{ inputs.push }}
+          tags: ${{ steps.meta-full.outputs.tags }}
+          labels: ${{ steps.meta-full.outputs.labels }}
+          cache-from: type=gha,scope=mediacms-full
+          cache-to: type=gha,mode=max,scope=mediacms-full

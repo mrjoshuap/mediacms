@@ -3,6 +3,7 @@ name: "CI"
 # Branch roles (repository variables; defaults match a beta fork):
 #   MEDIACMS_STABLE_BRANCH — production line (default: main)
 #   MEDIACMS_BETA_BRANCH   — beta / next line (default: mediacms-next)
+# Image publishing lives in release.yml (GHCR), not here.
 # `on.push.branches` cannot read vars; keep this list aligned with those names.
 on:
   pull_request:
@@ -20,12 +21,3 @@ jobs:
     needs: [pre-commit]
   frontend:
     uses: ./.github/workflows/frontend-build-and-test.yml
-  release:
-    uses: ./.github/workflows/docker-build-push.yml
-    secrets: inherit # pass all secrets
-    needs: [test, frontend]
-    # Image publish stays on the stable line (and tags via the called workflow).
-    if: >
-      github.event_name != 'pull_request' &&
-      github.ref == format('refs/heads/{0}', vars.MEDIACMS_STABLE_BRANCH || 'main')
-

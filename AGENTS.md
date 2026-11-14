@@ -45,6 +45,7 @@ This starts: Django dev server (`runserver`, auto-reloads) on **http://localhost
 - **Frontend changes are only visible on port 80 after building**: run `make build-frontend` (or `docker compose -f docker-compose-dev.yaml exec -T frontend npm run dist` then `cp -r frontend/dist/static/* static/`).
 - **Docs on the same origin**: `make docs-up` starts the optional Compose profile `docs`; Django serves `site/` at `http://localhost/documentation/` (not `/docs/`, which is ReDoc + a protected slug).
 - **Fork / beta branches**: repository Actions variables `MEDIACMS_STABLE_BRANCH` (default `main`) and `MEDIACMS_BETA_BRANCH` (default `mediacms-next`) select which line is production vs beta. Workflows also list both branch names under `on.push` because triggers cannot read vars. Docs mike aliases: stable → `dev`, beta → `beta`, tags → `latest`.
+- **Fork releases (GHCR)**: `release.yml` publishes date-stamped tags `v{FORK_VERSION}.YYYYMMDD[.N]` from `version/FORK_VERSION`. Every push to `mediacms-next` → GitHub pre-release + `ghcr.io/<owner>/mediacms:beta` and `…/mediacms-full:beta`. Stable only on matching stamp tags from `main` → `:stable`. Upgrade drills use `:upgrade-audit` / `:upgrade-audit-beta` (base image aliases). Set `MEDIACMS_ENABLE_SEMANTIC_RELEASE=true` only if you want upstream-style semantic-release instead.
 - Shared styles go in `static/css/_commons.css`; per-entry styles in `static/css/<name>.css`.
 
 ## Common Commands

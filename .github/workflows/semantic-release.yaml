@@ -1,8 +1,12 @@
 name: Semantic Release
 
-# Stable release line only. Override with repository variable
-# MEDIACMS_STABLE_BRANCH when the production branch is not "main".
+# Opt-in only. Date-stamped fork releases (release.yml + GHCR) are the default
+# on this repository. Set repository variable MEDIACMS_ENABLE_SEMANTIC_RELEASE=true
+# to restore upstream-style semantic-release on the stable branch.
+#
+# MEDIACMS_STABLE_BRANCH — production line (default: main)
 # `on.push.branches` cannot read vars; list both common names.
+
 on:
   push:
     branches:
@@ -15,7 +19,9 @@ permissions:
 
 jobs:
   semantic-release:
-    if: github.ref == format('refs/heads/{0}', vars.MEDIACMS_STABLE_BRANCH || 'main')
+    if: >
+      vars.MEDIACMS_ENABLE_SEMANTIC_RELEASE == 'true' &&
+      github.ref == format('refs/heads/{0}', vars.MEDIACMS_STABLE_BRANCH || 'main')
     runs-on: ubuntu-latest
     environment: dev
     steps:
@@ -25,15 +31,34 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Check deploy key
+        id: ssh
+        env:
+          DEPLOY_KEY: ${{ secrets.GA_DEPLOY_KEY }}
+        run: |
+          if [ -n "$DEPLOY_KEY" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=GA_DEPLOY_KEY missing::Secret GA_DEPLOY_KEY is not configured on this repository. Skipping SSH deploy-key setup; semantic-release will push over HTTPS with GITHUB_TOKEN. Set GA_DEPLOY_KEY (a deploy key with write access) if branch protection blocks GITHUB_TOKEN pushes."
+          fi
+
       - name: Setup SSH
+        if: steps.ssh.outputs.available == 'true'
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.GA_DEPLOY_KEY }}
 
-      # use SSH url to ensure git commit using a deploy key bypasses the main
-      # branch protection rule
+      # Deploy key over SSH can bypass branch protection that blocks GITHUB_TOKEN.
       - name: Configure Git for SSH Push
+        if: steps.ssh.outputs.available == 'true'
         run: git remote set-url origin "git@github.com:${{ github.repository }}.git"
+
+      - name: Configure Git for HTTPS Push
+        if: steps.ssh.outputs.available != 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -50,3 +75,11 @@ jobs:
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  notice:
+    if: vars.MEDIACMS_ENABLE_SEMANTIC_RELEASE != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Semantic-release disabled
+        run: |
+          echo "::notice title=Semantic Release skipped::MEDIACMS_ENABLE_SEMANTIC_RELEASE is not true. Fork releases use .github/workflows/release.yml (date-stamped tags + GHCR). Set the variable to true to enable upstream-style semantic-release."

@@ -66,3 +66,6 @@ docs/en/reference/changelog.md
 docs/en/reference/openapi.yaml
 docs/en/reference/this-version.md
 docs/en/reference/whats-new.md
+
+# Release packaging
+dist/
