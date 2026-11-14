@@ -30,10 +30,10 @@ const useVideoChapters = () => {
         const sortedSegments = [...segments].sort((a, b) => a.startTime - b.startTime);
 
         // Renumber each segment based on its chronological position
-        // Only update titles that follow the default "Chapter X" pattern to preserve custom titles
+        // Empty titles and default "Chapter X" titles are renumbered; custom titles stay.
         return sortedSegments.map((segment, index) => {
-            const currentTitle = segment.chapterTitle || '';
-            const isDefaultTitle = /^Chapter \d+$/.test(currentTitle);
+            const currentTitle = (segment.chapterTitle || '').trim();
+            const isDefaultTitle = !currentTitle || /^Chapter \d+$/.test(currentTitle);
 
             return {
                 ...segment,
@@ -211,10 +211,11 @@ const useVideoChapters = () => {
         };
 
         const handleSeeked = () => {
-            if (pendingSeekRef.current === null) return;
-            const time = pendingSeekRef.current;
+            // Prefer the intended seek target; never re-assign video.currentTime here
+            // (that can snap a paused seek back toward 0 on some browsers).
+            const time = pendingSeekRef.current !== null ? pendingSeekRef.current : video.currentTime;
             pendingSeekRef.current = null;
-            video.currentTime = time;
+            setCurrentTime(time);
         };
 
         const handlePlay = () => {
@@ -436,12 +437,10 @@ const useVideoChapters = () => {
         // Track if the video was playing before seeking
         const wasPlaying = !video.paused;
 
-        // Update the video position
-        if (video.seeking) {
-            pendingSeekRef.current = time;
-        } else {
-            video.currentTime = time;
-        }
+        // Always gate timeupdate with pendingSeekRef so a late timeupdate cannot
+        // overwrite React state with a stale pre-seek position while paused.
+        pendingSeekRef.current = time;
+        video.currentTime = time;
         setCurrentTime(time);
 
         // Store the position in a global state accessible to iOS Safari

@@ -487,6 +487,9 @@ const TimelineControls = ({
 
     // Calculate positions as percentages
     const currentTimePercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+    // Anchor chapter/empty tooltips to the click/dialog time so a stale playhead
+    // cannot snap the popup to 0 after seek-while-paused.
+    const tooltipAnchorPercent = duration > 0 ? (clickedTime / duration) * 100 : currentTimePercent;
     const trimStartPercent = duration > 0 ? (trimStart / duration) * 100 : 0;
     const trimEndPercent = duration > 0 ? (trimEnd / duration) * 100 : 0;
 
@@ -500,12 +503,11 @@ const TimelineControls = ({
         setSaveType('chapters');
 
         try {
-            // Format chapters data for API request - sort by start time first
-            const chapters = clipSegments
-                .filter((segment) => segment.chapterTitle && segment.chapterTitle.trim())
-                .sort((a, b) => a.startTime - b.startTime) // Sort by start time chronologically
-                .map((segment) => ({
-                    chapterTitle: segment.chapterTitle || `Chapter ${segment.id}`,
+            // Apply Chapter N fallback for empty titles so save matches what the UI displays
+            const chapters = [...clipSegments]
+                .sort((a, b) => a.startTime - b.startTime)
+                .map((segment, index) => ({
+                    chapterTitle: segment.chapterTitle?.trim() || `Chapter ${index + 1}`,
                     from: formatDetailedTime(segment.startTime),
                     to: formatDetailedTime(segment.endTime),
                 }));
@@ -2356,7 +2358,7 @@ const TimelineControls = ({
                             }`}
                             style={{
                                 position: 'absolute',
-                                ...constrainTooltipPosition(currentTimePercent),
+                                ...constrainTooltipPosition(tooltipAnchorPercent),
                             }}
                             onClick={(e) => {
                                 if (isPlayingSegments) {
@@ -2841,7 +2843,7 @@ const TimelineControls = ({
                             }`}
                             style={{
                                 position: 'absolute',
-                                ...constrainTooltipPosition(currentTimePercent),
+                                ...constrainTooltipPosition(tooltipAnchorPercent),
                             }}
                             onClick={(e) => {
                                 if (isPlayingSegments) {
@@ -3998,9 +4000,7 @@ const TimelineControls = ({
                         <p className="modal-message">
                             {clipSegments.length === 0
                                 ? 'Are you sure you want to clear all chapters? This will remove all existing chapters from the database.'
-                                : `Are you sure you want to save the chapters? This will save ${
-                                      clipSegments.filter((s) => s.chapterTitle && s.chapterTitle.trim()).length
-                                  } chapters to the database.`}
+                                : `Are you sure you want to save the chapters? This will save ${clipSegments.length} chapters to the database.`}
                         </p>
                     </Modal>
 
