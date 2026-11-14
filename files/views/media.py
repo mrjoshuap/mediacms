@@ -37,6 +37,7 @@ from ..methods import (
     show_recommended_media,
     show_related_media,
     update_user_ratings,
+    user_is_pending_approval,
 )
 from ..models import (
     Category,
@@ -52,6 +53,12 @@ from ..models import (
 from ..serializers import MediaSearchSerializer, MediaSerializer, SingleMediaSerializer
 from ..stop_words import STOP_WORDS
 from ..tasks import save_user_action
+
+
+def _pending_library_block(user):
+    if user_is_pending_approval(user):
+        return Response({"detail": "User account not approved."}, status=status.HTTP_403_FORBIDDEN)
+    return None
 
 
 class MediaList(APIView):
@@ -416,6 +423,9 @@ class MediaBulkUserActions(APIView):
     def post(self, request, format=None):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+        blocked = _pending_library_block(request.user)
+        if blocked:
+            return blocked
 
         media_ids = request.data.get('media_ids', [])
         action = request.data.get('action')
@@ -965,6 +975,9 @@ class MediaDetail(APIView):
         responses={201: openapi.Response('response description', MediaSerializer), 401: 'bad request'},
     )
     def put(self, request, friendly_token, format=None):
+        blocked = _pending_library_block(request.user)
+        if blocked:
+            return blocked
         # Update a media object
         media = self.get_object(friendly_token)
         if isinstance(media, Response):
@@ -998,6 +1011,9 @@ class MediaDetail(APIView):
         },
     )
     def delete(self, request, friendly_token, format=None):
+        blocked = _pending_library_block(request.user)
+        if blocked:
+            return blocked
         # Delete a media object
         media = self.get_object(friendly_token)
         if isinstance(media, Response):

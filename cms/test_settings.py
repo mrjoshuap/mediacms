@@ -14,6 +14,8 @@ CELERY_TASK_ALWAYS_EAGER = True
 SECURE_SSL_REDIRECT = False
 USE_IDENTITY_PROVIDERS = False
 USERS_NEEDS_TO_BE_APPROVED = False
+PORTAL_NAME = "MediaCMS"
+MEDIA_IS_REVIEWED = True
 
 # Tests may invoke populate_fake_media helpers; allow the command under test settings.
 ALLOW_POPULATE_FAKE_MEDIA = True

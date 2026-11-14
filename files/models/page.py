@@ -1,5 +1,8 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
+
+from files.page_slugs import is_unroutable, parse_page_slug, slug_error
 
 
 class Page(models.Model):
@@ -12,8 +15,21 @@ class Page(models.Model):
     def __str__(self):
         return self.title
 
+    def clean(self):
+        error = slug_error(self.slug)
+        if error:
+            raise ValidationError({"slug": error})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self):
-        return reverse("get_page", args=[str(self.slug)])
+        parsed = parse_page_slug(self.slug)
+        if is_unroutable(self.slug):
+            return ""
+        name = parsed.name if parsed.kind == "link" else self.slug
+        return reverse("get_page", args=[str(name)])
 
 
 class TinyMCEMedia(models.Model):

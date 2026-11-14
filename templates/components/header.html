@@ -1,4 +1,5 @@
 <div id="app-header"></div>
+{% if PAGE_FRAGMENTS.inject_header %}{{ PAGE_FRAGMENTS.inject_header|safe }}{% endif %}
 
 {% comment %}
 Uncomment, or replace with your own cookie consent code.

@@ -20,7 +20,7 @@ class PopulateFakeMediaPagesTest(TestCase):
         pages = self.command.create_pages()
         by_slug = {page.slug: page for page in pages}
 
-        self.assertEqual(set(by_slug), {"about", "faq", "tos"})
+        self.assertEqual(set(by_slug), {spec["slug"] for spec in self.command._demo_page_specs()})
         self.assertEqual(TinyMCEMedia.objects.count(), 3)
 
         about = by_slug["about"]
@@ -56,6 +56,53 @@ class PopulateFakeMediaPagesTest(TestCase):
         self.assertContains(response, "not a legal agreement")
         self.assertContains(response, document.url)
 
+        browse = by_slug["sidebar-browse--demo-browse"]
+        self.assertIn("Demo browse", browse.description)
+        self.assertIn("Rendered", browse.description)
+        self.assertNotIn("<img", browse.description)
+        self.assertNotIn("<script", browse.description)
+        self.assertContains(self.client.get("/demo-browse"), "Demo browse")
+        self.assertEqual(self.client.get("/sidebar-browse--demo-browse").status_code, 404)
+
+        for slug, syntax in (
+            ("inject-head", "<!--"),
+            ("inject-header", "<!--"),
+            ("inject-footer", "<!--"),
+            ("inject-css", "/*"),
+            ("inject-js", "/*"),
+        ):
+            body = by_slug[slug].description.strip()
+            self.assertTrue(body.startswith(syntax), body)
+            self.assertIn(f"{slug} rendered", body)
+            self.assertNotIn("<script", body)
+            self.assertNotIn("document.", body)
+            self.assertEqual(self.client.get(f"/{slug}").status_code, 404)
+
+        home = self.client.get("/")
+        self.assertContains(home, "inject-head rendered")
+        self.assertContains(home, "inject-css rendered")
+        self.assertContains(home, "inject-js rendered")
+        self.assertContains(home, "inject-header rendered")
+        self.assertContains(home, "inject-footer rendered")
+        self.assertContains(home, "Below the menu")
+        self.assertContains(home, "Below the theme switcher")
+        self.assertContains(home, "Sidebar footer")
+        self.assertContains(home, 'text: "Demo browse"')
+        self.assertContains(home, 'text: "Demo info"')
+        self.assertNotContains(home, 'text: "Demo library"')
+        self.assertNotContains(home, 'text: "Demo manage"')
+
+        member = create_account()
+        self.client.force_login(member)
+        signed_in = self.client.get("/")
+        self.assertContains(signed_in, 'text: "Demo library"')
+        self.assertContains(signed_in, 'text: "Demo personal"')
+        self.assertNotContains(signed_in, 'text: "Demo manage"')
+
+        editor = create_account(is_editor=True)
+        self.client.force_login(editor)
+        self.assertContains(self.client.get("/"), 'text: "Demo manage"')
+
     def test_a_second_run_refreshes_generated_pages_without_new_attachments(self):
         self.command.create_pages()
         Page.objects.filter(slug="about").update(description=f"<!-- {GENERATOR_PAGE_MARKER} -->\n<p>stale warning</p>")
@@ -66,7 +113,7 @@ class PopulateFakeMediaPagesTest(TestCase):
         self.assertIn("sample content", about.description)
         self.assertNotIn("stale warning", about.description)
         self.assertEqual(TinyMCEMedia.objects.count(), 3)
-        self.assertEqual(Page.objects.count(), 3)
+        self.assertEqual(Page.objects.count(), len(self.command._demo_page_specs()))
 
     def test_an_older_generator_page_is_upgraded(self):
         Page.objects.create(
@@ -90,5 +137,5 @@ class PopulateFakeMediaPagesTest(TestCase):
         self.assertEqual(about.title, "Our library")
         self.assertEqual(about.description, "<p>Hand-written about text</p>")
         self.assertNotIn("sample-portal-still.png", [item.original_filename for item in TinyMCEMedia.objects.all()])
-        self.assertEqual({page.slug for page in pages}, {"about", "faq", "tos"})
+        self.assertEqual({page.slug for page in pages}, {spec["slug"] for spec in self.command._demo_page_specs()})
         self.assertEqual(TinyMCEMedia.objects.count(), 2)

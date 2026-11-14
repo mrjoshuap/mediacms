@@ -23,6 +23,9 @@
 
         {% block extra_head %}{% endblock extra_head %}
 
+        {% if PAGE_FRAGMENTS.inject_head %}{{ PAGE_FRAGMENTS.inject_head|safe }}{% endif %}
+        {% if PAGE_FRAGMENTS.inject_css %}<style>{{ PAGE_FRAGMENTS.inject_css|safe }}</style>{% endif %}
+
         {% include "config/index.html" %}
 
         {% if not USE_ROUNDED_CORNERS %}
@@ -64,6 +67,8 @@
     {% include "common/body-scripts.html" %}
 
     {% block bottomimports %}{% endblock bottomimports %}
+
+    {% if PAGE_FRAGMENTS.inject_js %}<script>{{ PAGE_FRAGMENTS.inject_js|safe }}</script>{% endif %}
 
 </body>
 

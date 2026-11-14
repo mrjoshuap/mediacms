@@ -7,6 +7,7 @@ import { LayoutContext } from '../../../src/static/js/utils/contexts/LayoutConte
 import { ThemeContext } from '../../../src/static/js/utils/contexts/ThemeContext';
 import { SidebarNavigationMenu } from '../../../src/static/js/components/page-layout/sidebar/SidebarNavigationMenu';
 import { PageSidebar } from '../../../src/static/js/components/page-layout/PageSidebar';
+import PageStore from '../../../src/static/js/utils/stores/PageStore';
 
 function classes(container: HTMLElement) {
     return Array.from(container.querySelectorAll('li')).map((li) => li.className.split(' ').find((c) => c.startsWith('nav-item-')));
@@ -59,6 +60,57 @@ describe('components/page-layout', () => {
             expect(container.querySelector('.nav-item-tags')?.className).toContain('active');
             expect(container.querySelector('.nav-item-home')?.className).not.toContain('active');
             unmount();
+        });
+
+        test('Places links in sidebar sections and keeps HTML slots out of the menu', () => {
+            const sidebar = PageStore.get('config-contents').sidebar;
+            const previous = {
+                extra: sidebar.mainMenuExtra.items.slice(),
+                library: (sidebar.libraryItems || []).slice(),
+                personal: (sidebar.personalItems || []).slice(),
+                info: (sidebar.infoItems || []).slice(),
+                manage: (sidebar.manageItems || []).slice(),
+            };
+            const item = (text: string, link: string, className: string) => ({ text, link, icon: 'article', className });
+            sidebar.mainMenuExtra.items = [item('Handbook', '/handbook', 'nav-item-cms-page-handbook')];
+            sidebar.libraryItems = [item('Drafts', '/drafts', 'nav-item-cms-page-drafts')];
+            sidebar.personalItems = [item('Notes', '/notes', 'nav-item-cms-page-notes')];
+            sidebar.infoItems = [item('Guide', '/guide', 'nav-item-cms-page-guide')];
+            sidebar.manageItems = [item('Policy', '/policy', 'nav-item-cms-page-policy')];
+
+            const signedIn = renderIntoContainer(
+                <UserProvider>
+                    <SidebarNavigationMenu />
+                </UserProvider>
+            );
+            const signedInClasses = classes(signedIn.container);
+            expect(signedInClasses.indexOf('nav-item-members')).toBeLessThan(signedInClasses.indexOf('nav-item-cms-page-handbook'));
+            expect(signedInClasses.indexOf('nav-item-my-playlists')).toBeLessThan(signedInClasses.indexOf('nav-item-cms-page-drafts'));
+            expect(signedInClasses.indexOf('nav-item-liked')).toBeLessThan(signedInClasses.indexOf('nav-item-cms-page-notes'));
+            expect(signedInClasses.indexOf('nav-item-language')).toBeLessThan(signedInClasses.indexOf('nav-item-cms-page-guide'));
+            expect(signedInClasses.indexOf('nav-item-manage-comments')).toBeLessThan(signedInClasses.indexOf('nav-item-cms-page-policy'));
+            expect(signedIn.container.textContent).not.toContain('under the menu');
+            signedIn.unmount();
+
+            const anonymousUser = { isAnonymous: true, userCan: { canSeeMembersPage: false }, pages: {} };
+            const anonymous = renderIntoContainer(
+                <UserContext.Provider value={anonymousUser as any}>
+                    <SidebarNavigationMenu />
+                </UserContext.Provider>
+            );
+            const anonymousClasses = classes(anonymous.container);
+            expect(anonymousClasses).toContain('nav-item-cms-page-handbook');
+            expect(anonymousClasses).toContain('nav-item-cms-page-guide');
+            expect(anonymousClasses).not.toContain('nav-item-cms-page-drafts');
+            expect(anonymousClasses).not.toContain('nav-item-cms-page-notes');
+            expect(anonymousClasses).not.toContain('nav-item-cms-page-policy');
+            anonymous.unmount();
+
+            sidebar.mainMenuExtra.items = previous.extra;
+            sidebar.libraryItems = previous.library;
+            sidebar.personalItems = previous.personal;
+            sidebar.infoItems = previous.info;
+            sidebar.manageItems = previous.manage;
         });
 
         test('Respects sidebar hide flags and anonymous users', () => {

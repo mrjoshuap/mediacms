@@ -14,8 +14,7 @@ from django.core.management.color import no_style
 from django.core.serializers.base import DeserializationError
 from django.db import IntegrityError, connection, transaction
 
-from actions.models import EXPORTED_MEDIA_ACTIONS
-from admin_customizations.database_backup import EXCLUDED_MODELS, _models_in_order
+from admin_customizations.database_backup import _models_in_order, split_backup_document
 
 MAX_COMPRESSED_BYTES = 64 * 1024 * 1024
 MAX_DECOMPRESSED_BYTES = 256 * 1024 * 1024
@@ -156,8 +155,8 @@ def vanilla_install_status():
     return {"enabled": not blockers, "blockers": blockers}
 
 
-def _backup_model_labels():
-    return {f"{model._meta.app_label}.{model._meta.model_name}" for model in _models_in_order()}
+def _backup_model_labels(profile):
+    return {f"{model._meta.app_label}.{model._meta.model_name}" for model in _models_in_order(profile)}
 
 
 def _read_compressed(uploaded):
@@ -193,11 +192,12 @@ def _gunzip(raw):
     return bytes(out)
 
 
-def _validate_fixture(objects):
+def _validate_fixture(objects, profile):
     if not isinstance(objects, list) or not objects:
         raise RestoreError("The backup file is not a database fixture.")
-    allowed = _backup_model_labels()
-    excluded = {f"{app}.{model}" for app, model in EXCLUDED_MODELS}
+    allowed = _backup_model_labels(profile)
+    excluded = {f"{app}.{model}" for app, model in profile.excluded_models()}
+    allowed_actions = set(profile.media_actions())
     has_superuser = False
     for item in objects:
         if not isinstance(item, dict):
@@ -206,9 +206,9 @@ def _validate_fixture(objects):
         fields = item.get("fields")
         if model in excluded or model not in allowed or not isinstance(fields, dict) or "pk" not in item:
             raise RestoreError("The backup file includes records this page does not restore.")
-        if model == "actions.mediaaction" and fields.get("action") not in EXPORTED_MEDIA_ACTIONS:
+        if model == "actions.mediaaction" and fields.get("action") not in allowed_actions:
             raise RestoreError("The backup file includes records this page does not restore.")
-        if model == "files.encoding" and fields.get("status") == "fail":
+        if model == "files.encoding" and fields.get("status") == "fail" and not profile.include_noisy_status:
             raise RestoreError("The backup file includes records this page does not restore.")
         if model == "users.user" and fields.get("is_superuser"):
             has_superuser = True
@@ -274,10 +274,12 @@ def restore_database_backup(uploaded):
     payload = _gunzip(_read_compressed(uploaded))
     try:
         text = payload.decode("utf-8")
-        objects = json.loads(text)
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        document = json.loads(text)
+        profile, objects = split_backup_document(document)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
         raise RestoreError("The backup file is not a database fixture.") from exc
-    _validate_fixture(objects)
+    _validate_fixture(objects, profile)
+    text = json.dumps(objects)
     loaded = {}
     try:
         with transaction.atomic():

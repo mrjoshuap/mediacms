@@ -1603,8 +1603,11 @@ class Command(BaseCommand):
                 pages.append(page)
                 continue
 
-            attachment = self._ensure_demo_page_attachment(spec, author)
-            description = spec['body'](self, attachment)
+            if spec.get('fixture'):
+                attachment = self._ensure_demo_page_attachment(spec, author)
+                description = spec['body'](self, attachment)
+            else:
+                description = spec['body'](self)
             if page is None:
                 page = Page.objects.create(slug=spec['slug'], title=spec['title'], description=description)
                 page_date = self._random_datetime_between(self._horizon_start, self._now)
@@ -1660,7 +1663,73 @@ class Command(BaseCommand):
                 'file_type': 'media',
                 'body': Command._terms_page_body,
             },
+            *self._placement_demo_specs(),
         ]
+
+    def _placement_demo_specs(self):
+        """One inert page for each sidebar section, HTML slot, and include."""
+        specs = []
+        links = (
+            ('browse', 'demo-browse', 'Demo browse'),
+            ('library', 'demo-library', 'Demo library'),
+            ('personal', 'demo-personal', 'Demo personal'),
+            ('info', 'demo-info', 'Demo info'),
+            ('manage', 'demo-manage', 'Demo manage'),
+        )
+        for section, name, title in links:
+            specs.append(
+                {
+                    'slug': f'sidebar-{section}--{name}',
+                    'title': title,
+                    'body': lambda self, label=title: self._demo_slot_box(label),
+                }
+            )
+        slots = (
+            ('below', 'Below the menu'),
+            ('after-theme', 'Below the theme switcher'),
+            ('footer', 'Sidebar footer'),
+        )
+        for section, label in slots:
+            specs.append(
+                {
+                    'slug': f'sidebar-{section}--demo',
+                    'title': label,
+                    'body': lambda self, label=label: self._demo_slot_box(label),
+                }
+            )
+        includes = (
+            ('inject-head', 'html'),
+            ('inject-header', 'html'),
+            ('inject-footer', 'html'),
+            ('inject-css', 'css'),
+            ('inject-js', 'js'),
+        )
+        for slug, syntax in includes:
+            specs.append(
+                {
+                    'slug': slug,
+                    'title': slug,
+                    'body': lambda self, slug=slug, syntax=syntax: self._demo_include_comment(slug, syntax),
+                }
+            )
+        return specs
+
+    def _demo_slot_box(self, label):
+        """A fixed box. It names the slot and does not load an image or script."""
+        return (
+            f'<!-- {GENERATOR_PAGE_MARKER} -->'
+            '<div style="box-sizing:border-box;width:220px;height:72px;overflow:hidden;'
+            'padding:8px;border:1px solid #888;background:#f3f3f3;color:#222;font:12px/1.3 sans-serif;">'
+            f'<strong>{label}</strong><br>Rendered'
+            '</div>'
+        )
+
+    def _demo_include_comment(self, slug, syntax):
+        """A comment in the language of the include. It does not execute."""
+        message = f'{GENERATOR_PAGE_MARKER} {slug} rendered'
+        if syntax == 'html':
+            return f'<!-- {message} -->'
+        return f'/* {message} */'
 
     def _ensure_demo_page_attachment(self, spec, user):
         """Store the fixture file once and reuse it when the command runs again."""
@@ -1735,7 +1804,7 @@ class Command(BaseCommand):
 <h3>Is the media on this site real?</h3>
 <p>No. <code>populate_fake_media</code> copied sample files from <code>fixtures/</code> and invented the titles, descriptions, and authors. The same bytes are reused for many listings.</p>
 <h3>What does the generator create?</h3>
-<p>Users and channels (including a few inactive, pending-approval, featured, advanced, and email-unverified accounts for admin demos), categories, tags, licenses, media (video, audio, image, and PDF), playlists, comments, likes, reports, subtitles, chapters, caption requests, share permissions, trim requests, and the About, FAQ, and Terms pages. Dates are spread over the previous 12 months.</p>
+<p>Users and channels (including a few inactive, pending-approval, featured, advanced, and email-unverified accounts for admin demos), categories, tags, licenses, media (video, audio, image, and PDF), playlists, comments, likes, reports, subtitles, chapters, caption requests, share permissions, trim requests, and the About, FAQ, and Terms pages. It also adds one demo page for each sidebar section, sidebar HTML slot, and head, header, footer, CSS, and script include. Those demos are a labeled box or a comment and do not load outside code. Dates are spread over the previous 12 months.</p>
 <h3>Which sample files does it use?</h3>
 <p>Whichever of these are present: <code>test_image.png</code>, <code>test_image2.jpg</code>, <code>small_video.mp4</code>, <code>medium_video.mp4</code>, <code>sample_audio.wav</code>, <code>sample_audio.mp3</code>, and <code>sample_document.pdf</code>.</p>
 {figure}

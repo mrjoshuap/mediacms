@@ -5,8 +5,8 @@ NOT_APPROVED_MESSAGE = "User account not approved."
 
 
 def ensure_approved(user):
-    if settings.USERS_NEEDS_TO_BE_APPROVED and not user.is_superuser and not getattr(user, "is_approved", False):
-        raise exceptions.PermissionDenied(NOT_APPROVED_MESSAGE)
+    """Reads are allowed for a pending account. Writes are refused in the views."""
+    return user
 
 
 class ApprovalRequiredMixin:

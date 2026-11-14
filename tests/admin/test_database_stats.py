@@ -171,7 +171,10 @@ class DatabaseDashboardTest(TestCase):
         self.assertIn(stamped, {database_backup_filename(before), database_backup_filename(after)})
 
         payload = b"".join(response.streaming_content)
-        objects = json.loads(gzip.decompress(payload))
+        document = json.loads(gzip.decompress(payload))
+        self.assertFalse(document["manifest"]["include_engagement"])
+        self.assertFalse(document["manifest"]["include_noisy_status"])
+        objects = document["objects"]
         actions = [item["fields"]["action"] for item in objects if item["model"] == "actions.mediaaction" and item["fields"]["media"] == self.media.pk]
         self.assertCountEqual(actions, ["report", "report_cleared"])
         encodings = [item for item in objects if item["model"] == "files.encoding" and item["fields"]["media"] == self.media.pk]
@@ -179,6 +182,26 @@ class DatabaseDashboardTest(TestCase):
         self.assertFalse(any(item["model"] == "files.videotrimrequest" and item["pk"] == self.trim.pk for item in objects))
         self.assertFalse(any(item["model"] == "files.transcriptionrequest" and item["pk"] == self.caption.pk for item in objects))
         self.assertNotIn(self.failed.pk, [item["pk"] for item in encodings])
+
+    def test_switches_add_engagement_and_noisy_rows(self):
+        from admin_customizations.database_backup import (
+            BackupProfile,
+            iter_database_backup,
+        )
+
+        quiet = json.loads(gzip.decompress(b"".join(iter_database_backup())))
+        engaged = json.loads(gzip.decompress(b"".join(iter_database_backup(BackupProfile(include_engagement=True, include_noisy_status=True)))))
+        quiet_actions = [item["fields"]["action"] for item in quiet["objects"] if item["model"] == "actions.mediaaction" and item["fields"]["media"] == self.media.pk]
+        engaged_actions = [item["fields"]["action"] for item in engaged["objects"] if item["model"] == "actions.mediaaction" and item["fields"]["media"] == self.media.pk]
+        self.assertNotIn("like", quiet_actions)
+        self.assertIn("like", engaged_actions)
+        self.assertIn("watch", engaged_actions)
+        self.assertTrue(engaged["manifest"]["include_engagement"])
+        self.assertTrue(engaged["manifest"]["include_noisy_status"])
+        failed = [item for item in engaged["objects"] if item["model"] == "files.encoding" and item["pk"] == self.failed.pk]
+        self.assertEqual(len(failed), 1)
+        self.assertTrue(any(item["model"] == "files.videotrimrequest" and item["pk"] == self.trim.pk for item in engaged["objects"]))
+        self.assertTrue(any(item["model"] == "files.transcriptionrequest" and item["pk"] == self.caption.pk for item in engaged["objects"]))
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)
@@ -244,6 +267,41 @@ class DatabaseRestoreTest(TestCase):
         self.client.post(reverse("admin:database_restore"), {"backup_file": notes})
         page = self.client.get(reverse("admin:dashboard_section", args=["database"]))
         self.assertContains(page, "The file is not a gzipped database backup.")
+
+    def test_default_manifest_rejects_a_like_and_engagement_round_trips(self):
+        from admin_customizations.database_backup import (
+            BackupProfile,
+            iter_database_backup,
+        )
+
+        media = create_media(self.admin, title="round trip media")
+        MediaAction.objects.create(user=self.admin, media=media, action="like")
+        MediaAction.objects.create(user=self.admin, media=media, action="report", extra_info="keep")
+        quiet = json.loads(gzip.decompress(b"".join(iter_database_backup())))
+        like = {"model": "actions.mediaaction", "pk": 999001, "fields": {"action": "like", "media": media.pk, "user": self.admin.pk}}
+        rejected = {"manifest": quiet["manifest"], "objects": quiet["objects"] + [like]}
+        rejected_file = SimpleUploadedFile(
+            "mediacms-database-backup-2026-11-13-1416.json.gz",
+            gzip.compress(json.dumps(rejected).encode("utf-8")),
+            content_type="application/gzip",
+        )
+        media.delete()
+        self.client.force_login(self.admin)
+        response = self.client.post(reverse("admin:database_restore"), {"backup_file": rejected_file})
+        self.assertRedirects(response, reverse("admin:dashboard_section", args=["database"]))
+        self.assertFalse(MediaAction.objects.filter(action="like").exists())
+
+        media = create_media(self.admin, title="round trip media")
+        MediaAction.objects.create(user=self.admin, media=media, action="like")
+        MediaAction.objects.create(user=self.admin, media=media, action="report", extra_info="keep")
+        payload = b"".join(iter_database_backup(BackupProfile(include_engagement=True)))
+        media.delete()
+        upload = SimpleUploadedFile("mediacms-database-backup-2026-11-13-1417.json.gz", payload, content_type="application/gzip")
+        response = self.client.post(reverse("admin:database_restore"), {"backup_file": upload})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("admin:login"))
+        self.assertTrue(MediaAction.objects.filter(action="like").exists())
+        self.assertTrue(MediaAction.objects.filter(action="report").exists())
 
     def test_staff_cannot_restore(self):
         staff = create_account(username="restore_staff")

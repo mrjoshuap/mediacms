@@ -588,12 +588,25 @@ def clean_comment(raw_comment):
     return cleaned_comment
 
 
+def user_is_pending_approval(user):
+    """True when this signed-in user may browse but may not change the library."""
+    if not getattr(settings, "USERS_NEEDS_TO_BE_APPROVED", False):
+        return False
+    if not getattr(user, "is_authenticated", False):
+        return False
+    if getattr(user, "is_superuser", False):
+        return False
+    return not getattr(user, "is_approved", False)
+
+
 def user_allowed_to_upload(request):
     """Any custom logic for whether a user is allowed
     to upload content lives here
     """
 
     if request.user.is_anonymous:
+        return False
+    if user_is_pending_approval(request.user):
         return False
     if is_mediacms_editor(request.user):
         return True

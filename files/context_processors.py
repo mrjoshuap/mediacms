@@ -5,9 +5,7 @@ from cms.version import VERSION
 from .frontend_translations import get_translation, get_translation_strings
 from .methods import is_mediacms_editor, is_mediacms_manager
 from .models import Page
-
-# Pages that already have dedicated frontend routes / sidebar entries.
-_SIDEBAR_RESERVED_PAGE_SLUGS = frozenset({"about", "tos", "contact", "setlanguage"})
+from .page_slugs import HTML_SECTIONS, INJECT_SLUGS, LINK_SECTIONS, parse_page_slug
 
 
 def stuff(request):
@@ -16,7 +14,31 @@ def stuff(request):
     ret["FRONTEND_HOST"] = request.build_absolute_uri('/').rstrip('/')
     ret["DEFAULT_THEME"] = settings.DEFAULT_THEME
     ret["PORTAL_NAME"] = settings.PORTAL_NAME
-    ret["CMS_SIDEBAR_PAGES"] = list(Page.objects.exclude(slug__in=_SIDEBAR_RESERVED_PAGE_SLUGS).order_by("title").only("slug", "title"))
+    groups = {section: [] for section in LINK_SECTIONS}
+    html_slots = {section: [] for section in HTML_SECTIONS}
+    fragments = {slug.replace("-", "_"): "" for slug in INJECT_SLUGS}
+    for page in Page.objects.order_by("title").only("slug", "title", "description"):
+        parsed = parse_page_slug(page.slug)
+        if parsed.kind == "link":
+            groups[parsed.section].append(page)
+        elif parsed.kind == "html":
+            html_slots[parsed.section].append(page.description or "")
+        elif parsed.kind == "inject":
+            fragments[page.slug.replace("-", "_")] = page.description or ""
+    if not request.user.is_authenticated:
+        groups["library"] = []
+        groups["personal"] = []
+    if not (request.user.is_authenticated and is_mediacms_editor(request.user)):
+        groups["manage"] = []
+    ret["SIDEBAR_BROWSE"] = groups["browse"]
+    ret["SIDEBAR_LIBRARY"] = groups["library"]
+    ret["SIDEBAR_PERSONAL"] = groups["personal"]
+    ret["SIDEBAR_INFO"] = groups["info"]
+    ret["SIDEBAR_MANAGE"] = groups["manage"]
+    ret["SIDEBAR_BELOW"] = "".join(html_slots["below"])
+    ret["SIDEBAR_AFTER_THEME"] = "".join(html_slots["after-theme"])
+    ret["SIDEBAR_FOOTER_HTML"] = "".join(html_slots["footer"])
+    ret["PAGE_FRAGMENTS"] = fragments
 
     ret["PORTAL_LOGO_DARK_SVG"] = getattr(settings, 'PORTAL_LOGO_DARK_SVG', "")
     ret["PORTAL_LOGO_DARK_PNG"] = getattr(settings, 'PORTAL_LOGO_DARK_PNG', "")

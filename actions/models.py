@@ -24,8 +24,10 @@ MODERATION_MEDIA_ACTIONS = (
 
 USER_MEDIA_ACTIONS = PUBLIC_USER_MEDIA_ACTIONS + MODERATION_MEDIA_ACTIONS
 
-# Admin database backups keep reports and moderator audit rows. Engagement stays out.
+# Admin database backups keep reports and moderator audit rows. Engagement stays out
+# unless an export profile asks for it.
 EXPORTED_MEDIA_ACTIONS = ("report",) + tuple(name for name, _label in MODERATION_MEDIA_ACTIONS)
+ENGAGEMENT_MEDIA_ACTIONS = tuple(name for name, _label in PUBLIC_USER_MEDIA_ACTIONS if name != "report")
 
 
 class MediaAction(models.Model):
