@@ -76,7 +76,9 @@ describe('components/list-item', () => {
 
         test('Accepts numeric publish dates and missing thumbnail', () => {
             const ts = Date.parse('2023-12-31T00:00:00Z');
-            const { container, unmount } = renderIntoContainer(<PlaylistItem title="Mix" link="/p" publish_date={ts} />);
+            const { container, unmount } = renderIntoContainer(
+                <PlaylistItem title="Mix" link="/p" publish_date={ts} />
+            );
             expect(container.querySelector('a.item-thumb')?.className).toBe('item-thumb no-thumb');
             expect(container.querySelector('.playlist-count span')?.textContent).toBe('0');
             expect(container.querySelector('.playlist-date time')?.textContent).toBe('Created 1 day ago');

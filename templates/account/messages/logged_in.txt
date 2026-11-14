@@ -4,4 +4,3 @@
 {% with name=user.name|default:user.email|default:display_name %}
 {% blocktrans %}Successfully signed in as {{name}}.{% endblocktrans %}
 {% endwith %}
-

@@ -2,93 +2,93 @@ import React, { useState, useEffect, useRef } from 'react';
 import { applyDefaultProps } from '../../../utils/helpers/applyDefaultProps';
 
 export function NavigationContentApp(rawProps) {
-  const props = applyDefaultProps(rawProps, NavigationContentApp.defaultPropValues);
-  const containerRef = useRef(null);
+    const props = applyDefaultProps(rawProps, NavigationContentApp.defaultPropValues);
+    const containerRef = useRef(null);
 
-  const [currentPage, setCurrentPage] = useState(null);
+    const [currentPage, setCurrentPage] = useState(null);
 
-  let changePageElements = [];
+    let changePageElements = [];
 
-  function initEvents() {
-    let domElem = containerRef.current;
-    let elems = domElem.querySelectorAll(props.pageChangeSelector);
+    function initEvents() {
+        let domElem = containerRef.current;
+        let elems = domElem.querySelectorAll(props.pageChangeSelector);
 
-    let i, pageId;
+        let i, pageId;
 
-    if (elems.length) {
-      i = 0;
-      while (i < elems.length) {
-        pageId = elems[i].getAttribute(props.pageIdSelectorAttr);
-        pageId = pageId ? pageId.trim() : pageId;
+        if (elems.length) {
+            i = 0;
+            while (i < elems.length) {
+                pageId = elems[i].getAttribute(props.pageIdSelectorAttr);
+                pageId = pageId ? pageId.trim() : pageId;
 
-        if (pageId) {
-          changePageElements[i] = {
-            id: pageId,
-            elem: elems[i],
-          };
+                if (pageId) {
+                    changePageElements[i] = {
+                        id: pageId,
+                        elem: elems[i],
+                    };
 
-          changePageElements[i].listener = (
-            (index) => (event) =>
-              changePageListener(index, event)
-          )(i);
-          changePageElements[i].elem.addEventListener('click', changePageElements[i].listener);
+                    changePageElements[i].listener = (
+                        (index) => (event) =>
+                            changePageListener(index, event)
+                    )(i);
+                    changePageElements[i].elem.addEventListener('click', changePageElements[i].listener);
+                }
+
+                i += 1;
+            }
         }
 
-        i += 1;
-      }
+        if (props.focusFirstItemOnPageChange) {
+            domElem.focus();
+        }
     }
 
-    if (props.focusFirstItemOnPageChange) {
-      domElem.focus();
+    function clearEvents() {
+        let i = 0;
+        while (i < changePageElements.length) {
+            changePageElements[i].elem.removeEventListener('click', changePageElements[i].listener);
+            i += 1;
+        }
+        changePageElements = [];
     }
-  }
 
-  function clearEvents() {
-    let i = 0;
-    while (i < changePageElements.length) {
-      changePageElements[i].elem.removeEventListener('click', changePageElements[i].listener);
-      i += 1;
+    function changePageListener(index, event) {
+        event.preventDefault();
+        event.stopPropagation();
+        changePage(changePageElements[index].id);
     }
-    changePageElements = [];
-  }
 
-  function changePageListener(index, event) {
-    event.preventDefault();
-    event.stopPropagation();
-    changePage(changePageElements[index].id);
-  }
-
-  function changePage(newPage) {
-    if (void 0 !== props.pages[newPage]) {
-      setCurrentPage(newPage);
+    function changePage(newPage) {
+        if (void 0 !== props.pages[newPage]) {
+            setCurrentPage(newPage);
+        }
     }
-  }
 
-  useEffect(() => {
-    if (void 0 !== props.pages[props.initPage]) {
-      setCurrentPage(props.initPage);
-    } else if (Object.keys(props.pages).length) {
-      setCurrentPage(Object.keys(props.pages)[0]);
-    } else {
-      setCurrentPage(null);
-    }
-  }, [props.initPage]);
+    useEffect(() => {
+        if (void 0 !== props.pages[props.initPage]) {
+            setCurrentPage(props.initPage);
+        } else if (Object.keys(props.pages).length) {
+            setCurrentPage(Object.keys(props.pages)[0]);
+        } else {
+            setCurrentPage(null);
+        }
+    }, [props.initPage]);
 
-  useEffect(() => {
-    clearEvents();
+    useEffect(() => {
+        clearEvents();
 
-    if (currentPage) {
-      initEvents();
+        if (currentPage) {
+            initEvents();
 
-      if ('function' === typeof props.pageChangeCallback) {
-        props.pageChangeCallback(currentPage);
-      }
-    }
-  }, [currentPage]);
+            if ('function' === typeof props.pageChangeCallback) {
+                props.pageChangeCallback(currentPage);
+            }
+        }
+    }, [currentPage]);
 
-  return !currentPage ? null : <div ref={containerRef}>{React.cloneElement(props.pages[currentPage])}</div>;
+    return !currentPage ? null : <div ref={containerRef}>{React.cloneElement(props.pages[currentPage])}</div>;
 }
 
 NavigationContentApp.defaultPropValues = {
-  focusFirstItemOnPageChange: true,
+    focusFirstItemOnPageChange: true,
 };

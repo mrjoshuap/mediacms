@@ -10,16 +10,22 @@ import { ProfileMediaFilters } from '../components/search-filters/ProfileMediaFi
 import { ProfileMediaTags } from '../components/search-filters/ProfileMediaTags';
 import { ProfileMediaSharing } from '../components/search-filters/ProfileMediaSharing';
 import { ProfileMediaSorting } from '../components/search-filters/ProfileMediaSorting';
-import { inEmbeddedApp, inSelectMediaEmbedMode, isDeepLinkSelection, isShareMediaDisabled, submitDeepLinkSelection } from '../utils/helpers';
+import {
+    inEmbeddedApp,
+    inSelectMediaEmbedMode,
+    isDeepLinkSelection,
+    isShareMediaDisabled,
+    submitDeepLinkSelection,
+} from '../utils/helpers';
 
 import { Page } from './_Page';
 
 import '../components/profile-page/ProfilePage.scss';
 
-function EmptySharedWithMe(props) {
+function EmptySharedWithMe(_props) {
     return (
         <LinksConsumer>
-            {(links) => (
+            {(_links) => (
                 <div className="empty-media empty-channel-media">
                     <div className="welcome-title">No shared media</div>
                     <div className="start-uploading">Media that others have shared with you will show up here.</div>
@@ -160,11 +166,7 @@ export class ProfileSharedWithMePage extends Page {
                 this.state.filterArgs;
         } else {
             requestUrl =
-                apiUrlConfig.media +
-                '?author=' +
-                this.state.author.id +
-                '&show=shared_with_me' +
-                this.state.filterArgs;
+                apiUrlConfig.media + '?author=' + this.state.author.id + '&show=shared_with_me' + this.state.filterArgs;
         }
 
         let title = this.state.title;
@@ -422,11 +424,14 @@ export class ProfileSharedWithMePage extends Page {
                         const embedUrl = `${baseUrl}/embed?m=${mediaId}`;
 
                         // Send message in the format expected by the Moodle plugin
-                        window.parent.postMessage({
-                            type: 'videoSelected',
-                            embedUrl: embedUrl,
-                            videoId: mediaId
-                        }, '*');
+                        window.parent.postMessage(
+                            {
+                                type: 'videoSelected',
+                                embedUrl: embedUrl,
+                                videoId: mediaId,
+                            },
+                            '*'
+                        );
 
                         console.log('Sent postMessage to parent:', { embedUrl, videoId: mediaId });
                     }

@@ -8,7 +8,9 @@ import { ManageMediaItem } from '../../../../src/static/js/components/management
 import { ManageUsersItem } from '../../../../src/static/js/components/management-table/ManageItem/ManageUsersItem';
 import { ManageCommentsItem } from '../../../../src/static/js/components/management-table/ManageItem/ManageCommentsItem';
 
-jest.mock('../../../../src/static/js/utils/stores/', () => require('../../../_support/compD_storeMocks').mockStoresModule());
+jest.mock('../../../../src/static/js/utils/stores/', () =>
+    require('../../../_support/compD_storeMocks').mockStoresModule()
+);
 
 const pageStore = PageStore as any;
 const DATE = '2024-03-05T07:08:09';
@@ -75,7 +77,14 @@ describe('components/management-table', () => {
 
         test('Shows N/A placeholders and alternate values', () => {
             const { container, unmount } = renderIntoContainer(
-                <ManageMediaItem token="t" selectedRow={false} hideDeleteAction is_reviewed={false} featured reported_times={1} />
+                <ManageMediaItem
+                    token="t"
+                    selectedRow={false}
+                    hideDeleteAction
+                    is_reviewed={false}
+                    featured
+                    reported_times={1}
+                />
             );
             expect(container.querySelector('.mi-title .non-available')).not.toBeNull();
             expect(container.querySelector('.actions')).toBeNull();
@@ -89,12 +98,22 @@ describe('components/management-table', () => {
         });
 
         test('Title or url alone render as text and zero reports as dash', () => {
-            const a = renderIntoContainer(<ManageMediaItem selectedRow={false} hideDeleteAction title="Only title" author_name="Ann" reported_times={0} />);
+            const a = renderIntoContainer(
+                <ManageMediaItem
+                    selectedRow={false}
+                    hideDeleteAction
+                    title="Only title"
+                    author_name="Ann"
+                    reported_times={0}
+                />
+            );
             expect(cellText(a.container, '.mi-title')).toBe('Only title');
             expect(cellText(a.container, '.mi-author')).toBe('Ann');
             expect(cellText(a.container, '.mi-reported')).toBe('-');
             a.unmount();
-            const b = renderIntoContainer(<ManageMediaItem selectedRow={false} hideDeleteAction url="/u" author_url="/a" />);
+            const b = renderIntoContainer(
+                <ManageMediaItem selectedRow={false} hideDeleteAction url="/u" author_url="/a" />
+            );
             expect(cellText(b.container, '.mi-title')).toBe('/u');
             expect(cellText(b.container, '.mi-author')).toBe('/a');
             expect(b.container.querySelector('.mi-reviewed .non-available')).not.toBeNull();
@@ -103,7 +122,9 @@ describe('components/management-table', () => {
 
         test('Row checkbox reports selection and follows selectedRow prop', () => {
             const onCheckRow = jest.fn();
-            const { container, rerender, unmount } = renderIntoContainer(<ManageMediaItem {...props} onCheckRow={onCheckRow} />);
+            const { container, rerender, unmount } = renderIntoContainer(
+                <ManageMediaItem {...props} onCheckRow={onCheckRow} />
+            );
             expect(onCheckRow).toHaveBeenLastCalledWith('tok1', false);
             click(container.querySelector('.mi-checkbox input'));
             expect(onCheckRow).toHaveBeenLastCalledWith('tok1', true);
@@ -114,7 +135,9 @@ describe('components/management-table', () => {
 
         test('Delete popup proceeds with the media token and cancels without it', () => {
             const onProceedRemoval = jest.fn();
-            const { container, unmount } = renderIntoContainer(<ManageMediaItem {...props} onProceedRemoval={onProceedRemoval} />);
+            const { container, unmount } = renderIntoContainer(
+                <ManageMediaItem {...props} onProceedRemoval={onProceedRemoval} />
+            );
             click(container.querySelector('.actions > button'));
             expect(cellText(container, '.popup-message-main')).toBe('You\'re willing to remove media "Clip"?');
             expect(pageStore.listenerCount('window_resize')).toBe(1);
@@ -159,7 +182,9 @@ describe('components/management-table', () => {
         });
 
         test('Omits actions when there is no text', () => {
-            const { container, unmount } = renderIntoContainer(<ManageCommentsItem uid="c" selectedRow={false} hideDeleteAction={false} />);
+            const { container, unmount } = renderIntoContainer(
+                <ManageCommentsItem uid="c" selectedRow={false} hideDeleteAction={false} />
+            );
             expect(container.querySelector('.mi-comment .non-available')).not.toBeNull();
             expect(container.querySelector('.mi-author .non-available')).not.toBeNull();
             expect(container.querySelector('.actions')).toBeNull();
@@ -167,7 +192,9 @@ describe('components/management-table', () => {
         });
 
         test('Omits actions without media url when delete is hidden', () => {
-            const { container, unmount } = renderIntoContainer(<ManageCommentsItem uid="c" text="t" author_name="Ann" selectedRow={false} hideDeleteAction />);
+            const { container, unmount } = renderIntoContainer(
+                <ManageCommentsItem uid="c" text="t" author_name="Ann" selectedRow={false} hideDeleteAction />
+            );
             expect(container.querySelector('.actions')).toBeNull();
             expect(cellText(container, '.mi-author')).toBe('Ann');
             unmount();
@@ -177,7 +204,13 @@ describe('components/management-table', () => {
             const onProceedRemoval = jest.fn();
             const onCheckRow = jest.fn();
             const { container, unmount } = renderIntoContainer(
-                <ManageCommentsItem {...props} media_url={undefined} author_name={undefined} onProceedRemoval={onProceedRemoval} onCheckRow={onCheckRow} />
+                <ManageCommentsItem
+                    {...props}
+                    media_url={undefined}
+                    author_name={undefined}
+                    onProceedRemoval={onProceedRemoval}
+                    onCheckRow={onCheckRow}
+                />
             );
             expect(cellText(container, '.mi-author')).toBe('/user/ann');
             expect(container.querySelector('.actions .seperator')).toBeNull();
@@ -258,14 +291,32 @@ describe('components/management-table', () => {
                 has_approved: true,
                 is_approved: null,
             });
-            ['.mi-name', '.mi-username', '.mi-added', '.mi-role', '.mi-verified', '.mi-trusted', '.mi-approved', '.mi-featured'].forEach((s) =>
-                expect(container.querySelector(s + ' .non-available')).not.toBeNull()
-            );
+            [
+                '.mi-name',
+                '.mi-username',
+                '.mi-added',
+                '.mi-role',
+                '.mi-verified',
+                '.mi-trusted',
+                '.mi-approved',
+                '.mi-featured',
+            ].forEach((s) => expect(container.querySelector(s + ' .non-available')).not.toBeNull());
             unmount();
         });
 
         test('Plain text name and username without url and empty roles as dash', () => {
-            const { container, unmount } = render({ url: undefined, has_roles: true, roles: [], has_verified: true, is_verified: false, has_trusted: true, is_trusted: true, has_approved: true, is_approved: true, is_featured: false });
+            const { container, unmount } = render({
+                url: undefined,
+                has_roles: true,
+                roles: [],
+                has_verified: true,
+                is_verified: false,
+                has_trusted: true,
+                is_trusted: true,
+                has_approved: true,
+                is_approved: true,
+                is_featured: false,
+            });
             expect(container.querySelector('.mi-name')?.firstChild?.textContent).toBe('Ann');
             expect(cellText(container, '.mi-username')).toBe('ann');
             expect(cellText(container, '.mi-role')).toBe('-');
@@ -289,7 +340,10 @@ describe('components/management-table', () => {
             const { container, unmount } = render({ onProceedRemoval, onCheckRow });
             click(container.querySelector('.mi-checkbox input'));
             expect(onCheckRow).toHaveBeenLastCalledWith('ann', true);
-            const deleteBtn = () => Array.from(container.querySelectorAll('.actions > button')).find((b) => b.textContent === 'Delete') as HTMLElement;
+            const deleteBtn = () =>
+                Array.from(container.querySelectorAll('.actions > button')).find(
+                    (b) => b.textContent === 'Delete'
+                ) as HTMLElement;
             expect(deleteBtn().title).toBe('Delete "Ann"');
             click(deleteBtn());
             expect(cellText(container, '.popup-message-title')).toBe('Member removal');
@@ -310,7 +364,9 @@ describe('components/management-table', () => {
             expect(cellText(container, '.popup-message-title')).toBe('Change Password for Ann');
             changeValue(container.querySelector('input[type="password"]'), 'pw');
             act(() => {
-                (container.querySelector('form') as HTMLFormElement).dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+                (container.querySelector('form') as HTMLFormElement).dispatchEvent(
+                    new Event('submit', { bubbles: true, cancelable: true })
+                );
             });
             await flush();
             expect(fetchMock.mock.calls[0][0]).toBe('/api/v1/users/ann');
@@ -333,7 +389,9 @@ describe('components/management-table', () => {
             const { container, unmount } = render({ setMessage });
             click(container.querySelector('.actions > button'));
             act(() => {
-                (container.querySelector('form') as HTMLFormElement).dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+                (container.querySelector('form') as HTMLFormElement).dispatchEvent(
+                    new Event('submit', { bubbles: true, cancelable: true })
+                );
             });
             await flush();
             expect(setMessage).toHaveBeenLastCalledWith({ type: 'error', text: 'Failed to change password.' });

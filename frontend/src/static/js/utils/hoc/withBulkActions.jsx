@@ -6,14 +6,9 @@ import { useBulkActions } from '../hooks/useBulkActions';
  * to class components via props
  */
 export function withBulkActions(WrappedComponent) {
-  return function WithBulkActionsComponent(props) {
-    const bulkActions = useBulkActions();
+    return function WithBulkActionsComponent(props) {
+        const bulkActions = useBulkActions();
 
-    return (
-      <WrappedComponent
-        {...props}
-        bulkActions={bulkActions}
-      />
-    );
-  };
+        return <WrappedComponent {...props} bulkActions={bulkActions} />;
+    };
 }

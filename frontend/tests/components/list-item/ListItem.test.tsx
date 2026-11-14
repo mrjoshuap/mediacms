@@ -93,7 +93,11 @@ describe('components/list-item', () => {
         });
 
         test('Detects user and playlist items', () => {
-            const user = listItemProps({}, { username: 'bob', url: '/user/bob', date_added: '2021-01-01', description: 'Hi' }, 0);
+            const user = listItemProps(
+                {},
+                { username: 'bob', url: '/user/bob', date_added: '2021-01-01', description: 'Hi' },
+                0
+            );
             expect(user.type).toBe('user');
             expect(user.title).toBe('bob');
             expect(user.date).toBe('2021-01-01');
@@ -165,26 +169,38 @@ describe('components/list-item', () => {
         });
 
         test('Renders user items', () => {
-            const { container, unmount } = renderItem({}, { username: 'bob', url: '/user/bob', date_added: '2021-01-01T00:00:00Z', description: '' });
+            const { container, unmount } = renderItem(
+                {},
+                { username: 'bob', url: '/user/bob', date_added: '2021-01-01T00:00:00Z', description: '' }
+            );
             expect(container.firstElementChild?.className).toBe('item member-item');
             expect(container.querySelector('h3 a')?.textContent).toBe('bob');
             unmount();
         });
 
         test('Renders playlist items and rewrites link in dev environment', () => {
-            const a = renderItem({}, { title: 'PL', url: '/playlists/xyz', media_count: 3, add_date: '2021-01-01T00:00:00Z' });
+            const a = renderItem(
+                {},
+                { title: 'PL', url: '/playlists/xyz', media_count: 3, add_date: '2021-01-01T00:00:00Z' }
+            );
             expect(a.container.firstElementChild?.className).toBe('item playlist-item');
             expect(a.container.querySelector('.playlist-count span')?.textContent).toBe('3');
             a.unmount();
 
             (window as any).MediaCMS.site.devEnv = true;
-            const b = renderItem({}, { title: 'PL', url: '/playlists/xyz', media_count: 3, add_date: '2021-01-01T00:00:00Z' });
+            const b = renderItem(
+                {},
+                { title: 'PL', url: '/playlists/xyz', media_count: 3, add_date: '2021-01-01T00:00:00Z' }
+            );
             expect(b.container.querySelector('h3 a')?.getAttribute('href')).toBe('playlist.html?pl=xyz');
             b.unmount();
         });
 
         test('Renders category and tag taxonomy items', () => {
-            const a = renderItem({ inCategoriesList: true }, { uid: 'c1', title: 'Cat', url: '/c', media_count: 1, description: '' });
+            const a = renderItem(
+                { inCategoriesList: true },
+                { uid: 'c1', title: 'Cat', url: '/c', media_count: 1, description: '' }
+            );
             expect(a.container.firstElementChild?.className).toBe('item category-item');
             a.unmount();
             const b = renderItem({ inTagsList: true }, { title: 'Tag', url: '/t', media_count: 1 });

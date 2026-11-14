@@ -50,12 +50,12 @@ const MobilePlayPrompt: React.FC<MobilePlayPromptProps> = ({ videoRef, onPlay })
         <div className="mobile-play-prompt-overlay">
             <div className="mobile-play-prompt">
                 {/* <h3>Mobile Device Notice</h3>
-        
+
         <p>
-          For the best video editing experience on mobile devices, you need to <strong>play the video first</strong> before 
+          For the best video editing experience on mobile devices, you need to <strong>play the video first</strong> before
           using the timeline controls.
         </p>
-        
+
         <div className="mobile-prompt-instructions">
           <p>Please follow these steps:</p>
           <ol>

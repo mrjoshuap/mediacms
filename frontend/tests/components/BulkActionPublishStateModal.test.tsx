@@ -79,7 +79,12 @@ describe('components', () => {
             expect(fetchMock).toHaveBeenCalledWith('/api/v1/media/user/bulk_actions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': 'tok' },
-                body: JSON.stringify({ action: 'set_state', media_ids: ['a', 'b'], state: 'private', remove_sharing: true }),
+                body: JSON.stringify({
+                    action: 'set_state',
+                    media_ids: ['a', 'b'],
+                    state: 'private',
+                    remove_sharing: true,
+                }),
             });
             expect(onSuccess).toHaveBeenCalledWith('Done');
             expect(onCancel).toHaveBeenCalledTimes(1);
@@ -92,7 +97,11 @@ describe('components', () => {
             changeValue(container.querySelector('select'), 'public');
             click(container.querySelector('.publish-state-btn-submit'));
             await flush();
-            expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({ action: 'set_state', media_ids: ['a', 'b'], state: 'public' });
+            expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
+                action: 'set_state',
+                media_ids: ['a', 'b'],
+                state: 'public',
+            });
             expect(onSuccess).toHaveBeenCalledWith('Successfully updated publish state');
             unmount();
         });
@@ -106,7 +115,9 @@ describe('components', () => {
             expect(onError).toHaveBeenCalledWith('Failed to set publish state. Please try again.');
             expect(onSuccess).not.toHaveBeenCalled();
             expect(onCancel).not.toHaveBeenCalled();
-            expect((container.querySelector('.publish-state-btn-submit') as HTMLButtonElement).textContent).toBe('Submit');
+            expect((container.querySelector('.publish-state-btn-submit') as HTMLButtonElement).textContent).toBe(
+                'Submit'
+            );
             unmount();
         });
 

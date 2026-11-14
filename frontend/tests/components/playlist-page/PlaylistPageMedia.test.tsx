@@ -11,15 +11,26 @@ describe('components/playlist-page', () => {
         test('Passes playlist page options to ItemList', () => {
             const media = [{ id: 1 }];
             const itemsCountCallback = jest.fn();
-            const { unmount } = renderIntoContainer(<PlaylistPageMedia media={media} playlistId="p1" itemsCountCallback={itemsCountCallback} />);
+            const { unmount } = renderIntoContainer(
+                <PlaylistPageMedia media={media} playlistId="p1" itemsCountCallback={itemsCountCallback} />
+            );
             expect(itemListCalls[itemListCalls.length - 1]).toEqual(
-                expect.objectContaining({ items: media, playlistId: 'p1', hidePlaylistOptions: true, inPlaylistPage: true, itemsCountCallback, pageItems: 99999 })
+                expect.objectContaining({
+                    items: media,
+                    playlistId: 'p1',
+                    hidePlaylistOptions: true,
+                    inPlaylistPage: true,
+                    itemsCountCallback,
+                    pageItems: 99999,
+                })
             );
             unmount();
         });
 
         test('Allows showing playlist options', () => {
-            const { unmount } = renderIntoContainer(<PlaylistPageMedia media={[]} playlistId="p1" hidePlaylistOptions={false} />);
+            const { unmount } = renderIntoContainer(
+                <PlaylistPageMedia media={[]} playlistId="p1" hidePlaylistOptions={false} />
+            );
             expect(itemListCalls[itemListCalls.length - 1].hidePlaylistOptions).toBe(false);
             unmount();
         });

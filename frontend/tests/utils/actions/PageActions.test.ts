@@ -21,11 +21,14 @@ describe('utils/actions', () => {
         test.each([
             ['initPage', ['home'], { type: 'INIT_PAGE', page: 'home' }],
             ['toggleMediaAutoPlay', [], { type: 'TOGGLE_AUTO_PLAY' }],
-            ['addNotification', ['Hello', 'n1'], { type: 'ADD_NOTIFICATION', notification: 'Hello', notificationId: 'n1' }],
+            [
+                'addNotification',
+                ['Hello', 'n1'],
+                { type: 'ADD_NOTIFICATION', notification: 'Hello', notificationId: 'n1' },
+            ],
         ] as [string, any[], any][])('%s dispatches the expected payload', (name, args, expected) => {
             (PageActions as any)[name](...args);
             expect(received).toStrictEqual([expected]);
         });
-
     });
 });

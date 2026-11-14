@@ -14,7 +14,7 @@ export function inEmbeddedApp() {
         }
 
         return sessionStorage.getItem('lms_embed_mode') === 'true';
-    } catch (e) {
+    } catch (_e) {
         return false;
     }
 }
@@ -22,7 +22,7 @@ export function inEmbeddedApp() {
 export function storedLmsEmbedMode(): boolean {
     try {
         return sessionStorage.getItem('lms_embed_mode') === 'true';
-    } catch (e) {
+    } catch (_e) {
         return false;
     }
 }
@@ -46,7 +46,7 @@ export function isShareMediaDisabled(): boolean {
         }
 
         return sessionStorage.getItem('lms_share_media_disabled') === 'true';
-    } catch (e) {
+    } catch (_e) {
         return false;
     }
 }
@@ -57,7 +57,7 @@ export function isSelectMediaMode() {
         const action = params.get('action');
 
         return action === 'select_media';
-    } catch (e) {
+    } catch (_e) {
         return false;
     }
 }
@@ -84,7 +84,7 @@ export function isDeepLinkSelection(): boolean {
         }
 
         return sessionStorage.getItem('lti_deep_link') === 'true';
-    } catch (e) {
+    } catch (_e) {
         return false;
     }
 }
@@ -108,7 +108,7 @@ export function submitDeepLinkSelection(mediaToken: string): boolean {
         document.body.appendChild(form);
         form.submit();
         return true;
-    } catch (e) {
+    } catch (_e) {
         return false;
     }
 }
@@ -135,7 +135,7 @@ export function getParentMediaBase(): string | null {
         }
 
         return sessionStorage.getItem('parent_media_base');
-    } catch (e) {
+    } catch (_e) {
         return null;
     }
 }
@@ -151,7 +151,7 @@ export function getLtiContextId(): string | null {
         }
 
         return sessionStorage.getItem('lti_context_id');
-    } catch (e) {
+    } catch (_e) {
         return null;
     }
 }

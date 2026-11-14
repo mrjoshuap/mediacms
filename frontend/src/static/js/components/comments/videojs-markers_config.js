@@ -1,13 +1,13 @@
 //markers on the timebar
 const markerStyle = {
-    width: "15px",
-    "background-color": "#DD7373"
+    width: '15px',
+    'background-color': '#DD7373',
 };
 
 //the comment overlay
 const overlayStyle = {
-    width: "100%",
-    height: "auto",
+    width: '100%',
+    height: 'auto',
 };
 
 function enableMarkers(video) {
@@ -18,7 +18,7 @@ function enableMarkers(video) {
                 display: true,
                 text: function (marker) {
                     return marker.text;
-                }
+                },
             },
             breakOverlay: {
                 display: true,
@@ -26,19 +26,20 @@ function enableMarkers(video) {
                 text: function (marker) {
                     return marker.text;
                 },
-                style : overlayStyle
+                style: overlayStyle,
             },
-            markers: []
+            markers: [],
         });
     }
 }
 
-function addMarker(videoPlayer, time, text)
-{
-  videoPlayer.markers.add([{
-    time: time,
-    text: text
-  }]);
+function addMarker(videoPlayer, time, text) {
+    videoPlayer.markers.add([
+        {
+            time: time,
+            text: text,
+        },
+    ]);
 }
 
-export {enableMarkers, addMarker};
+export { enableMarkers, addMarker };

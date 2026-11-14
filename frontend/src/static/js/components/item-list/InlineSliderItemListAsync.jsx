@@ -8,73 +8,73 @@ import { ItemsListHandler } from './includes/itemLists/ItemsListHandler';
 import { applyDefaultProps } from '../../utils/helpers/applyDefaultProps';
 
 export function InlineSliderItemListAsync(rawProps) {
-  const props = applyDefaultProps(rawProps, InlineSliderItemListAsync.defaultPropValues);
-  const { visibleSidebar } = useLayout();
+    const props = applyDefaultProps(rawProps, InlineSliderItemListAsync.defaultPropValues);
+    const { visibleSidebar } = useLayout();
 
-  const [
-    items,
-    countedItems,
-    listHandler,
-    classname,
-    setListHandler,
-    onItemsCount,
-    onItemsLoad,
-    winResizeListener,
-    sidebarVisibilityChangeListener,
-    itemsListWrapperRef,
-    itemsListRef,
-    renderBeforeListWrap,
-    renderAfterListWrap,
-  ] = useItemListInlineSlider(props);
-
-  useEffect(() => {
-    sidebarVisibilityChangeListener();
-  }, [visibleSidebar]);
-
-  useEffect(() => {
-    setListHandler(
-      new ItemsListHandler(
-        props.pageItems,
-        props.maxItems,
-        props.firstItemRequestUrl,
-        props.requestUrl,
+    const [
+        items,
+        countedItems,
+        listHandler,
+        classname,
+        setListHandler,
         onItemsCount,
-        onItemsLoad
-      )
-    );
+        onItemsLoad,
+        winResizeListener,
+        sidebarVisibilityChangeListener,
+        itemsListWrapperRef,
+        itemsListRef,
+        renderBeforeListWrap,
+        renderAfterListWrap,
+    ] = useItemListInlineSlider(props);
 
-    PageStore.on('window_resize', winResizeListener);
+    useEffect(() => {
+        sidebarVisibilityChangeListener();
+    }, [visibleSidebar]);
 
-    return () => {
-      PageStore.removeListener('window_resize', winResizeListener);
+    useEffect(() => {
+        setListHandler(
+            new ItemsListHandler(
+                props.pageItems,
+                props.maxItems,
+                props.firstItemRequestUrl,
+                props.requestUrl,
+                onItemsCount,
+                onItemsLoad
+            )
+        );
 
-      if (listHandler) {
-        listHandler.cancelAll();
-        setListHandler(null);
-      }
-    };
-  }, []);
+        PageStore.on('window_resize', winResizeListener);
 
-  return !countedItems ? (
-    <PendingItemsList className={classname.listOuter} />
-  ) : !items.length ? null : (
-    <div className={classname.listOuter}>
-      {renderBeforeListWrap()}
+        return () => {
+            PageStore.removeListener('window_resize', winResizeListener);
 
-      <div ref={itemsListWrapperRef} className="items-list-wrap">
-        <div ref={itemsListRef} className={classname.list}>
-          {items.map((itm, index) => (
-            <ListItem key={index} {...listItemProps(props, itm, index)} />
-          ))}
+            if (listHandler) {
+                listHandler.cancelAll();
+                setListHandler(null);
+            }
+        };
+    }, []);
+
+    return !countedItems ? (
+        <PendingItemsList className={classname.listOuter} />
+    ) : !items.length ? null : (
+        <div className={classname.listOuter}>
+            {renderBeforeListWrap()}
+
+            <div ref={itemsListWrapperRef} className="items-list-wrap">
+                <div ref={itemsListRef} className={classname.list}>
+                    {items.map((itm, index) => (
+                        <ListItem key={index} {...listItemProps(props, itm, index)} />
+                    ))}
+                </div>
+            </div>
+
+            {renderAfterListWrap()}
         </div>
-      </div>
-
-      {renderAfterListWrap()}
-    </div>
-  );
+    );
 }
 
 InlineSliderItemListAsync.defaultPropValues = {
-  ...ItemListAsync.defaultPropValues,
-  pageItems: 12,
+    ...ItemListAsync.defaultPropValues,
+    pageItems: 12,
 };

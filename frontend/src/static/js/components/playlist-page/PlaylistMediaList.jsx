@@ -29,11 +29,11 @@ export class PlaylistMediaList extends React.PureComponent {
 
         const playlistId = this.props.id;
 
-        function onPutMediaOrderingSuccess(response) {
+        function onPutMediaOrderingSuccess(_response) {
             // TODO: Continue here
         }
 
-        function onPutMediaOrderingFail(response) {
+        function onPutMediaOrderingFail(_response) {
             // TODO: Continue here
         }
 
@@ -60,10 +60,10 @@ export class PlaylistMediaList extends React.PureComponent {
         }.bind(this);
 
         Sortable.create(container, {
-            onStart: function (evt) {
+            onStart: function (_evt) {
                 container.classList.add('on-dragging');
             },
-            onEnd: function (evt) {
+            onEnd: function (_evt) {
                 const newMediaOrder = [];
 
                 const itemsOrderNumElems = container.querySelectorAll('.item-order-number div div');

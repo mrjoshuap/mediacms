@@ -13,7 +13,9 @@ jest.mock('../../../src/static/js/utils/stores/', () => require('../../_support/
 const pageStore = PageStore as any;
 
 function filterGroup(container: HTMLElement, title: string) {
-    return Array.from(container.querySelectorAll('.mi-filter')).find((f) => f.querySelector('.mi-filter-title')?.textContent === title) as HTMLElement;
+    return Array.from(container.querySelectorAll('.mi-filter')).find(
+        (f) => f.querySelector('.mi-filter-title')?.textContent === title
+    ) as HTMLElement;
 }
 
 function activeOption(group: HTMLElement) {
@@ -37,7 +39,9 @@ describe('components/management-table', () => {
         });
 
         test('Hidden prop adds the hidden class', () => {
-            const { container, rerender, unmount } = renderIntoContainer(<ManageMediaFilters hidden onFiltersUpdate={jest.fn()} />);
+            const { container, rerender, unmount } = renderIntoContainer(
+                <ManageMediaFilters hidden onFiltersUpdate={jest.fn()} />
+            );
             expect(container.firstElementChild?.className).toBe('mi-filters-row hidden');
             rerender(<ManageMediaFilters hidden={false} onFiltersUpdate={jest.fn()} />);
             expect(container.firstElementChild?.className).toBe('mi-filters-row');
@@ -52,7 +56,9 @@ describe('components/management-table', () => {
             ['FEATURED', 'Yes', { featured: 'true' }],
         ])('Selecting %s %s reports merged filters', (group, option, changed) => {
             const onFiltersUpdate = jest.fn();
-            const { container, unmount } = renderIntoContainer(<ManageMediaFilters onFiltersUpdate={onFiltersUpdate} />);
+            const { container, unmount } = renderIntoContainer(
+                <ManageMediaFilters onFiltersUpdate={onFiltersUpdate} />
+            );
             click(findByText(filterGroup(container, group), 'button', option));
             expect(onFiltersUpdate).toHaveBeenCalledWith({
                 state: 'all',
@@ -69,10 +75,14 @@ describe('components/management-table', () => {
 
         test('Keeps previous selections when another filter changes', () => {
             const onFiltersUpdate = jest.fn();
-            const { container, unmount } = renderIntoContainer(<ManageMediaFilters onFiltersUpdate={onFiltersUpdate} />);
+            const { container, unmount } = renderIntoContainer(
+                <ManageMediaFilters onFiltersUpdate={onFiltersUpdate} />
+            );
             click(findByText(filterGroup(container, 'STATE'), 'button', 'Public'));
             click(findByText(filterGroup(container, 'MEDIA TYPE'), 'button', 'Video'));
-            expect(onFiltersUpdate).toHaveBeenLastCalledWith(expect.objectContaining({ state: 'public', media_type: 'video' }));
+            expect(onFiltersUpdate).toHaveBeenLastCalledWith(
+                expect.objectContaining({ state: 'public', media_type: 'video' })
+            );
             unmount();
         });
 
@@ -91,11 +101,16 @@ describe('components/management-table', () => {
             jest.isolateModules(() => {
                 const React_ = require('react');
                 const { renderIntoContainer: isolatedRender, act: isolatedAct } = require('../../_support/render');
-                const { ManageMediaFilters: Isolated } = require('../../../src/static/js/components/management-table/ManageMediaFilters');
+                const {
+                    ManageMediaFilters: Isolated,
+                } = require('../../../src/static/js/components/management-table/ManageMediaFilters');
                 const onFiltersUpdate = jest.fn();
                 const { container, unmount } = isolatedRender(React_.createElement(Isolated, { onFiltersUpdate }));
                 const group = filterGroup(container, 'CATEGORY');
-                expect(Array.from(group.querySelectorAll('button span')).map((s) => s.textContent)).toEqual(['All', 'Science']);
+                expect(Array.from(group.querySelectorAll('button span')).map((s) => s.textContent)).toEqual([
+                    'All',
+                    'Science',
+                ]);
                 isolatedAct(() => (findByText(group, 'button', 'Science') as HTMLElement).click());
                 expect(onFiltersUpdate).toHaveBeenCalledWith(expect.objectContaining({ category: 'c1' }));
                 unmount();
@@ -112,7 +127,9 @@ describe('components/management-table', () => {
                     <ManageUsersFilters onFiltersUpdate={onFiltersUpdate} />
                 </UserProvider>
             );
-            expect(Array.from(container.querySelectorAll('.mi-filter-title')).map((t) => t.textContent)).toEqual(['ROLE']);
+            expect(Array.from(container.querySelectorAll('.mi-filter-title')).map((t) => t.textContent)).toEqual([
+                'ROLE',
+            ]);
             click(findByText(container, 'button', 'Manager'));
             expect(onFiltersUpdate).toHaveBeenCalledWith({ role: 'manager', is_approved: 'all' });
             expect(activeOption(filterGroup(container, 'ROLE'))).toBe('Manager');
@@ -124,13 +141,19 @@ describe('components/management-table', () => {
                 const previous = (window as any).MediaCMS;
                 installMediaCMSGlobal({ user: { can: { usersNeedsToBeApproved: true } } });
                 const { UserProvider: IsolatedProvider } = require('../../../src/static/js/utils/contexts/UserContext');
-                const { ManageUsersFilters: IsolatedFilters } = require('../../../src/static/js/components/management-table/ManageUsersFilters');
+                const {
+                    ManageUsersFilters: IsolatedFilters,
+                } = require('../../../src/static/js/components/management-table/ManageUsersFilters');
                 const React_ = require('react');
                 const { renderIntoContainer: isolatedRender, act: isolatedAct } = require('../../_support/render');
                 const isolatedClick = (el: Element | undefined) => isolatedAct(() => (el as HTMLElement).click());
                 const onFiltersUpdate = jest.fn();
                 const { container, unmount } = isolatedRender(
-                    React_.createElement(IsolatedProvider, null, React_.createElement(IsolatedFilters, { onFiltersUpdate, hidden: true }))
+                    React_.createElement(
+                        IsolatedProvider,
+                        null,
+                        React_.createElement(IsolatedFilters, { onFiltersUpdate, hidden: true })
+                    )
                 );
                 expect(container.firstElementChild?.className).toBe('mi-filters-row hidden');
                 isolatedClick(findByText(filterGroup(container, 'ROLE'), 'button', 'Editor'));

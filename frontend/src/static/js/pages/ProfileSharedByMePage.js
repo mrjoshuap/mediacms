@@ -18,10 +18,10 @@ import { Page } from './_Page';
 
 import '../components/profile-page/ProfilePage.scss';
 
-function EmptySharedByMe(props) {
+function EmptySharedByMe(_props) {
     return (
         <LinksConsumer>
-            {(links) => (
+            {(_links) => (
                 <div className="empty-media empty-channel-media">
                     <div className="welcome-title">No shared media</div>
                     <div className="start-uploading">Media that you have shared with others will show up here.</div>
@@ -96,12 +96,7 @@ class ProfileSharedByMePage extends Page {
                     encodeURIComponent(this.state.query) +
                     this.state.filterArgs;
             } else {
-                requestUrl =
-                    apiUrlConfig.media +
-                    '?author=' +
-                    author.id +
-                    '&show=shared_by_me' +
-                    this.state.filterArgs;
+                requestUrl = apiUrlConfig.media + '?author=' + author.id + '&show=shared_by_me' + this.state.filterArgs;
             }
         }
 
@@ -159,11 +154,7 @@ class ProfileSharedByMePage extends Page {
                 this.state.filterArgs;
         } else {
             requestUrl =
-                apiUrlConfig.media +
-                '?author=' +
-                this.state.author.id +
-                '&show=shared_by_me' +
-                this.state.filterArgs;
+                apiUrlConfig.media + '?author=' + this.state.author.id + '&show=shared_by_me' + this.state.filterArgs;
         }
 
         let title = this.state.title;
@@ -421,11 +412,14 @@ class ProfileSharedByMePage extends Page {
                         const embedUrl = `${baseUrl}/embed?m=${mediaId}`;
 
                         // Send message in the format expected by the Moodle plugin
-                        window.parent.postMessage({
-                            type: 'videoSelected',
-                            embedUrl: embedUrl,
-                            videoId: mediaId
-                        }, '*');
+                        window.parent.postMessage(
+                            {
+                                type: 'videoSelected',
+                                embedUrl: embedUrl,
+                                videoId: mediaId,
+                            },
+                            '*'
+                        );
 
                         console.log('Sent postMessage to parent:', { embedUrl, videoId: mediaId });
                     }
@@ -485,7 +479,11 @@ class ProfileSharedByMePage extends Page {
                         className="items-list-ver"
                         style={inEmbeddedApp() ? { marginTop: '24px' } : undefined}
                         showBulkActions={!isSelectMediaMode && isMediaAuthor}
-                        selectedCount={isSelectMediaMode ? this.state.selectedMedia.size : this.props.bulkActions.selectedMedia.size}
+                        selectedCount={
+                            isSelectMediaMode
+                                ? this.state.selectedMedia.size
+                                : this.props.bulkActions.selectedMedia.size
+                        }
                         totalCount={isSelectMediaMode ? 0 : this.props.bulkActions.availableMediaIds.length}
                         onBulkAction={this.props.bulkActions.handleBulkAction}
                         onSelectAll={this.props.bulkActions.handleSelectAll}
@@ -512,7 +510,11 @@ class ProfileSharedByMePage extends Page {
                             selectedSharingValue={this.state.selectedSharingValue}
                         />
                         <LazyLoadItemListAsync
-                            key={isSelectMediaMode ? this.state.requestUrl : `${this.state.requestUrl}-${this.props.bulkActions.listKey}`}
+                            key={
+                                isSelectMediaMode
+                                    ? this.state.requestUrl
+                                    : `${this.state.requestUrl}-${this.props.bulkActions.listKey}`
+                            }
                             requestUrl={this.state.requestUrl}
                             hideAuthor={true}
                             itemsCountCallback={this.state.requestUrl ? this.getCountFunc : null}
@@ -521,9 +523,19 @@ class ProfileSharedByMePage extends Page {
                             canEdit={!isSelectMediaMode && isMediaAuthor}
                             onResponseDataLoaded={this.onResponseDataLoaded}
                             showSelection={isMediaAuthor || isSelectMediaMode}
-                            hasAnySelection={isSelectMediaMode ? this.state.selectedMedia.size > 0 : this.props.bulkActions.selectedMedia.size > 0}
-                            selectedMedia={isSelectMediaMode ? this.state.selectedMedia : this.props.bulkActions.selectedMedia}
-                            onMediaSelection={isSelectMediaMode ? this.handleMediaSelection : this.props.bulkActions.handleMediaSelection}
+                            hasAnySelection={
+                                isSelectMediaMode
+                                    ? this.state.selectedMedia.size > 0
+                                    : this.props.bulkActions.selectedMedia.size > 0
+                            }
+                            selectedMedia={
+                                isSelectMediaMode ? this.state.selectedMedia : this.props.bulkActions.selectedMedia
+                            }
+                            onMediaSelection={
+                                isSelectMediaMode
+                                    ? this.handleMediaSelection
+                                    : this.props.bulkActions.handleMediaSelection
+                            }
                             onItemsUpdate={!isSelectMediaMode ? this.props.bulkActions.handleItemsUpdate : undefined}
                         />
                         {isMediaAuthor && 0 === this.state.channelMediaCount && !this.state.query ? (

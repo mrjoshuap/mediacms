@@ -13,5 +13,14 @@ export * from './quickSort';
 export * from './requests';
 export { translateString } from './translate';
 export { replaceString } from './replacementStrings';
-export { getParentMediaBase, inEmbeddedApp, inSelectMediaEmbedMode, isDeepLinkSelection, isSelectMediaMode, isShareMediaDisabled, storedLmsEmbedMode, submitDeepLinkSelection } from './embeddedApp';
+export {
+    getParentMediaBase,
+    inEmbeddedApp,
+    inSelectMediaEmbedMode,
+    isDeepLinkSelection,
+    isSelectMediaMode,
+    isShareMediaDisabled,
+    storedLmsEmbedMode,
+    submitDeepLinkSelection,
+} from './embeddedApp';
 export { rememberMessage, takeRememberedMessage } from './managementMessage';

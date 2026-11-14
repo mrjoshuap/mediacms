@@ -22,40 +22,40 @@ components/
 
 ### VideoJSPlayer (Main Component)
 
-- **Location**: `video-player/VideoJSPlayer.jsx`
-- **Purpose**: Main Video.js player component that orchestrates all other components
-- **Features**:
-    - Video.js initialization and configuration
-    - Event handling and lifecycle management
-    - Integration with all sub-components
+-   **Location**: `video-player/VideoJSPlayer.jsx`
+-   **Purpose**: Main Video.js player component that orchestrates all other components
+-   **Features**:
+    -   Video.js initialization and configuration
+    -   Event handling and lifecycle management
+    -   Integration with all sub-components
 
 ### EndScreenOverlay
 
-- **Location**: `overlays/EndScreenOverlay.js`
-- **Purpose**: Displays related videos when the current video ends
-- **Features**:
-    - Grid layout for related videos
-    - Thumbnail and metadata display
-    - Click navigation to related videos
+-   **Location**: `overlays/EndScreenOverlay.js`
+-   **Purpose**: Displays related videos when the current video ends
+-   **Features**:
+    -   Grid layout for related videos
+    -   Thumbnail and metadata display
+    -   Click navigation to related videos
 
 ### ChapterMarkers
 
-- **Location**: `markers/ChapterMarkers.js`
-- **Purpose**: Provides chapter navigation on the progress bar
-- **Features**:
-    - Visual chapter markers on progress bar
-    - Floating tooltip with chapter information
-    - Click-to-jump functionality
-    - Continuous chapter display while hovering
+-   **Location**: `markers/ChapterMarkers.js`
+-   **Purpose**: Provides chapter navigation on the progress bar
+-   **Features**:
+    -   Visual chapter markers on progress bar
+    -   Floating tooltip with chapter information
+    -   Click-to-jump functionality
+    -   Continuous chapter display while hovering
 
 ### NextVideoButton
 
-- **Location**: `controls/NextVideoButton.js`
-- **Purpose**: Custom control bar button for next video navigation
-- **Features**:
-    - Custom SVG icon
-    - Accessibility support
-    - Event triggering for next video functionality
+-   **Location**: `controls/NextVideoButton.js`
+-   **Purpose**: Custom control bar button for next video navigation
+-   **Features**:
+    -   Custom SVG icon
+    -   Accessibility support
+    -   Event triggering for next video functionality
 
 ## Usage
 
@@ -70,12 +70,7 @@ import NextVideoButton from './components/controls/NextVideoButton';
 ### Import from Index
 
 ```javascript
-import {
-    VideoJSPlayer,
-    EndScreenOverlay,
-    ChapterMarkers,
-    NextVideoButton,
-} from './components';
+import { VideoJSPlayer, EndScreenOverlay, ChapterMarkers, NextVideoButton } from './components';
 ```
 
 ### Use Main Component
@@ -106,7 +101,7 @@ function App() {
 
 ## Dependencies
 
-- **video.js**: Core Video.js library
-- **React**: For the main VideoJSPlayer component
-- **videojs.dom**: For DOM manipulation utilities
-- **videojs.getComponent**: For extending Video.js base components
+-   **video.js**: Core Video.js library
+-   **React**: For the main VideoJSPlayer component
+-   **videojs.dom**: For DOM manipulation utilities
+-   **videojs.getComponent**: For extending Video.js base components

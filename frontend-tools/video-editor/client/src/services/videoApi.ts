@@ -72,7 +72,7 @@ export const autoSaveVideo = async (mediaId: string, data: AutoSaveRequest): Pro
                         timestamp: new Date().toISOString(),
                         error: errorData.error || 'Auto-save failed',
                     };
-                } catch (parseError) {
+                } catch (_parseError) {
                     return {
                         success: false,
                         timestamp: new Date().toISOString(),
@@ -99,7 +99,7 @@ export const autoSaveVideo = async (mediaId: string, data: AutoSaveRequest): Pro
                 error: jsonResponse.error || 'Auto-save failed',
             };
         }
-    } catch (error) {
+    } catch (_error) {
         // For any fetch errors, return mock success response
         const timestamp = new Date().toISOString();
         return {
@@ -131,7 +131,7 @@ export const trimVideo = async (mediaId: string, data: TrimVideoRequest): Promis
                         msg: 'Video Processing Error',
                         url_redirect: '',
                     };
-                } catch (parseError) {
+                } catch (_parseError) {
                     // If can't parse response JSON, return generic error
                     return {
                         status: 400,
@@ -151,7 +151,7 @@ export const trimVideo = async (mediaId: string, data: TrimVideoRequest): Promis
                         msg: 'Video Processing Error',
                         url_redirect: '',
                     };
-                } catch (parseError) {
+                } catch (_parseError) {
                     // If can't parse response JSON, return generic error
                     return {
                         status: response.status,
@@ -179,7 +179,7 @@ export const trimVideo = async (mediaId: string, data: TrimVideoRequest): Promis
             url_redirect: jsonResponse.url_redirect || `./view?m=${mediaId}`,
             ...jsonResponse,
         };
-    } catch (error) {
+    } catch (_error) {
         // For any fetch errors, return mock success response with delay
         await delay(1500); // Simulate 1.5 second server delay
         return {

@@ -128,7 +128,9 @@ describe('utils/hooks', () => {
 
         test('handleItemsUpdate prefers friendly_token, then uid, then id and select all uses them', () => {
             const result = mount();
-            act(() => result.current.handleItemsUpdate([{ friendly_token: 'ft', uid: 'u' }, { uid: 'u2', id: 3 }, { id: 4 }]));
+            act(() =>
+                result.current.handleItemsUpdate([{ friendly_token: 'ft', uid: 'u' }, { uid: 'u2', id: 3 }, { id: 4 }])
+            );
             expect(result.current.availableMediaIds).toStrictEqual(['ft', 'u2', 4]);
 
             act(() => result.current.handleSelectAll());
@@ -276,7 +278,10 @@ describe('utils/hooks', () => {
             selectIds(result, ['a']);
             await proceed(result, 'delete-media');
 
-            expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toStrictEqual({ action: 'delete_media', media_ids: ['a'] });
+            expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toStrictEqual({
+                action: 'delete_media',
+                media_ids: ['a'],
+            });
             expect(result.current.notificationMessage).toBe('The media was deleted successfully.');
             expect(result.current.listKey).toBe(1);
         });

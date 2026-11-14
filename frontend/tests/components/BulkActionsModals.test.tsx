@@ -79,7 +79,9 @@ describe('components', () => {
             ['error', 'rgb(244, 67, 54)'],
         ])('Shows %s notification with matching color', (notificationType, color) => {
             const { container, unmount } = renderIntoContainer(
-                <BulkActionsModals {...baseProps({ showNotification: true, notificationMessage: 'Saved', notificationType })} />
+                <BulkActionsModals
+                    {...baseProps({ showNotification: true, notificationMessage: 'Saved', notificationType })}
+                />
             );
             const note = container.firstElementChild as HTMLElement;
             expect(note.textContent).toBe('Saved');

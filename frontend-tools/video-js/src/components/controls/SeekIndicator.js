@@ -88,13 +88,13 @@ class SeekIndicator extends Component {
             iconEl.innerHTML = `
                 <div style="display: flex; align-items: center; justify-content: center; animation: youtubeSeekPulse 0.3s ease-out;">
                     <div style="
-                        width: ${circleSize}; 
-                        height: ${circleSize}; 
-                        border-radius: 50%; 
-                        background: rgba(0, 0, 0, 0.3); 
-                        display: flex; 
-                        flex-direction: column; 
-                        align-items: center; 
+                        width: ${circleSize};
+                        height: ${circleSize};
+                        border-radius: 50%;
+                        background: rgba(0, 0, 0, 0.3);
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
                         justify-content: center;
                         border: none;
                         outline: none;
@@ -110,12 +110,12 @@ class SeekIndicator extends Component {
                             </svg>
                         </div>
                         <div style="
-                            color: white; 
-                            font-size: ${textSize}; 
-                            font-weight: 500; 
-                            text-align: center; 
-                            line-height: 1.2; 
-                            opacity: 0.9; 
+                            color: white;
+                            font-size: ${textSize};
+                            font-weight: 500;
+                            text-align: center;
+                            line-height: 1.2;
+                            opacity: 0.9;
                             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                         ">${seconds} seconds</div>
                     </div>
@@ -147,12 +147,12 @@ class SeekIndicator extends Component {
                             </svg>
                         </div>
                         <div style="
-                            color: white; 
-                            font-size: ${textSize}; 
-                            font-weight: 500; 
-                            text-align: center; 
-                            line-height: 1.2; 
-                            opacity: 0.9; 
+                            color: white;
+                            font-size: ${textSize};
+                            font-weight: 500;
+                            text-align: center;
+                            line-height: 1.2;
+                            opacity: 0.9;
                             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                         ">${seconds} seconds</div>
                     </div>

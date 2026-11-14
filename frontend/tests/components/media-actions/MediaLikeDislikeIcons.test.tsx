@@ -8,14 +8,21 @@ import { MediaLikeIcon } from '../../../src/static/js/components/media-actions/M
 import { MediaDislikeIcon } from '../../../src/static/js/components/media-actions/MediaDislikeIcon';
 
 jest.mock('../../../src/static/js/utils/stores/', () => require('../../_support/compD_storeMocks').mockStoresModule());
-jest.mock('../../../src/static/js/utils/actions/', () => require('../../_support/compD_storeMocks').mockActionsModule());
+jest.mock('../../../src/static/js/utils/actions/', () =>
+    require('../../_support/compD_storeMocks').mockActionsModule()
+);
 
 const store = MediaPageStore as any;
 const actions = MediaPageActions as any;
 
 describe('components/media-actions', () => {
     beforeEach(() => {
-        store.__reset({ 'user-liked-media': false, 'media-likes': 1500, 'user-disliked-media': false, 'media-dislikes': 3 });
+        store.__reset({
+            'user-liked-media': false,
+            'media-likes': 1500,
+            'user-disliked-media': false,
+            'media-dislikes': 3,
+        });
         jest.clearAllMocks();
     });
 
@@ -88,7 +95,10 @@ describe('components/media-actions', () => {
                     store.emit('disliked_media');
                 })
             ).not.toThrow();
-            expect((PageActions as any).addNotification).toHaveBeenCalledWith('Added to disliked media', 'mediaDislike');
+            expect((PageActions as any).addNotification).toHaveBeenCalledWith(
+                'Added to disliked media',
+                'mediaDislike'
+            );
             unmount();
         });
     });

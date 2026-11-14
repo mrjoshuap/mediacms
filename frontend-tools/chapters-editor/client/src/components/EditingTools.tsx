@@ -14,7 +14,7 @@ interface EditingToolsProps {
 }
 
 const EditingTools = ({
-    onSplit,
+    onSplit: _onSplit,
     onReset,
     onUndo,
     onRedo,
@@ -23,7 +23,7 @@ const EditingTools = ({
     canRedo,
     isPlaying = false,
 }: EditingToolsProps) => {
-    const [isSmallScreen, setIsSmallScreen] = useState(false);
+    const [_isSmallScreen, setIsSmallScreen] = useState(false);
 
     useEffect(() => {
         const checkScreenSize = () => {
@@ -51,9 +51,8 @@ const EditingTools = ({
             <div className="flex-container single-row">
                 {/* Left side - Play buttons group */}
                 <div className="button-group play-buttons-group">
-
                     {/* Play Preview button */}
-                    {/* <button 
+                    {/* <button
             className="button preview-button"
             onClick={onPreview}
             data-tooltip={isPreviewMode ? "Stop preview playback" : "Play only segments (skips gaps between segments)"}
@@ -196,11 +195,7 @@ const EditingTools = ({
                         <span className="button-text">Redo</span>
                     </button>
                     <div className="divider"></div>
-                    <button
-                        className="button"
-                        onClick={onReset}
-                        data-tooltip="Reset to full video"
-                    >
+                    <button className="button" onClick={onReset} data-tooltip="Reset to full video">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path
                                 fillRule="evenodd"

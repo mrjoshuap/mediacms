@@ -9,54 +9,60 @@ import { LazyLoadItemListAsync } from '../components/item-list/LazyLoadItemListA
 import { ProfileMediaPageBase } from './ProfileMediaPage';
 
 export class ProfileLikedPage extends ProfileMediaPageBase {
-  constructor(props) {
-    super(props, 'author-liked');
+    constructor(props) {
+        super(props, 'author-liked');
 
-    this.state = {
-      resultsCount: null,
-    };
+        this.state = {
+            resultsCount: null,
+        };
 
-    this.getCountFunc = this.getCountFunc.bind(this);
-  }
+        this.getCountFunc = this.getCountFunc.bind(this);
+    }
 
-  getCountFunc(resultsCount) {
-    this.setState({
-      resultsCount: resultsCount,
-    });
-  }
+    getCountFunc(resultsCount) {
+        this.setState({
+            resultsCount: resultsCount,
+        });
+    }
 
-  pageContent() {
-    return [
-      this.state.author ? (
-        <ProfilePagesHeader key="ProfilePagesHeader" author={this.state.author} type="liked" hideChannelBanner={inEmbeddedApp()} />
-      ) : null,
-      this.state.author ? (
-        <ProfilePagesContent key="ProfilePagesContent">
-          <ApiUrlConsumer>
-            {(apiUrl) => (
-              <MediaListWrapper
-                title={
-                  this.props.title + (null !== this.state.resultsCount ? ' (' + this.state.resultsCount + ')' : '')
-                }
-                className="items-list-ver"
-              >
-                <LazyLoadItemListAsync
-                  itemsCountCallback={this.getCountFunc}
-                  requestUrl={apiUrl.user.liked}
-                  hideAuthor={!PageStore.get('config-media-item').displayAuthor}
-                  hideViews={!PageStore.get('config-media-item').displayViews}
-                  hideDate={!PageStore.get('config-media-item').displayPublishDate}
-                  canEdit={false}
+    pageContent() {
+        return [
+            this.state.author ? (
+                <ProfilePagesHeader
+                    key="ProfilePagesHeader"
+                    author={this.state.author}
+                    type="liked"
+                    hideChannelBanner={inEmbeddedApp()}
                 />
-              </MediaListWrapper>
-            )}
-          </ApiUrlConsumer>
-        </ProfilePagesContent>
-      ) : null,
-    ];
-  }
+            ) : null,
+            this.state.author ? (
+                <ProfilePagesContent key="ProfilePagesContent">
+                    <ApiUrlConsumer>
+                        {(apiUrl) => (
+                            <MediaListWrapper
+                                title={
+                                    this.props.title +
+                                    (null !== this.state.resultsCount ? ' (' + this.state.resultsCount + ')' : '')
+                                }
+                                className="items-list-ver"
+                            >
+                                <LazyLoadItemListAsync
+                                    itemsCountCallback={this.getCountFunc}
+                                    requestUrl={apiUrl.user.liked}
+                                    hideAuthor={!PageStore.get('config-media-item').displayAuthor}
+                                    hideViews={!PageStore.get('config-media-item').displayViews}
+                                    hideDate={!PageStore.get('config-media-item').displayPublishDate}
+                                    canEdit={false}
+                                />
+                            </MediaListWrapper>
+                        )}
+                    </ApiUrlConsumer>
+                </ProfilePagesContent>
+            ) : null,
+        ];
+    }
 }
 
 ProfileLikedPage.defaultProps = {
-  title: 'Liked media',
+    title: 'Liked media',
 };

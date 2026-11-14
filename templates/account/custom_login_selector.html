@@ -11,28 +11,28 @@
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
-  
+
   .login-header {
     text-align: center;
     margin-bottom: 1.5rem;
   }
-  
+
   .login-header h1 {
     font-size: 1.5rem;
     color: #333;
     margin-bottom: 0.5rem;
   }
-  
+
   .login-header p {
     color: #666;
     font-size: 0.9rem;
   }
-  
+
   .login-select-container {
     position: relative;
     margin-bottom: 1.5rem;
   }
-  
+
   .login-select {
     width: 100%;
     padding: 12px 16px;
@@ -43,13 +43,13 @@
     appearance: none;
     cursor: pointer;
   }
-  
+
   .login-select:focus {
     outline: none;
     border-color: #4a90e2;
     box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
   }
-  
+
   .select-arrow {
     position: absolute;
     right: 16px;
@@ -60,7 +60,7 @@
     border-width: 6px 6px 0 6px;
     border-color: #666 transparent transparent transparent;
   }
-  
+
   .login-button {
     display: block;
     width: 100%;
@@ -75,11 +75,11 @@
     cursor: pointer;
     transition: background-color 0.2s;
   }
-  
+
   .login-button:hover {
     background-color: #3a7bc8;
   }
-  
+
   .login-direct-link {
     display: block;
     text-align: center;
@@ -88,7 +88,7 @@
     text-decoration: none;
     font-size: 0.9rem;
   }
-  
+
   .login-direct-link:hover {
     text-decoration: underline;
     color: #4a90e2;
@@ -133,7 +133,7 @@
     } else {
       form.method = 'post';
     }
-	  
+
   }
 
   // Auto-submit form on change
@@ -141,10 +141,9 @@
     if (this.value) {
       // Change method to POST before submitting
       updateFormAction(); // Update the form method based on URL
-	    
+
       document.getElementById('loginForm').submit();
     }
   });
 </script>
 {% endblock innercontent %}
-

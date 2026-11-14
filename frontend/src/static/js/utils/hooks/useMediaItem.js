@@ -3,83 +3,91 @@ import { format } from 'timeago.js';
 import { formatInnerLink } from '../helpers/';
 import { PageStore } from '../stores/';
 import {
-  MediaItemAuthor,
-  MediaItemAuthorLink,
-  MediaItemMetaViews,
-  MediaItemMetaDate,
-  MediaItemEditLink,
-  MediaItemViewLink,
+    MediaItemAuthor,
+    MediaItemAuthorLink,
+    MediaItemMetaViews,
+    MediaItemMetaDate,
+    MediaItemEditLink,
+    MediaItemViewLink,
 } from '../../components/list-item/includes/items';
 import { useItem } from './useItem';
 import { replaceString } from '../../utils/helpers/';
 
 export function itemClassname(defaultClassname, inheritedClassname, isActiveInPlaylistPlayback) {
-  let classname = defaultClassname;
+    let classname = defaultClassname;
 
-  if ('' !== inheritedClassname) {
-    classname += ' ' + inheritedClassname;
-  }
+    if ('' !== inheritedClassname) {
+        classname += ' ' + inheritedClassname;
+    }
 
-  if (isActiveInPlaylistPlayback) {
-    classname += ' pl-active-item';
-  }
+    if (isActiveInPlaylistPlayback) {
+        classname += ' pl-active-item';
+    }
 
-  return classname;
+    return classname;
 }
 
 export function useMediaItem(props) {
-  const { titleComponent, descriptionComponent, thumbnailUrl, UnderThumbWrapper } = useItem({ ...props });
+    const { titleComponent, descriptionComponent, thumbnailUrl, UnderThumbWrapper } = useItem({ ...props });
 
-  function editMediaComponent() {
-    return <MediaItemEditLink link={props.editLink} />;
-  }
-
-  function viewMediaComponent() {
-    return props.showSelection ? <MediaItemViewLink link={props.publishLink || props.link} /> : null;
-  }
-
-  function authorComponent() {
-    if (props.hideAuthor) {
-      return null;
+    function editMediaComponent() {
+        return <MediaItemEditLink link={props.editLink} />;
     }
 
-    if (props.singleLinkContent) {
-      return <MediaItemAuthor name={props.author_name} />;
+    function viewMediaComponent() {
+        return props.showSelection ? <MediaItemViewLink link={props.publishLink || props.link} /> : null;
     }
 
-    const authorUrl =
-      '' === props.author_link ? null : formatInnerLink(props.author_link, PageStore.get('config-site').url);
+    function authorComponent() {
+        if (props.hideAuthor) {
+            return null;
+        }
 
-    return <MediaItemAuthorLink name={props.author_name} link={authorUrl} />;
-  }
+        if (props.singleLinkContent) {
+            return <MediaItemAuthor name={props.author_name} />;
+        }
 
-  function viewsComponent() {
-    return props.hideViews ? null : <MediaItemMetaViews views={props.views} />;
-  }
+        const authorUrl =
+            '' === props.author_link ? null : formatInnerLink(props.author_link, PageStore.get('config-site').url);
 
-  function dateComponent() {
-    if (props.hideDate) {
-      return null;
+        return <MediaItemAuthorLink name={props.author_name} link={authorUrl} />;
     }
 
-    const publishDate = replaceString(format(new Date(props.publish_date)));
-    const publishDateTime =
-      'string' === typeof props.publish_date
-        ? Date.parse(props.publish_date)
-        : Date.parse(new Date(props.publish_date));
+    function viewsComponent() {
+        return props.hideViews ? null : <MediaItemMetaViews views={props.views} />;
+    }
 
-    return <MediaItemMetaDate time={props.publish_date} dateTime={publishDateTime} text={publishDate} />;
-  }
+    function dateComponent() {
+        if (props.hideDate) {
+            return null;
+        }
 
-  function metaComponents() {
-    return props.hideAllMeta ? null : (
-      <span className="item-meta">
-        {authorComponent()}
-        {viewsComponent()}
-        {dateComponent()}
-      </span>
-    );
-  }
+        const publishDate = replaceString(format(new Date(props.publish_date)));
+        const publishDateTime =
+            'string' === typeof props.publish_date
+                ? Date.parse(props.publish_date)
+                : Date.parse(new Date(props.publish_date));
 
-  return [titleComponent, descriptionComponent, thumbnailUrl, UnderThumbWrapper, editMediaComponent, metaComponents, viewMediaComponent];
+        return <MediaItemMetaDate time={props.publish_date} dateTime={publishDateTime} text={publishDate} />;
+    }
+
+    function metaComponents() {
+        return props.hideAllMeta ? null : (
+            <span className="item-meta">
+                {authorComponent()}
+                {viewsComponent()}
+                {dateComponent()}
+            </span>
+        );
+    }
+
+    return [
+        titleComponent,
+        descriptionComponent,
+        thumbnailUrl,
+        UnderThumbWrapper,
+        editMediaComponent,
+        metaComponents,
+        viewMediaComponent,
+    ];
 }

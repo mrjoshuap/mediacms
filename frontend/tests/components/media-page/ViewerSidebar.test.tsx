@@ -4,11 +4,14 @@ import { MediaPageStore, PageStore } from '../../../src/static/js/utils/stores/'
 import ViewerSidebar from '../../../src/static/js/components/media-page/ViewerSidebar';
 
 jest.mock('../../../src/static/js/utils/stores/', () => require('../../_support/compD_storeMocks').mockStoresModule());
-jest.mock('../../../src/static/js/utils/actions/', () => require('../../_support/compD_storeMocks').mockActionsModule());
+jest.mock('../../../src/static/js/utils/actions/', () =>
+    require('../../_support/compD_storeMocks').mockActionsModule()
+);
 jest.mock('../../../src/static/js/components/item-list/ItemList', () => require('../../_support/compD_itemListMock'));
 jest.mock('../../../src/static/js/components/media-page/PlaylistView', () => ({
     __esModule: true,
-    default: (props: any) => require('react').createElement('div', { className: 'mock-playlist-view', 'data-active': props.activeItem }),
+    default: (props: any) =>
+        require('react').createElement('div', { className: 'mock-playlist-view', 'data-active': props.activeItem }),
 }));
 
 const Sidebar = ViewerSidebar as unknown as React.ComponentType<any>;
@@ -17,7 +20,10 @@ const mediaStore = MediaPageStore as any;
 describe('components/media-page', () => {
     describe('ViewerSidebar', () => {
         beforeEach(() => {
-            mediaStore.__reset({ 'media-type': 'image', 'media-data': { related_media: [{ id: 'r1' }, { id: 'r2' }] } });
+            mediaStore.__reset({
+                'media-type': 'image',
+                'media-data': { related_media: [{ id: 'r1' }, { id: 'r2' }] },
+            });
             (PageStore as any).__reset({
                 'config-media-item': { displayViews: true, displayAuthor: true },
                 'config-options': { pages: { media: { related: { initialSize: 5 } } } },

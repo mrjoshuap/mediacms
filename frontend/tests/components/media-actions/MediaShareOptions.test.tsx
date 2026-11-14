@@ -8,7 +8,9 @@ import { MediaShareOptions } from '../../../src/static/js/components/media-actio
 import { MediaShareButton } from '../../../src/static/js/components/media-actions/MediaShareButton';
 
 jest.mock('../../../src/static/js/utils/stores/', () => require('../../_support/compD_storeMocks').mockStoresModule());
-jest.mock('../../../src/static/js/utils/actions/', () => require('../../_support/compD_storeMocks').mockActionsModule());
+jest.mock('../../../src/static/js/utils/actions/', () =>
+    require('../../_support/compD_storeMocks').mockActionsModule()
+);
 
 const mediaStore = MediaPageStore as any;
 const pageStore = PageStore as any;
@@ -17,9 +19,15 @@ const URL_ = 'https://example.com/view?m=abc';
 describe('components/media-actions', () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        mediaStore.__reset({ 'media-url': URL_, 'media-id': 'abc', 'media-data': { title: 'Clip', media_type: 'video' } });
+        mediaStore.__reset({
+            'media-url': URL_,
+            'media-id': 'abc',
+            'media-data': { title: 'Clip', media_type: 'video' },
+        });
         pageStore.__reset({
-            'config-options': { embedded: { video: { dimensions: { width: 560, widthUnit: 'px', height: 315, heightUnit: 'px' } } } },
+            'config-options': {
+                embedded: { video: { dimensions: { width: 560, widthUnit: 'px', height: 315, heightUnit: 'px' } } },
+            },
         });
     });
 
@@ -71,13 +79,18 @@ describe('components/media-actions', () => {
             jest.useFakeTimers();
             const { container, unmount } = renderIntoContainer(<MediaShareOptions />);
             click(container.querySelector('.copy-field button'));
-            expect((MediaPageActions as any).copyShareLink).toHaveBeenCalledWith(container.querySelector('.copy-field input'));
+            expect((MediaPageActions as any).copyShareLink).toHaveBeenCalledWith(
+                container.querySelector('.copy-field input')
+            );
             act(() => {
                 mediaStore.emit('copied_media_link');
                 pageStore.emit('window_resize');
             });
             jest.advanceTimersByTime(100);
-            expect((PageActions as any).addNotification).toHaveBeenCalledWith('Link copied to clipboard', 'clipboardLinkCopy');
+            expect((PageActions as any).addNotification).toHaveBeenCalledWith(
+                'Link copied to clipboard',
+                'clipboardLinkCopy'
+            );
             unmount();
             expect(mediaStore.listenerCount('copied_media_link')).toBe(0);
             expect(pageStore.listenerCount('window_resize')).toBe(0);

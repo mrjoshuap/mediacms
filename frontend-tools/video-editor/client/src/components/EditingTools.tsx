@@ -16,7 +16,7 @@ interface EditingToolsProps {
 }
 
 const EditingTools = ({
-    onSplit,
+    onSplit: _onSplit,
     onReset,
     onUndo,
     onRedo,
@@ -103,7 +103,7 @@ const EditingTools = ({
                     </button>
 
                     {/* Play Preview button */}
-                    {/* <button 
+                    {/* <button
             className="button preview-button"
             onClick={onPreview}
             data-tooltip={isPreviewMode ? "Stop preview playback" : "Play only segments (skips gaps between segments)"}

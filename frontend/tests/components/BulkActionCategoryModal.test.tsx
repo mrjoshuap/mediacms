@@ -37,21 +37,39 @@ describe('components', () => {
         }
 
         function titles(container: HTMLElement, panel: number) {
-            return Array.from(container.querySelectorAll('.category-panel')[panel].querySelectorAll('.category-item span')).map((s) => s.textContent);
+            return Array.from(
+                container.querySelectorAll('.category-panel')[panel].querySelectorAll('.category-item span')
+            ).map((s) => s.textContent);
         }
 
         test('Renders nothing when closed', () => {
             const view = renderIntoContainer(
-                <BulkActionCategoryModal isOpen={false} selectedMediaIds={ids} csrfToken="t" onCancel={jest.fn()} onSuccess={jest.fn()} onError={jest.fn()} />
+                <BulkActionCategoryModal
+                    isOpen={false}
+                    selectedMediaIds={ids}
+                    csrfToken="t"
+                    onCancel={jest.fn()}
+                    onSuccess={jest.fn()}
+                    onError={jest.fn()}
+                />
             );
             expect(view.container.innerHTML).toBe('');
             view.unmount();
         });
 
         test('Loads categories into panels in standard mode', async () => {
-            load([['c1', 'Science']], [['c1', 'Science'], ['c2', 'Art']]);
+            load(
+                [['c1', 'Science']],
+                [
+                    ['c1', 'Science'],
+                    ['c2', 'Art'],
+                ]
+            );
             const { container, unmount } = await setup();
-            expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({ action: 'category_membership', media_ids: ids });
+            expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
+                action: 'category_membership',
+                media_ids: ids,
+            });
             expect(fetchMock.mock.calls[1][0]).toBe('/api/v1/categories');
             expect(container.querySelector('h2')?.textContent).toBe('Add / Remove from Categories');
             expect(container.querySelector('.category-modal-subtitle')).toBeNull();
@@ -62,13 +80,25 @@ describe('components', () => {
 
         test('Uses course endpoint and filters existing to courses in LMS mode', async () => {
             sessionStorage.setItem('lms_embed_mode', 'true');
-            load([['c1', 'Science'], ['x', 'Not a course']], [['c1', 'Science'], ['c2', 'Math']], false);
+            load(
+                [
+                    ['c1', 'Science'],
+                    ['x', 'Not a course'],
+                ],
+                [
+                    ['c1', 'Science'],
+                    ['c2', 'Math'],
+                ],
+                false
+            );
             const { container, unmount } = await setup(['solo']);
             expect(fetchMock.mock.calls[1][0]).toBe('/api/v1/categories/contributor?lms_courses_only=true');
             expect(container.querySelector('h2')?.textContent).toBe('Share with Course');
             expect(container.querySelector('.category-modal-subtitle')).not.toBeNull();
             expect(titles(container, 1)).toEqual(['Science']);
-            expect((container.querySelectorAll('.category-panel')[1].querySelector('.remove-btn') as HTMLElement).title).toBe('Remove course');
+            expect(
+                (container.querySelectorAll('.category-panel')[1].querySelector('.remove-btn') as HTMLElement).title
+            ).toBe('Remove course');
             expect(container.querySelector('.info-tooltip')).toBeNull();
             unmount();
         });
@@ -92,28 +122,50 @@ describe('components', () => {
         });
 
         test('Proceed posts add_to_category and remove_from_category', async () => {
-            load([['c1', 'Science']], [['c1', 'Science'], ['c2', 'Art']]);
+            load(
+                [['c1', 'Science']],
+                [
+                    ['c1', 'Science'],
+                    ['c2', 'Art'],
+                ]
+            );
             const { container, onSuccess, onCancel, unmount } = await setup();
             click(findByText(container, '.category-item.clickable', 'Art+'));
-            const removeButtons = () => container.querySelectorAll('.category-panel')[1].querySelectorAll('.remove-btn');
+            const removeButtons = () =>
+                container.querySelectorAll('.category-panel')[1].querySelectorAll('.remove-btn');
             click(removeButtons()[0]);
             expect((removeButtons()[0] as HTMLElement).title).toBe('Undo removal');
             expect((removeButtons()[1] as HTMLElement).title).toBe('Remove from list');
             fetchMock.mockReturnValueOnce(jsonResponse({})).mockReturnValueOnce(jsonResponse({}));
             click(container.querySelector('.category-btn-proceed'));
             await flush();
-            expect(JSON.parse(fetchMock.mock.calls[2][1].body)).toEqual({ action: 'add_to_category', media_ids: ids, category_uids: ['c2'] });
-            expect(JSON.parse(fetchMock.mock.calls[3][1].body)).toEqual({ action: 'remove_from_category', media_ids: ids, category_uids: ['c1'] });
+            expect(JSON.parse(fetchMock.mock.calls[2][1].body)).toEqual({
+                action: 'add_to_category',
+                media_ids: ids,
+                category_uids: ['c2'],
+            });
+            expect(JSON.parse(fetchMock.mock.calls[3][1].body)).toEqual({
+                action: 'remove_from_category',
+                media_ids: ids,
+                category_uids: ['c1'],
+            });
             expect(onSuccess).toHaveBeenCalledWith('Successfully updated categories');
             expect(onCancel).toHaveBeenCalled();
             unmount();
         });
 
         test('Undo and remove from list restore the initial state', async () => {
-            load([['c1', 'Science']], [['c1', 'Science'], ['c2', 'Art']]);
+            load(
+                [['c1', 'Science']],
+                [
+                    ['c1', 'Science'],
+                    ['c2', 'Art'],
+                ]
+            );
             const { container, unmount } = await setup();
             click(findByText(container, '.category-item.clickable', 'Art+'));
-            const removeButtons = () => container.querySelectorAll('.category-panel')[1].querySelectorAll('.remove-btn');
+            const removeButtons = () =>
+                container.querySelectorAll('.category-panel')[1].querySelectorAll('.remove-btn');
             click(removeButtons()[0]);
             click(removeButtons()[0]);
             click(removeButtons()[1]);

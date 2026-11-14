@@ -126,7 +126,12 @@ describe('utils/stores', () => {
 
                 expect(listener).toHaveBeenCalledTimes(1);
                 expect(store.get('media-id')).toBe('abc');
-                expect(getRequest).toHaveBeenCalledWith(api + '/media/abc', false, expect.any(Function), expect.any(Function));
+                expect(getRequest).toHaveBeenCalledWith(
+                    api + '/media/abc',
+                    false,
+                    expect.any(Function),
+                    expect.any(Function)
+                );
             });
 
             test('Reads the media id from the m URL param when page config has none', () => {
@@ -194,7 +199,10 @@ describe('utils/stores', () => {
 
             test('Skips playlists and comments when user cannot save or read comments', () => {
                 const ctx = loadedStore({
-                    overrides: { user: { can: { readComment: false } }, features: { media: { actions: { save: false } } } },
+                    overrides: {
+                        user: { can: { readComment: false } },
+                        features: { media: { actions: { save: false } } },
+                    },
                 });
                 expect(ctx.getRequest).toHaveBeenCalledTimes(1);
             });
@@ -581,9 +589,30 @@ describe('utils/stores', () => {
             const ownPlaylists = {
                 count: 3,
                 results: [
-                    { user: 'john', url: '/playlists/P1', title: 'One', description: 'd1', add_date: 'x', api_url: '/api/v1/playlists/P1' },
-                    { user: 'john', url: '/playlists/P2', title: 'Two', description: 'd2', add_date: 'y', api_url: '/api/v1/playlists/P2' },
-                    { user: 'john', url: '/playlists/P3', title: 'Three', description: 'd3', add_date: 'z', api_url: '/api/v1/playlists/P3' },
+                    {
+                        user: 'john',
+                        url: '/playlists/P1',
+                        title: 'One',
+                        description: 'd1',
+                        add_date: 'x',
+                        api_url: '/api/v1/playlists/P1',
+                    },
+                    {
+                        user: 'john',
+                        url: '/playlists/P2',
+                        title: 'Two',
+                        description: 'd2',
+                        add_date: 'y',
+                        api_url: '/api/v1/playlists/P2',
+                    },
+                    {
+                        user: 'john',
+                        url: '/playlists/P3',
+                        title: 'Three',
+                        description: 'd3',
+                        add_date: 'z',
+                        api_url: '/api/v1/playlists/P3',
+                    },
                 ],
             };
 
@@ -720,7 +749,10 @@ describe('utils/stores', () => {
             test('Requests the playlist referenced by the pl URL param', () => {
                 const ctx = withPagePlaylist();
                 expect(ctx.store.get('playlist-id')).toBe('PL1');
-                expect(ctx.getRequest.mock.calls.map((c) => c[0])).toStrictEqual([api + '/playlists/PL1', api + '/media/abc']);
+                expect(ctx.getRequest.mock.calls.map((c) => c[0])).toStrictEqual([
+                    api + '/playlists/PL1',
+                    api + '/media/abc',
+                ]);
             });
 
             test('Keeps playlist data when the media belongs to it', () => {

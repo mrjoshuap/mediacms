@@ -6,128 +6,134 @@ import { Item } from './Item';
 import { applyDefaultProps } from '../../utils/helpers/applyDefaultProps';
 
 export function MediaItem(rawProps) {
-  const props = applyDefaultProps(rawProps, MediaItem.defaultPropValues);
-  const type = props.type;
-  const isSelectMediaMode = inSelectMediaEmbedMode();
-
-  const [titleComponentOrig, descriptionComponent, thumbnailUrl, UnderThumbWrapperOrig, editMediaComponent, metaComponents, viewMediaComponent] =
-    useMediaItem({ ...props, type });
-
-  // In embed mode, override components to remove links
-  const ItemTitle = ({ title }) => (
-    <h3>
-      <span>{title}</span>
-    </h3>
-  );
-
-  const ItemMain = ({ children }) => <div className="item-main">{children}</div>;
-
-  const titleComponent = isSelectMediaMode
-    ? () => <ItemTitle title={props.title} />
-    : titleComponentOrig;
-
-  const UnderThumbWrapper = isSelectMediaMode ? ItemMain : UnderThumbWrapperOrig;
-
-  function thumbnailComponent() {
-    if (isSelectMediaMode) {
-      // In embed mode, render thumbnail without link
-      const thumbStyle = thumbnailUrl ? { backgroundImage: "url('" + thumbnailUrl + "')" } : null;
-      return (
-        <div
-          key="item-thumb"
-          className={'item-thumb' + (!thumbnailUrl ? ' no-thumb' : '')}
-          style={thumbStyle}
-        >
-          {thumbnailUrl ? (
-            <div key="item-type-icon" className="item-type-icon">
-              <div></div>
-            </div>
-          ) : null}
-        </div>
-      );
-    }
-    return <MediaItemThumbnailLink src={thumbnailUrl} title={props.title} link={props.link} />;
-  }
-
-  const containerClassname = itemClassname(
-    'item ' + type + '-item',
-    props.class_name.trim(),
-    props.playlistOrder === props.playlistActiveItem
-  );
-
-  const finalClassname = containerClassname +
-    (props.showSelection ? ' with-selection' : '') +
-    (props.isSelected ? ' selected' : '') +
-    (props.hasAnySelection || isSelectMediaMode ? ' has-any-selection' : '');
-
-  const handleItemClick = (e) => {
+    const props = applyDefaultProps(rawProps, MediaItem.defaultPropValues);
+    const type = props.type;
     const isSelectMediaMode = inSelectMediaEmbedMode();
 
-    // In select media mode or if there's any selection active, clicking the item should toggle selection
-    if ((isSelectMediaMode || props.hasAnySelection) && props.onCheckboxChange) {
-      // Check if clicking on the checkbox itself, edit icon, or view icon
-      if (e.target.closest('.item-selection-checkbox') ||
-          e.target.closest('.item-edit-icon') ||
-          e.target.closest('.item-view-icon')) {
-        return; // Let these elements handle their own clicks
-      }
+    const [
+        titleComponentOrig,
+        descriptionComponent,
+        thumbnailUrl,
+        UnderThumbWrapperOrig,
+        editMediaComponent,
+        metaComponents,
+        viewMediaComponent,
+    ] = useMediaItem({ ...props, type });
 
-      // Prevent all other clicks and toggle selection
-      e.preventDefault();
-      e.stopPropagation();
-      props.onCheckboxChange({ target: { checked: !props.isSelected } });
+    // In embed mode, override components to remove links
+    const ItemTitle = ({ title }) => (
+        <h3>
+            <span>{title}</span>
+        </h3>
+    );
+
+    const ItemMain = ({ children }) => <div className="item-main">{children}</div>;
+
+    const titleComponent = isSelectMediaMode ? () => <ItemTitle title={props.title} /> : titleComponentOrig;
+
+    const UnderThumbWrapper = isSelectMediaMode ? ItemMain : UnderThumbWrapperOrig;
+
+    function thumbnailComponent() {
+        if (isSelectMediaMode) {
+            // In embed mode, render thumbnail without link
+            const thumbStyle = thumbnailUrl ? { backgroundImage: "url('" + thumbnailUrl + "')" } : null;
+            return (
+                <div key="item-thumb" className={'item-thumb' + (!thumbnailUrl ? ' no-thumb' : '')} style={thumbStyle}>
+                    {thumbnailUrl ? (
+                        <div key="item-type-icon" className="item-type-icon">
+                            <div></div>
+                        </div>
+                    ) : null}
+                </div>
+            );
+        }
+        return <MediaItemThumbnailLink src={thumbnailUrl} title={props.title} link={props.link} />;
     }
-  };
 
-  return (
-    <div className={finalClassname} onClick={handleItemClick}>
-      <div className="item-content">
-        {props.showSelection && (
-          <div className="item-selection-checkbox" onClick={(e) => e.stopPropagation()}>
-            <input
-              type="checkbox"
-              checked={props.isSelected || false}
-              onChange={(e) => { props.onCheckboxChange && props.onCheckboxChange(e); }}
-              onClick={(e) => e.stopPropagation()}
-              aria-label="Select media"
-            />
-          </div>
-        )}
+    const containerClassname = itemClassname(
+        'item ' + type + '-item',
+        props.class_name.trim(),
+        props.playlistOrder === props.playlistActiveItem
+    );
 
-        {!isSelectMediaMode && editMediaComponent()}
-        {!isSelectMediaMode && viewMediaComponent()}
+    const finalClassname =
+        containerClassname +
+        (props.showSelection ? ' with-selection' : '') +
+        (props.isSelected ? ' selected' : '') +
+        (props.hasAnySelection || isSelectMediaMode ? ' has-any-selection' : '');
 
-        {thumbnailComponent()}
+    const handleItemClick = (e) => {
+        const isSelectMediaMode = inSelectMediaEmbedMode();
 
-        {isSelectMediaMode ? (
-          <UnderThumbWrapper>
-            {titleComponent()}
-            {metaComponents()}
-            {descriptionComponent()}
-          </UnderThumbWrapper>
-        ) : (
-          <UnderThumbWrapper title={props.title} link={props.link}>
-            {titleComponent()}
-            {metaComponents()}
-            {descriptionComponent()}
-          </UnderThumbWrapper>
-        )}
-      </div>
-    </div>
-  );
+        // In select media mode or if there's any selection active, clicking the item should toggle selection
+        if ((isSelectMediaMode || props.hasAnySelection) && props.onCheckboxChange) {
+            // Check if clicking on the checkbox itself, edit icon, or view icon
+            if (
+                e.target.closest('.item-selection-checkbox') ||
+                e.target.closest('.item-edit-icon') ||
+                e.target.closest('.item-view-icon')
+            ) {
+                return; // Let these elements handle their own clicks
+            }
+
+            // Prevent all other clicks and toggle selection
+            e.preventDefault();
+            e.stopPropagation();
+            props.onCheckboxChange({ target: { checked: !props.isSelected } });
+        }
+    };
+
+    return (
+        <div className={finalClassname} onClick={handleItemClick}>
+            <div className="item-content">
+                {props.showSelection && (
+                    <div className="item-selection-checkbox" onClick={(e) => e.stopPropagation()}>
+                        <input
+                            type="checkbox"
+                            checked={props.isSelected || false}
+                            onChange={(e) => {
+                                props.onCheckboxChange && props.onCheckboxChange(e);
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            aria-label="Select media"
+                        />
+                    </div>
+                )}
+
+                {!isSelectMediaMode && editMediaComponent()}
+                {!isSelectMediaMode && viewMediaComponent()}
+
+                {thumbnailComponent()}
+
+                {isSelectMediaMode ? (
+                    <UnderThumbWrapper>
+                        {titleComponent()}
+                        {metaComponents()}
+                        {descriptionComponent()}
+                    </UnderThumbWrapper>
+                ) : (
+                    <UnderThumbWrapper title={props.title} link={props.link}>
+                        {titleComponent()}
+                        {metaComponents()}
+                        {descriptionComponent()}
+                    </UnderThumbWrapper>
+                )}
+            </div>
+        </div>
+    );
 }
 
 MediaItem.defaultPropValues = {
-  ...Item.defaultPropValues,
-  class_name: '',
-  views: 0,
-  hideViews: false,
-  hideDate: false,
-  hideAuthor: false,
-  author_name: '',
-  author_link: '#',
-  playlistOrder: 1,
-  playlistActiveItem: 1,
-  inPlaylistView: false,
-  hidePlaylistOrderNumber: true,
+    ...Item.defaultPropValues,
+    class_name: '',
+    views: 0,
+    hideViews: false,
+    hideDate: false,
+    hideAuthor: false,
+    author_name: '',
+    author_link: '#',
+    playlistOrder: 1,
+    playlistActiveItem: 1,
+    inPlaylistView: false,
+    hidePlaylistOrderNumber: true,
 };

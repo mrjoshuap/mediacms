@@ -8,26 +8,26 @@ MediaCMS is an open source video and media CMS built with **Django + React**, ex
 
 ## Tech Stack
 
-- **Backend**: Python 3.11+, Django 5.2, Django REST Framework, Celery (task queue), Redis (cache/broker), PostgreSQL (psycopg3), django-allauth (auth)
-- **Frontend**: React 19 + TypeScript/JavaScript, Webpack, SCSS; runs on Node >= 20.9.0 (`frontend/package.json`)
-- **Packaging**: Docker (supervisord manages uwsgi/nginx/celery/migrations services inside the image)
+-   **Backend**: Python 3.11+, Django 5.2, Django REST Framework, Celery (task queue), Redis (cache/broker), PostgreSQL (psycopg3), django-allauth (auth)
+-   **Frontend**: React 19 + TypeScript/JavaScript, Webpack, SCSS; runs on Node >= 20.9.0 (`frontend/package.json`)
+-   **Packaging**: Docker (supervisord manages uwsgi/nginx/celery/migrations services inside the image)
 
 ## Repository Layout
 
-| Path | Purpose |
-|---|---|
-| `cms/` | Django project: `settings.py` (all portal configuration lives here), `urls.py`, `celery.py`, `dev_settings.py`, `test_settings.py` |
-| `files/` | Main Django app: `models/` (media, category, comment, encoding, playlist, subtitle...), `views/`, `serializers.py`, `forms.py`, `tasks.py` (Celery tasks), `management/` (custom management commands), `frontend_translations/` |
-| `frontend/` | React app; entry points in `src/entries/<name>.js` are built to `static/js/<name>.js` and loaded by matching Django templates. Pages in `src/static/js/pages/`, components in `src/static/js/components/` |
-| `templates/` | Django templates (e.g. `templates/cms/`, `templates/config/installation/features.html`) |
-| `static/` | Collected static files served by the app (js/css bundles built from `frontend/dist/`) |
-| `tests/` | Pytest test suite (mirrors app structure: `api/`, `models/`, `rbac/`, `saml/`, ...) |
-| `frontend/tests/` | Frontend Jest tests |
-| `deploy/docker/` | Docker entrypoints, `local_settings.py` used by docker-compose installs |
-| `docker-compose-dev.yaml` | Development environment (see below) |
-| `docs/en/` | MkDocs documentation (getting started, roles, guides, scenarios, reference) |
-| `actions/`, `admin_customizations/` | Additional Django apps |
-| `cli-tool/` | CLI tooling |
+| Path                                | Purpose                                                                                                                                                                                                                         |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cms/`                              | Django project: `settings.py` (all portal configuration lives here), `urls.py`, `celery.py`, `dev_settings.py`, `test_settings.py`                                                                                              |
+| `files/`                            | Main Django app: `models/` (media, category, comment, encoding, playlist, subtitle...), `views/`, `serializers.py`, `forms.py`, `tasks.py` (Celery tasks), `management/` (custom management commands), `frontend_translations/` |
+| `frontend/`                         | React app; entry points in `src/entries/<name>.js` are built to `static/js/<name>.js` and loaded by matching Django templates. Pages in `src/static/js/pages/`, components in `src/static/js/components/`                       |
+| `templates/`                        | Django templates (e.g. `templates/cms/`, `templates/config/installation/features.html`)                                                                                                                                         |
+| `static/`                           | Collected static files served by the app (js/css bundles built from `frontend/dist/`)                                                                                                                                           |
+| `tests/`                            | Pytest test suite (mirrors app structure: `api/`, `models/`, `rbac/`, `saml/`, ...)                                                                                                                                             |
+| `frontend/tests/`                   | Frontend Jest tests                                                                                                                                                                                                             |
+| `deploy/docker/`                    | Docker entrypoints, `local_settings.py` used by docker-compose installs                                                                                                                                                         |
+| `docker-compose-dev.yaml`           | Development environment (see below)                                                                                                                                                                                             |
+| `docs/en/`                          | MkDocs documentation (getting started, roles, guides, scenarios, reference)                                                                                                                                                     |
+| `actions/`, `admin_customizations/` | Additional Django apps                                                                                                                                                                                                          |
+| `cli-tool/`                         | CLI tooling                                                                                                                                                                                                                     |
 
 ## Development Environment
 
@@ -40,14 +40,14 @@ docker compose -f docker-compose-dev.yaml up
 
 This starts: Django dev server (`runserver`, auto-reloads) on **http://localhost:80**, webpack dev server (hot reload) on **http://localhost:8088**, PostgreSQL 17, Redis, and a Celery worker. Default credentials: `admin`/`admin`.
 
-- The webpack dev server on port 8088 proxies all pages/API requests to Django (`MEDIACMS_BACKEND=http://web` in `frontend/.env`), so you see real Django pages with live frontend bundles.
-- Backend Python changes auto-reload; if Django breaks (e.g. syntax error), restart with `docker compose -f docker-compose-dev.yaml restart web`.
-- **Frontend changes are only visible on port 80 after building**: run `make build-frontend` (or `docker compose -f docker-compose-dev.yaml exec -T frontend npm run dist` then `cp -r frontend/dist/static/* static/`).
-- **Docs on the same origin**: `make docs-up` starts the optional Compose profile `docs`; Django serves `site/` at `http://localhost/documentation/` (not `/docs/`, which is ReDoc + a protected slug).
-- **Fork / beta branches**: repository Actions variables `MEDIACMS_STABLE_BRANCH` (default `main`) and `MEDIACMS_BETA_BRANCH` (default `mediacms-next`) select which line is production vs beta. Workflows also list both branch names under `on.push` because triggers cannot read vars. Docs mike aliases: stable → `dev`, beta → `beta`, tags → `latest`. Pages must use **GitHub Actions** as the source (`docs.yml` runs `mike` then `actions/deploy-pages`); a `gh-pages` branch alone is not enough when Pages is not set to “Deploy from a branch”.
-- **Fork releases (GHCR)**: `release.yml` publishes date-stamped tags `v{FORK_VERSION}.YYYYMMDD[.N]` from `version/FORK_VERSION`. Every push to `mediacms-next` → GitHub pre-release + `ghcr.io/<owner>/mediacms:beta` and `…/mediacms-full:beta`. Stable only on matching stamp tags from `main` → `:stable`. Upgrade drills use `:upgrade-audit` / `:upgrade-audit-beta` (base image aliases). Set `MEDIACMS_ENABLE_SEMANTIC_RELEASE=true` only if you want upstream-style semantic-release instead.
-- **Fork what's new**: edit `docs/_shared/fork-whats-new.md` (Conventional Commits sections). `scripts/prepare_docs_build.py` injects it into `docs/en/reference/whats-new.md` for channels `beta` / `local` / `dev` / `stable` / `latest`. Do not hand-edit the generated reference page or upstream `CHANGELOG.md` for fork notes.
-- Shared styles go in `static/css/_commons.css`; per-entry styles in `static/css/<name>.css`.
+-   The webpack dev server on port 8088 proxies all pages/API requests to Django (`MEDIACMS_BACKEND=http://web` in `frontend/.env`), so you see real Django pages with live frontend bundles.
+-   Backend Python changes auto-reload; if Django breaks (e.g. syntax error), restart with `docker compose -f docker-compose-dev.yaml restart web`.
+-   **Frontend changes are only visible on port 80 after building**: run `make build-frontend` (or `docker compose -f docker-compose-dev.yaml exec -T frontend npm run dist` then `cp -r frontend/dist/static/* static/`).
+-   **Docs on the same origin**: `make docs-up` starts the optional Compose profile `docs`; Django serves `site/` at `http://localhost/documentation/` (not `/docs/`, which is ReDoc + a protected slug).
+-   **Fork / beta branches**: repository Actions variables `MEDIACMS_STABLE_BRANCH` (default `main`) and `MEDIACMS_BETA_BRANCH` (default `mediacms-next`) select which line is production vs beta. Workflows also list both branch names under `on.push` because triggers cannot read vars. Docs mike aliases: stable → `dev`, beta → `beta`, tags → `latest`. Pages must use **GitHub Actions** as the source (`docs.yml` runs `mike` then `actions/deploy-pages`); a `gh-pages` branch alone is not enough when Pages is not set to “Deploy from a branch”.
+-   **Fork releases (GHCR)**: `release.yml` publishes date-stamped tags `v{FORK_VERSION}.YYYYMMDD[.N]` from `version/FORK_VERSION`. Every push to `mediacms-next` → GitHub pre-release + `ghcr.io/<owner>/mediacms:beta` and `…/mediacms-full:beta`. Stable only on matching stamp tags from `main` → `:stable`. Upgrade drills use `:upgrade-audit` / `:upgrade-audit-beta` (base image aliases). Set `MEDIACMS_ENABLE_SEMANTIC_RELEASE=true` only if you want upstream-style semantic-release instead.
+-   **Fork what's new**: edit `docs/_shared/fork-whats-new.md` (Conventional Commits sections). `scripts/prepare_docs_build.py` injects it into `docs/en/reference/whats-new.md` for channels `beta` / `local` / `dev` / `stable` / `latest`. Do not hand-edit the generated reference page or upstream `CHANGELOG.md` for fork notes.
+-   Shared styles go in `static/css/_commons.css`; per-entry styles in `static/css/<name>.css`.
 
 ## Common Commands
 
@@ -79,9 +79,9 @@ docker compose -f docker-compose-dev.yaml exec -T frontend npm run test -- --ci
 
 ## Code Style & Linting
 
-- **Python**: `black` (formatting), `isort` (ack profile), `flake8` — enforced via pre-commit.
-- Before committing: run `pre-commit run --all` and fix everything. Install the hook once with `pre-commit install`.
-- **Frontend**: Prettier (`.prettierrc`).
+-   **Python**: `black` (formatting), `isort` (black profile), `flake8` — enforced via pre-commit.
+-   **Frontend**: Prettier (`.prettierrc`) and ESLint (flat config in `frontend/` and each `frontend-tools/*` package) — enforced via pre-commit. Hygiene hooks (EOF, trailing whitespace, YAML/JSON, etc.) run too.
+-   Before committing: `npm install` in each frontend package you touch, then `pre-commit run --all` and fix everything. Install the hook once with `pre-commit install`.
 
 ## Commit Conventions
 
@@ -89,9 +89,9 @@ This repo uses **semantic-release with Conventional Commits** (`.releaserc.json`
 
 ## Testing Notes
 
-- `pytest.ini` uses `cms/test_settings.py` as the Django settings module.
-- `conftest.py` blocks network access to non-local hosts during tests and cleans up temp media dirs — do not make tests hit external services.
-- Coverage config in `.coveragerc` (migrations, tests, frontend, etc. are omitted).
+-   `pytest.ini` uses `cms/test_settings.py` as the Django settings module.
+-   `conftest.py` blocks network access to non-local hosts during tests and cleans up temp media dirs — do not make tests hit external services.
+-   Coverage config in `.coveragerc` (migrations, tests, frontend, etc. are omitted).
 
 ## Key Domain Knowledge
 
@@ -99,11 +99,11 @@ This repo uses **semantic-release with Conventional Commits** (`.releaserc.json`
 
 All portal configuration is in `cms/settings.py`. Overrides go in `cms/local_settings.py` (never edit `settings.py` for a deployment), or `deploy/docker/local_settings.py` for docstalls. **Any settings change requires a restart** (`docker compose restart web celery_worker celery_beat`). Notable settings:
 
-- `PORTAL_WORKFLOW`: `public` / `private` / `unlisted` — what happens to newly uploaded media
-- `CAN_ADD_MEDIA`, `CAN_COMMENT`: `"all"` / `"email_verified"` / `"advancedUser"`
-- `MEDIA_IS_REVIEWED`: set `False` to require editor review before media appears in listings
-- `USE_RBAC`, `USE_SAML`, `USE_IDENTITY_PROVIDERS`, `USE_WHISPER_TRANSCRIBE`, `DO_NOT_TRANSCODE_VIDEO`
-- `ALLOWED_MEDIA_UPLOAD_TYPES` (default `["video", "audio", "image", "pdf"]`), `NUMBER_OF_MEDIA_USER_CAN_UPLOAD`, `UPLOAD_MAX_SIZE`
+-   `PORTAL_WORKFLOW`: `public` / `private` / `unlisted` — what happens to newly uploaded media
+-   `CAN_ADD_MEDIA`, `CAN_COMMENT`: `"all"` / `"email_verified"` / `"advancedUser"`
+-   `MEDIA_IS_REVIEWED`: set `False` to require editor review before media appears in listings
+-   `USE_RBAC`, `USE_SAML`, `USE_IDENTITY_PROVIDERS`, `USE_WHISPER_TRANSCRIBE`, `DO_NOT_TRANSCODE_VIDEO`
+-   `ALLOWED_MEDIA_UPLOAD_TYPES` (default `["video", "audio", "image", "pdf"]`), `NUMBER_OF_MEDIA_USER_CAN_UPLOAD`, `UPLOAD_MAX_SIZE`
 
 ### Video transcoding pipeline (Encode objects)
 
@@ -130,23 +130,22 @@ Django templates load bundles from `static/js/<name>.js`. After `npm run dist`, 
 
 ## Gotchas
 
-- Never run pytest without `TESTING=True` — Celery tasks would be dispatched to a broker that isn't running in tests.
-- The frontend dev server (8088) and the "real" app (80) can look out of sync — the real app only shows built bundles.
-- Whisper transcriptioly works with the `mediacms/mediacms:full` image or `docker-compose.full.yaml`.
-- Version 3+ uses Python 3.11 / PostgreSQL 15+; older PostgreSQL 13 data dirs are incompatible (see admins docs, section 3).
-- The repo root `package.json` version is managed by semantic-release — don't edit it manually.
+-   Never run pytest without `TESTING=True` — Celery tasks would be dispatched to a broker that isn't running in tests.
+-   The frontend dev server (8088) and the "real" app (80) can look out of sync — the real app only shows built bundles.
+-   Whisper transcriptioly works with the `mediacms/mediacms:full` image or `docker-compose.full.yaml`.
+-   Version 3+ uses Python 3.11 / PostgreSQL 15+; older PostgreSQL 13 data dirs are incompatible (see admins docs, section 3).
+-   The repo root `package.json` version is managed by semantic-release — don't edit it manually.
 
 ## Useful Docs
 
 Documentation source is under `docs/en/` (MkDocs Material). Start here:
 
-- `docs/en/getting-started/` — install, deploy, concepts, update
-- `docs/en/roles/` — anonymous, pending, viewer, editor, manager, staff, superuser
-- `docs/en/guides/developer/` — local development, architecture, tests, translations, adding docs pages
-- `docs/en/guides/admin/` — admin portal, settings catalog, processing, content migration, site upgrade, SAML, Moodle
-- `docs/en/guides/operator/` — Manage pages, review, permissions/RBAC, manage users
-- `docs/en/contributing/writing.md` — writing rules and glossary
-- `CODE_OF_CONDUCT.md` — required reading before contributing
+-   `docs/en/getting-started/` — install, deploy, concepts, update
+-   `docs/en/roles/` — anonymous, pending, viewer, editor, manager, staff, superuser
+-   `docs/en/guides/developer/` — local development, architecture, tests, translations, adding docs pages
+-   `docs/en/guides/admin/` — admin portal, settings catalog, processing, content migration, site upgrade, SAML, Moodle
+-   `docs/en/guides/operator/` — Manage pages, review, permissions/RBAC, manage users
+-   `docs/en/contributing/writing.md` — writing rules and glossary
+-   `CODE_OF_CONDUCT.md` — required reading before contributing
 
 Build docs: `pip install -r requirements-docs.txt && python scripts/prepare_docs_build.py && mkdocs build --strict`
-

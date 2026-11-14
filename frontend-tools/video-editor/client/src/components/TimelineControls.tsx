@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { formatTime, formatDetailedTime } from '../lib/timeUtils';
-import { generateThumbnail, generateSolidColor } from '../lib/videoUtils';
+import { generateSolidColor } from '../lib/videoUtils';
 import { Segment } from './ClipSegments';
 import Modal from './Modal';
 import { trimVideo, autoSaveVideo } from '../services/videoApi';
@@ -117,7 +117,7 @@ const TimelineControls = ({
     onSave,
     onSaveACopy,
     onSaveSegments,
-    hasUnsavedChanges = false,
+    hasUnsavedChanges: _hasUnsavedChanges = false,
     isIOSUninitialized = false,
     isPlaying,
     setIsPlaying,
@@ -129,7 +129,7 @@ const TimelineControls = ({
     const rightHandleRef = useRef<HTMLDivElement>(null);
     const [selectedSegmentId, setSelectedSegmentId] = useState<number | null>(null);
     const [showEmptySpaceTooltip, setShowEmptySpaceTooltip] = useState(false);
-    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+    const [_tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
     const [clickedTime, setClickedTime] = useState<number>(0);
     const [isZoomDropdownOpen, setIsZoomDropdownOpen] = useState(false);
     const [availableSegmentDuration, setAvailableSegmentDuration] = useState<number>(30); // Default 30 seconds
@@ -232,7 +232,7 @@ const TimelineControls = ({
     }, [performAutoSave]);
 
     // Helper function for time adjustment buttons to maintain playback state
-    const handleTimeAdjustment = (offsetSeconds: number) => (e: React.MouseEvent) => {
+    const _handleTimeAdjustment = (offsetSeconds: number) => (e: React.MouseEvent) => {
         e.stopPropagation();
 
         // Calculate new time based on offset (positive or negative)
@@ -360,7 +360,6 @@ const TimelineControls = ({
             onTouchStart: (e: React.TouchEvent) => {
                 e.stopPropagation();
                 e.preventDefault();
-                21;
 
                 // Update the initial last time value
                 lastTimeValue = clickedTime;
@@ -405,7 +404,7 @@ const TimelineControls = ({
     const [showProcessingModal, setShowProcessingModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
-    const [successMessage, setSuccessMessage] = useState('');
+    const [_successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [redirectUrl, setRedirectUrl] = useState('');
     const [saveType, setSaveType] = useState<'save' | 'copy' | 'segments'>('save');
@@ -655,7 +654,7 @@ const TimelineControls = ({
             const rect = timelineRef.current.getBoundingClientRect();
 
             // Calculate the visible position of the marker after scrolling
-            const containerRect = scrollContainerRef.current.getBoundingClientRect();
+            const _containerRect = scrollContainerRef.current.getBoundingClientRect();
             const visibleTimelineLeft = rect.left - scrollContainerRef.current.scrollLeft;
             const markerX = visibleTimelineLeft + (currentTimePercent / 100) * rect.width;
 
@@ -783,7 +782,7 @@ const TimelineControls = ({
         if (videoRef.current) {
             // Always update display time when current time changes (both playing and paused)
             setDisplayTime(currentTime);
-            
+
             // If video is playing, also update the tooltip and perform segment checks
             if (!videoRef.current.paused) {
                 // Also update clicked time to keep them in sync when playing
@@ -1077,11 +1076,13 @@ const TimelineControls = ({
     useEffect(() => {
         const loadSavedSegments = () => {
             // Get savedSegments directly from window.MEDIA_DATA
-            let savedData = (typeof window !== 'undefined' && (window as any).MEDIA_DATA?.savedSegments) || null;
+            const savedData = (typeof window !== 'undefined' && (window as any).MEDIA_DATA?.savedSegments) || null;
 
             // If no saved segments, don't load anything - the useVideoTrimmer hook already creates the initial full-length segment
             if (!savedData) {
-                logger.debug('No saved segments found in MEDIA_DATA, skipping load (initial segment already created by useVideoTrimmer)');
+                logger.debug(
+                    'No saved segments found in MEDIA_DATA, skipping load (initial segment already created by useVideoTrimmer)'
+                );
                 return;
             }
 
@@ -1320,7 +1321,7 @@ const TimelineControls = ({
 
         // Determine the amount of available space:
         // 1. Check remaining space until the end of video
-        const remainingDuration = Math.max(0, duration - startTime);
+        const _remainingDuration = Math.max(0, duration - startTime);
 
         // 2. Find the next segment (if any)
         const sortedSegments = [...clipSegments].sort((a, b) => a.startTime - b.startTime);
@@ -1591,7 +1592,7 @@ const TimelineControls = ({
         if (!timelineRef.current) return;
 
         const timelineRect = timelineRef.current.getBoundingClientRect();
-        const timelineWidth = timelineRect.width;
+        const _timelineWidth = timelineRect.width;
 
         // Find the segment that's being resized
         const segment = clipSegments.find((seg) => seg.id === segmentId);
@@ -1639,7 +1640,7 @@ const TimelineControls = ({
             const newTime = position * duration;
 
             // Create a temporary segment with the current drag position to check against
-            const draggedSegment = {
+            const _draggedSegment = {
                 id: segmentId,
                 startTime: isLeft ? newTime : originalStartTime,
                 endTime: isLeft ? originalEndTime : newTime,
@@ -1852,9 +1853,9 @@ const TimelineControls = ({
                         currentTime >= segmentBeforeDrag.startTime && currentTime <= segmentBeforeDrag.endTime;
 
                     logger.debug(
-                        `Playhead was ${
-                            wasInsideSegmentBefore ? 'inside' : 'outside'
-                        } segment before drag, now ${isInsideSegment ? 'inside' : 'outside'}`
+                        `Playhead was ${wasInsideSegmentBefore ? 'inside' : 'outside'} segment before drag, now ${
+                            isInsideSegment ? 'inside' : 'outside'
+                        }`
                     );
 
                     // Update UI elements based on segment position
@@ -2089,7 +2090,7 @@ const TimelineControls = ({
 
         // Auto-scroll to center the clicked position for zoomed timeline
         if (zoomLevel > 1 && timelineRef.current && scrollContainerRef.current) {
-            const timelineRect = timelineRef.current.getBoundingClientRect();
+            const _timelineRect = timelineRef.current.getBoundingClientRect();
             const timelineWidth = timelineRef.current.clientWidth;
             const containerWidth = scrollContainerRef.current.clientWidth;
 
@@ -2127,7 +2128,7 @@ const TimelineControls = ({
     };
 
     // Show tooltip for the segment
-    const setShowTooltip = (show: boolean, segmentId: number, x: number, y: number) => {
+    const _setShowTooltip = (show: boolean, segmentId: number, x: number, y: number) => {
         setSelectedSegmentId(show ? segmentId : null);
         setTooltipPosition({ x, y });
     };
@@ -2695,7 +2696,7 @@ const TimelineControls = ({
 
                                 // For ensuring accurate segment detection, refresh clipSegments first
                                 // This helps when clicking right after creating a new segment
-                                const refreshedSegmentAtCurrentTime = clipSegments.find(
+                                const _refreshedSegmentAtCurrentTime = clipSegments.find(
                                     (seg) => currentTime >= seg.startTime && currentTime <= seg.endTime
                                 );
 
@@ -3582,7 +3583,9 @@ const TimelineControls = ({
                                                                     logger.debug(
                                                                         `Position corrected to exact segment boundary: ${formatDetailedTime(
                                                                             videoRef.current.currentTime
-                                                                        )} (target: ${formatDetailedTime(nextSegment.startTime)})`
+                                                                        )} (target: ${formatDetailedTime(
+                                                                            nextSegment.startTime
+                                                                        )})`
                                                                     );
                                                                 }
                                                             };

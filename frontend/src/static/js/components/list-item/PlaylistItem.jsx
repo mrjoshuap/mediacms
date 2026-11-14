@@ -6,61 +6,61 @@ import { Item } from './Item';
 import { applyDefaultProps } from '../../utils/helpers/applyDefaultProps';
 
 export function PlaylistItem(rawProps) {
-  const props = applyDefaultProps(rawProps, PlaylistItem.defaultPropValues);
-  const type = 'playlist';
+    const props = applyDefaultProps(rawProps, PlaylistItem.defaultPropValues);
+    const type = 'playlist';
 
-  const { titleComponent, thumbnailUrl, UnderThumbWrapper } = useItem({ ...props, type });
+    const { titleComponent, thumbnailUrl, UnderThumbWrapper } = useItem({ ...props, type });
 
-  function metaComponents() {
-    const publishDate = format(new Date(props.publish_date));
-    const publishDateTime =
-      'string' === typeof props.publish_date
-        ? Date.parse(props.publish_date)
-        : Date.parse(new Date(props.publish_date));
+    function metaComponents() {
+        const publishDate = format(new Date(props.publish_date));
+        const publishDateTime =
+            'string' === typeof props.publish_date
+                ? Date.parse(props.publish_date)
+                : Date.parse(new Date(props.publish_date));
 
-    return <PlaylistItemMetaDate dateTime={publishDateTime} text={'Created ' + publishDate} />;
-  }
+        return <PlaylistItemMetaDate dateTime={publishDateTime} text={'Created ' + publishDate} />;
+    }
 
-  return (
-    <div className="item playlist-item">
-      <div className="item-content">
-        <a
-          className={'item-thumb' + (!thumbnailUrl ? ' no-thumb' : '')}
-          href={props.link}
-          title={props.title}
-          tabIndex="-1"
-          aria-hidden="true"
-          style={!thumbnailUrl ? null : { backgroundImage: "url('" + thumbnailUrl + "')" }}
-        >
-          <div className="playlist-count">
-            <div>
-              <div>
-                <span>{props.media_count}</span>
-                <i className="material-icons">playlist_play</i>
-              </div>
+    return (
+        <div className="item playlist-item">
+            <div className="item-content">
+                <a
+                    className={'item-thumb' + (!thumbnailUrl ? ' no-thumb' : '')}
+                    href={props.link}
+                    title={props.title}
+                    tabIndex="-1"
+                    aria-hidden="true"
+                    style={!thumbnailUrl ? null : { backgroundImage: "url('" + thumbnailUrl + "')" }}
+                >
+                    <div className="playlist-count">
+                        <div>
+                            <div>
+                                <span>{props.media_count}</span>
+                                <i className="material-icons">playlist_play</i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="playlist-hover-play-all">
+                        <div>
+                            <div>
+                                <i className="material-icons">play_arrow</i>
+                                <span>PLAY ALL</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <UnderThumbWrapper title={props.title} link={props.link}>
+                    {titleComponent()}
+                    {metaComponents()}
+                </UnderThumbWrapper>
             </div>
-          </div>
-
-          <div className="playlist-hover-play-all">
-            <div>
-              <div>
-                <i className="material-icons">play_arrow</i>
-                <span>PLAY ALL</span>
-              </div>
-            </div>
-          </div>
-        </a>
-
-        <UnderThumbWrapper title={props.title} link={props.link}>
-          {titleComponent()}
-          {metaComponents()}
-        </UnderThumbWrapper>
-      </div>
-    </div>
-  );
+        </div>
+    );
 }
 
 PlaylistItem.defaultPropValues = {
-  ...Item.defaultPropValues,
-  media_count: 0,
+    ...Item.defaultPropValues,
+    media_count: 0,
 };

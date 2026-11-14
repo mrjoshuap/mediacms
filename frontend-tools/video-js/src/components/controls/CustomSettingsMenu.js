@@ -563,7 +563,6 @@ class CustomSettingsMenu extends Component {
         }
     }
 
-
     getAvailableQualities() {
         // Priority: provided options -> MEDIA_DATA JSON -> player sources -> default
         const desiredOrder = ['auto', '144p', '240p', '360p', '480p', '720p', '1080p'];
@@ -947,10 +946,10 @@ class CustomSettingsMenu extends Component {
 
     lockBodyScroll() {
         if (!this.isMobile) return;
-        
+
         // Save current scroll position
         this.scrollY = window.scrollY || window.pageYOffset;
-        
+
         // Lock body scroll with proper iOS handling
         document.body.style.overflow = 'hidden';
         document.body.style.position = 'fixed';
@@ -962,7 +961,7 @@ class CustomSettingsMenu extends Component {
 
     unlockBodyScroll() {
         if (!this.isMobile) return;
-        
+
         // Restore body scroll
         const scrollY = this.scrollY;
         document.body.style.overflow = '';
@@ -971,7 +970,7 @@ class CustomSettingsMenu extends Component {
         document.body.style.left = '';
         document.body.style.right = '';
         document.body.style.width = '';
-        
+
         // Restore scroll position
         window.scrollTo(0, scrollY);
     }
@@ -1516,15 +1515,15 @@ class CustomSettingsMenu extends Component {
     dispose() {
         // Stop subtitle sync and clear interval
         this.stopSubtitleSync();
-        
+
         // Stop keeping controls visible
         this.stopKeepingControlsVisible();
-        
+
         // Remove text track change listener
         if (this.player()) {
             this.player().off('texttrackchange');
         }
-        
+
         // Remove event listeners
         document.removeEventListener('click', this.handleClickOutside);
 

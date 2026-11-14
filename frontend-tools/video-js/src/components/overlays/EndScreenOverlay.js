@@ -732,7 +732,7 @@ class EndScreenOverlay extends Component {
         return `data:image/svg+xml,${encodeURIComponent(`
             <svg width="320" height="180" xmlns="http://www.w3.org/2000/svg">
                 <rect width="320" height="180" fill="${color}"/>
-                <text x="160" y="90" font-family="Arial" font-size="48" font-weight="bold" 
+                <text x="160" y="90" font-family="Arial" font-size="48" font-weight="bold"
                       text-anchor="middle" dominant-baseline="middle" fill="white">${firstLetter}</text>
             </svg>
         `)}`;

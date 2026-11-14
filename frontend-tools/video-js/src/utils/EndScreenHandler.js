@@ -63,15 +63,8 @@ export class EndScreenHandler {
     }
 
     handleVideoEnded() {
-        const {
-            isEmbedPlayer,
-            userPreferences,
-            mediaData,
-            currentVideo,
-            relatedVideos,
-            goToNextVideo,
-            showRelated,
-        } = this.options;
+        const { isEmbedPlayer, userPreferences, mediaData, currentVideo, relatedVideos, goToNextVideo, showRelated } =
+            this.options;
 
         // For embed players, show big play button when video ends
         if (isEmbedPlayer) {

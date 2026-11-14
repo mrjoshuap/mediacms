@@ -157,7 +157,9 @@ describe('components/list-item', () => {
             b.unmount();
 
             const c = render(<UserItemThumbnailLink src="https://cdn/u.jpg" title="U" link="/u" />);
-            expect((c.container.querySelector('a') as HTMLAnchorElement).style.backgroundImage).toContain('https://cdn/u.jpg');
+            expect((c.container.querySelector('a') as HTMLAnchorElement).style.backgroundImage).toContain(
+                'https://cdn/u.jpg'
+            );
             c.unmount();
             const d = render(<UserItemThumbnailLink src="" title="U" link="/u" />);
             expect(d.container.querySelector('a')?.className).toBe('item-thumb no-thumb');

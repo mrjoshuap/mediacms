@@ -53,7 +53,9 @@ function setup(initial = '', users = USERS) {
         onChange,
         value: () => current,
         suggestions: () =>
-            Array.from(view.container.querySelectorAll('.form-textarea__suggestions__item')).map((li) => li.textContent),
+            Array.from(view.container.querySelectorAll('.form-textarea__suggestions__item')).map(
+                (li) => li.textContent
+            ),
         focused: () => view.container.querySelector('.form-textarea__suggestions__item--focused')?.textContent,
     };
 }
@@ -103,7 +105,10 @@ describe('components/comments/MentionTextarea', () => {
         });
 
         test('parseMentions keeps plain text untouched', () => {
-            expect(parseMentions('just @ text (_x_) [_y_]')).toEqual({ plainText: 'just @ text (_x_) [_y_]', mentions: [] });
+            expect(parseMentions('just @ text (_x_) [_y_]')).toEqual({
+                plainText: 'just @ text (_x_) [_y_]',
+                mentions: [],
+            });
         });
 
         test('diffText finds the edited range, using the caret to resolve repeated characters', () => {
@@ -117,9 +122,18 @@ describe('components/comments/MentionTextarea', () => {
         test('applyPlainTextChange edits text around mentions and removes touched mentions entirely', () => {
             const markup = 'a @(_bob_)[_Bob_] z';
             const parsed = parseMentions(markup);
-            expect(applyPlainTextChange(markup, parsed, 1, 1, '!')).toEqual({ markup: 'a! @(_bob_)[_Bob_] z', caret: 2 });
-            expect(applyPlainTextChange(markup, parsed, 5, 5, '!')).toEqual({ markup: 'a @(_bob_)[_Bob_]! z', caret: 6 });
-            expect(applyPlainTextChange(markup, parsed, 2, 2, '!')).toEqual({ markup: 'a !@(_bob_)[_Bob_] z', caret: 3 });
+            expect(applyPlainTextChange(markup, parsed, 1, 1, '!')).toEqual({
+                markup: 'a! @(_bob_)[_Bob_] z',
+                caret: 2,
+            });
+            expect(applyPlainTextChange(markup, parsed, 5, 5, '!')).toEqual({
+                markup: 'a @(_bob_)[_Bob_]! z',
+                caret: 6,
+            });
+            expect(applyPlainTextChange(markup, parsed, 2, 2, '!')).toEqual({
+                markup: 'a !@(_bob_)[_Bob_] z',
+                caret: 3,
+            });
             expect(applyPlainTextChange(markup, parsed, 4, 5, '')).toEqual({ markup: 'a  z', caret: 2 });
             expect(applyPlainTextChange(markup, parsed, 3, 3, 'x')).toEqual({ markup: 'a x z', caret: 3 });
             expect(applyPlainTextChange(markup, parsed, 0, 7, 'new')).toEqual({ markup: 'new', caret: 3 });
@@ -160,7 +174,11 @@ describe('components/comments/MentionTextarea', () => {
             edit(textarea, 'hello world, mail me at a@b.c');
             expect(value()).toBe('hello world, mail me at a@b.c');
             expect(textarea.value).toBe('hello world, mail me at a@b.c');
-            expect(onChange).toHaveBeenLastCalledWith(expect.anything(), 'hello world, mail me at a@b.c', 'hello world, mail me at a@b.c');
+            expect(onChange).toHaveBeenLastCalledWith(
+                expect.anything(),
+                'hello world, mail me at a@b.c',
+                'hello world, mail me at a@b.c'
+            );
             expect(suggestions()).toEqual([]);
             unmount();
         });
@@ -249,7 +267,13 @@ describe('components/comments/MentionTextarea', () => {
             function Harness() {
                 const [value, setValue] = useState('');
                 return (
-                    <MentionTextarea className="x" value={value} users={USERS} onChange={(e: any, v: string) => setValue(v)} onKeyDown={onKeyDown} />
+                    <MentionTextarea
+                        className="x"
+                        value={value}
+                        users={USERS}
+                        onChange={(e: any, v: string) => setValue(v)}
+                        onKeyDown={onKeyDown}
+                    />
                 );
             }
             const { container, unmount } = renderIntoContainer(<Harness />);
@@ -266,7 +290,15 @@ describe('components/comments/MentionTextarea', () => {
             const onBlur = jest.fn();
             function Harness() {
                 const [value, setValue] = useState('');
-                return <MentionTextarea className="x" value={value} users={USERS} onChange={(e: any, v: string) => setValue(v)} onBlur={onBlur} />;
+                return (
+                    <MentionTextarea
+                        className="x"
+                        value={value}
+                        users={USERS}
+                        onChange={(e: any, v: string) => setValue(v)}
+                        onBlur={onBlur}
+                    />
+                );
             }
             const { container, unmount } = renderIntoContainer(<Harness />);
             const textarea = container.querySelector('textarea') as HTMLTextAreaElement;
@@ -288,10 +320,9 @@ describe('components/comments/MentionTextarea', () => {
             typeAtCaret(textarea, ' thanks');
             expect(value()).toBe('cc @(_alice_)[_Alice Liddell_] and @(_bob_)[_Bob Builder_] thanks');
             expect(textarea.value).toBe('cc Alice Liddell and Bob Builder thanks');
-            expect(Array.from(container.querySelectorAll('.form-textarea__highlighter strong')).map((s) => s.textContent)).toEqual([
-                'Alice Liddell',
-                'Bob Builder',
-            ]);
+            expect(
+                Array.from(container.querySelectorAll('.form-textarea__highlighter strong')).map((s) => s.textContent)
+            ).toEqual(['Alice Liddell', 'Bob Builder']);
             unmount();
         });
 
@@ -344,7 +375,12 @@ describe('components/comments/MentionTextarea', () => {
                 const [value, setValue] = useState('@(_bob_)[_Bob_] x');
                 return (
                     <>
-                        <MentionTextarea className="x" value={value} users={USERS} onChange={(e: any, v: string) => setValue(v)} />
+                        <MentionTextarea
+                            className="x"
+                            value={value}
+                            users={USERS}
+                            onChange={(e: any, v: string) => setValue(v)}
+                        />
                         <button onClick={() => setValue('')}>clear</button>
                     </>
                 );

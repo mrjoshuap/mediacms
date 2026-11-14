@@ -1,7 +1,11 @@
 import '../../_support/setupMediaCMS';
 import React from 'react';
 import { renderIntoContainer } from '../../_support/render';
-import UserContextDefault, { UserContext, UserProvider, UserConsumer } from '../../../src/static/js/utils/contexts/UserContext';
+import UserContextDefault, {
+    UserContext,
+    UserProvider,
+    UserConsumer,
+} from '../../../src/static/js/utils/contexts/UserContext';
 import { useUser } from '../../../src/static/js/utils/hooks/useUser';
 import { installMediaCMSGlobal } from '../../_support/mediacmsGlobal';
 

@@ -1,10 +1,16 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { usePopup } from '../../utils/hooks/';
 import { linksConfig, memberConfig, siteConfig } from '../../utils/contexts/';
 import { PageStore, ProfilePageStore } from '../../utils/stores/';
 import { PageActions, ProfilePageActions } from '../../utils/actions/';
 import { CircleIconButton, PopupMain } from '../_shared';
-import { translateString, inEmbeddedApp, inSelectMediaEmbedMode, isSelectMediaMode, isShareMediaDisabled } from '../../utils/helpers/';
+import {
+    translateString,
+    inEmbeddedApp,
+    inSelectMediaEmbedMode,
+    isSelectMediaMode,
+    isShareMediaDisabled,
+} from '../../utils/helpers/';
 import { applyDefaultProps } from '../../utils/helpers/applyDefaultProps';
 
 class ProfileSearchBar extends React.PureComponent {
@@ -302,8 +308,7 @@ class NavMenuInlineTabs extends React.PureComponent {
         );
 
         this.userIsAuthor =
-            !memberConfig.is.anonymous &&
-            ProfilePageStore.get('author-data').username === memberConfig.username;
+            !memberConfig.is.anonymous && ProfilePageStore.get('author-data').username === memberConfig.username;
     }
 
     componentDidMount() {
@@ -333,7 +338,7 @@ class NavMenuInlineTabs extends React.PureComponent {
         setTimeout(() => this.updateSliderButtonsView(), 50);
     }
 
-    updateSlider(afterItemsUpdate) {
+    updateSlider(_afterItemsUpdate) {
         this.updateSliderButtonsView();
     }
 
@@ -371,11 +376,15 @@ class NavMenuInlineTabs extends React.PureComponent {
             : linksConfig.profile.media;
 
         const sharedByMeLink = isSelectMediaMode
-            ? `${linksConfig.profile.shared_by_me}${linksConfig.profile.shared_by_me.includes('?') ? '&' : '?'}action=select_media`
+            ? `${linksConfig.profile.shared_by_me}${
+                  linksConfig.profile.shared_by_me.includes('?') ? '&' : '?'
+              }action=select_media`
             : linksConfig.profile.shared_by_me;
 
         const sharedWithMeBase = shareMediaDisabled
-            ? `${linksConfig.profile.shared_with_me}${linksConfig.profile.shared_with_me.includes('?') ? '&' : '?'}share_media=0`
+            ? `${linksConfig.profile.shared_with_me}${
+                  linksConfig.profile.shared_with_me.includes('?') ? '&' : '?'
+              }share_media=0`
             : linksConfig.profile.shared_with_me;
         const sharedWithMeLink = isSelectMediaMode
             ? `${sharedWithMeBase}${sharedWithMeBase.includes('?') ? '&' : '?'}action=select_media`
@@ -642,14 +651,10 @@ export default function ProfilePagesHeader(rawProps) {
 
     const userIsAdmin = !memberConfig.is.anonymous && memberConfig.is.admin;
     const userIsAuthor =
-        !memberConfig.is.anonymous &&
-        ProfilePageStore.get('author-data').username === memberConfig.username;
-    const userCanEditProfile =
-        userIsAuthor || (!memberConfig.is.anonymous && memberConfig.can.editProfile);
+        !memberConfig.is.anonymous && ProfilePageStore.get('author-data').username === memberConfig.username;
+    const userCanEditProfile = userIsAuthor || (!memberConfig.is.anonymous && memberConfig.can.editProfile);
     const userCanDeleteProfile =
-        userIsAdmin ||
-        userIsAuthor ||
-        (!memberConfig.is.anonymous && memberConfig.can.deleteProfile);
+        userIsAdmin || userIsAuthor || (!memberConfig.is.anonymous && memberConfig.can.deleteProfile);
 
     function cancelProfileRemoval() {
         popupContentRef.current.toggle();

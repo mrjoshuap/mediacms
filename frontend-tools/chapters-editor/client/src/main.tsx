@@ -6,7 +6,7 @@ if (typeof window !== 'undefined') {
     window.MEDIA_DATA = {
         videoUrl: '',
         mediaId: '',
-        posterUrl: ''
+        posterUrl: '',
     };
     window.lastSeekedPosition = 0;
 }

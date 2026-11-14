@@ -44,11 +44,11 @@ const IOSVideoPlayer = ({ videoRef, currentTime, duration }: IOSVideoPlayerProps
         // Check if the media is an audio file and set poster image
         const audioFile = url.match(/\.(mp3|wav|ogg|m4a|aac|flac)$/i) !== null;
         setIsAudioFile(audioFile);
-        
+
         // Get posterUrl from MEDIA_DATA, or use audio-poster.jpg as fallback for audio files when posterUrl is empty, null, or "None"
         const mediaPosterUrl = (typeof window !== 'undefined' && (window as any).MEDIA_DATA?.posterUrl) || '';
         const isValidPoster = mediaPosterUrl && mediaPosterUrl !== 'None' && mediaPosterUrl.trim() !== '';
-        setPosterImage(isValidPoster ? mediaPosterUrl : (audioFile ? AUDIO_POSTER_URL : undefined));
+        setPosterImage(isValidPoster ? mediaPosterUrl : audioFile ? AUDIO_POSTER_URL : undefined);
     }, [videoRef]);
 
     // Function to jump 15 seconds backward
@@ -134,13 +134,13 @@ const IOSVideoPlayer = ({ videoRef, currentTime, duration }: IOSVideoPlayerProps
             <div className="ios-video-wrapper">
                 {/* Persistent background image for audio files (Safari fix) */}
                 {isAudioFile && posterImage && (
-                    <div 
-                        className="ios-audio-poster-background" 
+                    <div
+                        className="ios-audio-poster-background"
                         style={{ backgroundImage: `url(${posterImage})` }}
                         aria-hidden="true"
                     />
                 )}
-                
+
                 {/* iOS-optimized Video Element with Native Controls */}
                 <video
                     ref={(ref) => setIosVideoRef(ref)}

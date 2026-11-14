@@ -21,7 +21,13 @@ function layout(extra: { [key: string]: any } = {}) {
 }
 
 function theme(extra: { [key: string]: any } = {}) {
-    return { logo: '/logo.svg', currentThemeMode: 'light', changeThemeMode: jest.fn(), themeModeSwitcher: { enabled: true, position: 'header' }, ...extra } as any;
+    return {
+        logo: '/logo.svg',
+        currentThemeMode: 'light',
+        changeThemeMode: jest.fn(),
+        themeModeSwitcher: { enabled: true, position: 'header' },
+        ...extra,
+    } as any;
 }
 
 describe('components/page-layout', () => {
@@ -77,7 +83,9 @@ describe('components/page-layout', () => {
             click(container.querySelector('input'));
             expect(value.changeThemeMode).toHaveBeenCalledTimes(2);
             act(() => {
-                container.querySelector('.theme-switch')!.dispatchEvent(new KeyboardEvent('keypress', { keyCode: 13, charCode: 13, bubbles: true }));
+                container
+                    .querySelector('.theme-switch')!
+                    .dispatchEvent(new KeyboardEvent('keypress', { keyCode: 13, charCode: 13, bubbles: true }));
             });
             expect(value.changeThemeMode).toHaveBeenCalledTimes(3);
             unmount();
@@ -110,11 +118,17 @@ describe('components/page-layout', () => {
         test('Anonymous users get sign in and register links and a settings popup', () => {
             const header = {
                 hasThemeSwitcher: false,
-                popupNavItems: { top: [], middle: [{ link: '/accounts/login/', text: 'Sign in', itemType: 'link' }], bottom: [] },
+                popupNavItems: {
+                    top: [],
+                    middle: [{ link: '/accounts/login/', text: 'Sign in', itemType: 'link' }],
+                    bottom: [],
+                },
             };
             const layoutValue = layout();
             const { container, unmount } = render(anonymous, header, layoutValue);
-            expect(container.querySelector('.user-options')?.className).toBe('user-options visible-only-in-extra-small');
+            expect(container.querySelector('.user-options')?.className).toBe(
+                'user-options visible-only-in-extra-small'
+            );
             const signIn = container.querySelector('.sign-in') as HTMLAnchorElement;
             expect(signIn.getAttribute('href')).toBe('/accounts/login/');
             expect(signIn.className).toBe('button-link sign-in hidden-only-in-extra-small');
@@ -123,7 +137,9 @@ describe('components/page-layout', () => {
             click(container.querySelector('.mobile-search-toggle button'));
             expect(layoutValue.toggleMobileSearch).toHaveBeenCalled();
             click(container.querySelector('.user-options button'));
-            expect(Array.from(container.querySelectorAll('.user-options a')).map((a) => a.textContent)).toEqual(['Sign in']);
+            expect(Array.from(container.querySelectorAll('.user-options a')).map((a) => a.textContent)).toEqual([
+                'Sign in',
+            ]);
             unmount();
         });
 
@@ -132,7 +148,13 @@ describe('components/page-layout', () => {
                 hasThemeSwitcher: true,
                 popupNavItems: {
                     top: [],
-                    middle: [{ itemType: 'open-subpage', text: 'Switch theme', buttonAttr: { className: 'change-page', 'data-page-id': 'switch-theme' } }],
+                    middle: [
+                        {
+                            itemType: 'open-subpage',
+                            text: 'Switch theme',
+                            buttonAttr: { className: 'change-page', 'data-page-id': 'switch-theme' },
+                        },
+                    ],
                     bottom: [],
                 },
             };
@@ -157,16 +179,24 @@ describe('components/page-layout', () => {
             };
             const header = {
                 hasThemeSwitcher: false,
-                popupNavItems: { top: [{ link: '/user/john', text: 'My media' }], middle: [{ link: '/edit', text: 'Edit profile' }], bottom: [] },
+                popupNavItems: {
+                    top: [{ link: '/user/john', text: 'My media' }],
+                    middle: [{ link: '/edit', text: 'Edit profile' }],
+                    bottom: [],
+                },
             };
             const { container, unmount } = render(member, header);
             expect(container.querySelector('.user-thumb')).not.toBeNull();
             expect(container.querySelector('.sign-in-wrap')).toBeNull();
             expect(container.querySelector('.on-header-right')?.innerHTML).toBe('<span class="x">x</span>');
 
-            const uploadWrap = (container.querySelector('[title="Upload media"]') as HTMLElement).parentElement as HTMLElement;
+            const uploadWrap = (container.querySelector('[title="Upload media"]') as HTMLElement)
+                .parentElement as HTMLElement;
             click(uploadWrap.querySelector('button'));
-            expect(Array.from(uploadWrap.querySelectorAll('a')).map((a) => a.getAttribute('href'))).toEqual(['/upload', '/record_screen']);
+            expect(Array.from(uploadWrap.querySelectorAll('a')).map((a) => a.getAttribute('href'))).toEqual([
+                '/upload',
+                '/record_screen',
+            ]);
 
             click(container.querySelector('.user-thumb button'));
             const top = container.querySelector('.user-menu-top-link') as HTMLAnchorElement;

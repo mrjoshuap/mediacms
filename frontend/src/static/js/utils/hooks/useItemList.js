@@ -3,55 +3,55 @@ import initItemsList from '../../components/item-list/includes/itemLists/initIte
 import '../../components/item-list/ItemList.scss'; // TODO: Remove it from here
 
 export function useItemList(props, itemsListRef) {
-  let previousItemsLength = 0;
+    let previousItemsLength = 0;
 
-  let itemsListInstance = null;
+    let itemsListInstance = null;
 
-  const [items, setItems] = useState([]);
+    const [items, setItems] = useState([]);
 
-  const [countedItems, setCountedItems] = useState(false);
-  const [listHandler, setListHandler] = useState(null);
+    const [countedItems, setCountedItems] = useState(false);
+    const [listHandler, setListHandler] = useState(null);
 
-  function onItemsLoad(itemsArray) {
-    setItems([...itemsArray]);
-  }
-
-  function onItemsCount(totalItems) {
-    setCountedItems(true);
-    if (void 0 !== props.itemsCountCallback) {
-      props.itemsCountCallback(totalItems);
+    function onItemsLoad(itemsArray) {
+        setItems([...itemsArray]);
     }
-  }
 
-  function addListItems() {
-    if (previousItemsLength < items.length) {
-      if (null === itemsListInstance) {
-        itemsListInstance = initItemsList([itemsListRef.current])[0];
-      }
-
-      // TODO: Should get item elements from children components.
-      const itemsElem = itemsListRef.current.querySelectorAll('.item');
-
-      if (!itemsElem || !itemsElem.length) {
-        return;
-      }
-
-      let i = previousItemsLength;
-
-      while (i < items.length) {
-        itemsListInstance.appendItems(itemsElem[i]);
-        i += 1;
-      }
-
-      previousItemsLength = items.length;
+    function onItemsCount(totalItems) {
+        setCountedItems(true);
+        if (void 0 !== props.itemsCountCallback) {
+            props.itemsCountCallback(totalItems);
+        }
     }
-  }
 
-  useEffect(() => {
-    if (void 0 !== props.itemsLoadCallback) {
-      props.itemsLoadCallback();
+    function addListItems() {
+        if (previousItemsLength < items.length) {
+            if (null === itemsListInstance) {
+                itemsListInstance = initItemsList([itemsListRef.current])[0];
+            }
+
+            // TODO: Should get item elements from children components.
+            const itemsElem = itemsListRef.current.querySelectorAll('.item');
+
+            if (!itemsElem || !itemsElem.length) {
+                return;
+            }
+
+            let i = previousItemsLength;
+
+            while (i < items.length) {
+                itemsListInstance.appendItems(itemsElem[i]);
+                i += 1;
+            }
+
+            previousItemsLength = items.length;
+        }
     }
-  }, [items]);
 
-  return [items, countedItems, listHandler, setListHandler, onItemsLoad, onItemsCount, addListItems];
+    useEffect(() => {
+        if (void 0 !== props.itemsLoadCallback) {
+            props.itemsLoadCallback();
+        }
+    }, [items]);
+
+    return [items, countedItems, listHandler, setListHandler, onItemsLoad, onItemsCount, addListItems];
 }

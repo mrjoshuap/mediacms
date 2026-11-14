@@ -19,7 +19,9 @@ describe('components', () => {
         });
 
         test('Shows plain label and closed menu without selection', () => {
-            const { container, unmount } = renderIntoContainer(<BulkActionsDropdown selectedCount={0} onActionSelect={jest.fn()} />);
+            const { container, unmount } = renderIntoContainer(
+                <BulkActionsDropdown selectedCount={0} onActionSelect={jest.fn()} />
+            );
             const trigger = container.querySelector('.bulk-actions-trigger') as HTMLButtonElement;
             expect(trigger.textContent).toBe('Bulk Actions');
             expect(trigger.className).toBe('bulk-actions-trigger no-selection');
@@ -29,17 +31,23 @@ describe('components', () => {
         });
 
         test('Shows selected count in the label', () => {
-            const { container, unmount } = renderIntoContainer(<BulkActionsDropdown selectedCount={4} onActionSelect={jest.fn()} />);
+            const { container, unmount } = renderIntoContainer(
+                <BulkActionsDropdown selectedCount={4} onActionSelect={jest.fn()} />
+            );
             expect(container.querySelector('.bulk-actions-trigger')?.textContent).toBe('Bulk Actions (4 selected)');
             unmount();
         });
 
         test('Opens grouped menu with all actions disabled when nothing is selected', () => {
             const onActionSelect = jest.fn();
-            const { container, unmount } = renderIntoContainer(<BulkActionsDropdown selectedCount={0} onActionSelect={onActionSelect} />);
+            const { container, unmount } = renderIntoContainer(
+                <BulkActionsDropdown selectedCount={0} onActionSelect={onActionSelect} />
+            );
             click(container.querySelector('.bulk-actions-trigger'));
             expect(container.querySelector('.bulk-actions-trigger')?.className).toContain('is-open');
-            const groups = Array.from(container.querySelectorAll('.bulk-actions-group-label')).map((g) => g.textContent);
+            const groups = Array.from(container.querySelectorAll('.bulk-actions-group-label')).map(
+                (g) => g.textContent
+            );
             expect(groups).toEqual(['Sharing', 'Organization', 'Settings', 'Management']);
             const items = container.querySelectorAll('.bulk-actions-item');
             expect(items.length).toBe(15);
@@ -51,9 +59,13 @@ describe('components', () => {
 
         test('Selecting an action calls back with its value and closes the menu', () => {
             const onActionSelect = jest.fn();
-            const { container, unmount } = renderIntoContainer(<BulkActionsDropdown selectedCount={2} onActionSelect={onActionSelect} />);
+            const { container, unmount } = renderIntoContainer(
+                <BulkActionsDropdown selectedCount={2} onActionSelect={onActionSelect} />
+            );
             click(container.querySelector('.bulk-actions-trigger'));
-            const deleteBtn = Array.from(container.querySelectorAll('.bulk-actions-item')).find((b) => b.textContent === 'Delete Media');
+            const deleteBtn = Array.from(container.querySelectorAll('.bulk-actions-item')).find(
+                (b) => b.textContent === 'Delete Media'
+            );
             click(deleteBtn as Element);
             expect(onActionSelect).toHaveBeenCalledWith('delete-media');
             expect(container.querySelector('.bulk-actions-menu')).toBeNull();
@@ -61,7 +73,9 @@ describe('components', () => {
         });
 
         test('Closes on Escape and on outside mousedown but not on inside mousedown', () => {
-            const { container, unmount } = renderIntoContainer(<BulkActionsDropdown selectedCount={1} onActionSelect={jest.fn()} />);
+            const { container, unmount } = renderIntoContainer(
+                <BulkActionsDropdown selectedCount={1} onActionSelect={jest.fn()} />
+            );
             click(container.querySelector('.bulk-actions-trigger'));
             act(() => {
                 document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
@@ -70,7 +84,9 @@ describe('components', () => {
 
             click(container.querySelector('.bulk-actions-trigger'));
             act(() => {
-                container.querySelector('.bulk-actions-menu')!.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                container
+                    .querySelector('.bulk-actions-menu')!
+                    .dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
             });
             expect(container.querySelector('.bulk-actions-menu')).not.toBeNull();
             act(() => {
@@ -81,7 +97,9 @@ describe('components', () => {
         });
 
         test('Toggles closed when trigger is clicked twice', () => {
-            const { container, unmount } = renderIntoContainer(<BulkActionsDropdown selectedCount={1} onActionSelect={jest.fn()} />);
+            const { container, unmount } = renderIntoContainer(
+                <BulkActionsDropdown selectedCount={1} onActionSelect={jest.fn()} />
+            );
             click(container.querySelector('.bulk-actions-trigger'));
             click(container.querySelector('.bulk-actions-trigger'));
             expect(container.querySelector('.bulk-actions-menu')).toBeNull();
@@ -96,7 +114,9 @@ describe('components', () => {
             );
             click(container.querySelector('.bulk-actions-trigger'));
             expect(optionLabels(container)).toContain('Share with Course Members');
-            const cleanup = Array.from(container.querySelectorAll('.bulk-actions-item')).find((b) => b.textContent === 'Course Cleanup') as HTMLButtonElement;
+            const cleanup = Array.from(container.querySelectorAll('.bulk-actions-item')).find(
+                (b) => b.textContent === 'Course Cleanup'
+            ) as HTMLButtonElement;
             expect(cleanup.disabled).toBe(false);
             click(cleanup);
             expect(onActionSelect).toHaveBeenCalledWith('course-cleanup');

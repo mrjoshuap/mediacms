@@ -41,11 +41,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
     // Check if the media is an audio file
     const isAudioFile = sampleVideoUrl.match(/\.(mp3|wav|ogg|m4a|aac|flac)$/i) !== null;
-    
+
     // Get posterUrl from MEDIA_DATA, or use audio-poster.jpg as fallback for audio files when posterUrl is empty, null, or "None"
     const mediaPosterUrl = (typeof window !== 'undefined' && (window as any).MEDIA_DATA?.posterUrl) || '';
     const isValidPoster = mediaPosterUrl && mediaPosterUrl !== 'None' && mediaPosterUrl.trim() !== '';
-    const posterImage = isValidPoster ? mediaPosterUrl : (isAudioFile ? AUDIO_POSTER_URL : undefined);
+    const posterImage = isValidPoster ? mediaPosterUrl : isAudioFile ? AUDIO_POSTER_URL : undefined;
 
     // Detect iOS device and Safari browser
     useEffect(() => {
@@ -60,7 +60,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         };
 
         setIsIOS(checkIOS());
-        
+
         // Store Safari detection globally for other components
         if (typeof window !== 'undefined') {
             (window as any).isSafari = checkSafari();
@@ -134,14 +134,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }, [currentTime]);
 
     // Jump 10 seconds forward
-    const handleForward = () => {
+    const _handleForward = () => {
         const newTime = Math.min(currentTime + 10, duration);
         onSeek(newTime);
         setLastPosition(newTime);
     };
 
     // Jump 10 seconds backward
-    const handleBackward = () => {
+    const _handleBackward = () => {
         const newTime = Math.max(currentTime - 10, 0);
         onSeek(newTime);
         setLastPosition(newTime);
@@ -355,13 +355,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         <div className="video-player-container">
             {/* Persistent background image for audio files (Safari fix) */}
             {isAudioFile && posterImage && (
-                <div 
-                    className="audio-poster-background" 
+                <div
+                    className="audio-poster-background"
                     style={{ backgroundImage: `url(${posterImage})` }}
                     aria-hidden="true"
                 />
             )}
-            
+
             <video
                 ref={videoRef}
                 className={isAudioFile && posterImage ? 'audio-with-poster' : ''}

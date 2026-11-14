@@ -177,7 +177,14 @@ const enableStandardButtonTooltips = (player) => {
     }, 500); // Delay to ensure all components are ready
 };
 
-function VideoJSPlayer({ videoId = 'default-video', showTitle = true, showRelated = true, showUserAvatar = true, linkTitle = true, urlTimestamp = null }) {
+function VideoJSPlayer({
+    videoId = 'default-video',
+    showTitle = true,
+    showRelated = true,
+    showUserAvatar = true,
+    linkTitle = true,
+    urlTimestamp = null,
+}) {
     const videoRef = useRef(null);
     const playerRef = useRef(null); // Track the player instance
     const userPreferences = useRef(new UserPreferences()); // User preferences instance
@@ -1505,7 +1512,9 @@ function VideoJSPlayer({ videoId = 'default-video', showTitle = true, showRelate
                     if (controlBarEl) {
                         // Style control bar using config values
                         controlBarEl.style.height = `${PlayerConfig.controlBar.height}em`;
-                        controlBarEl.style.fontSize = `${isTouchDevice ? PlayerConfig.controlBar.mobileFontSize : PlayerConfig.controlBar.fontSize}px`;
+                        controlBarEl.style.fontSize = `${
+                            isTouchDevice ? PlayerConfig.controlBar.mobileFontSize : PlayerConfig.controlBar.fontSize
+                        }px`;
                         controlBarEl.style.backgroundColor = PlayerConfig.controlBar.backgroundColor;
 
                         // Apply same line height to time-related controls
@@ -2355,7 +2364,7 @@ function VideoJSPlayer({ videoId = 'default-video', showTitle = true, showRelate
                         // Make the video element focusable
                         const videoElement = playerRef.current.el();
                         videoElement.setAttribute('tabindex', '0');
-                        
+
                         if (!isEmbedPlayer) {
                             videoElement.focus();
                         }
@@ -2420,7 +2429,9 @@ function VideoJSPlayer({ videoId = 'default-video', showTitle = true, showRelate
                 ref={videoRef}
                 id={videoId}
                 controls={true}
-                className={`video-js ${isEmbedPlayer ? 'vjs-fill' : 'vjs-fluid'} vjs-default-skin${currentVideo.useRoundedCorners ? ' video-js-rounded-corners' : ''}`}
+                className={`video-js ${isEmbedPlayer ? 'vjs-fill' : 'vjs-fluid'} vjs-default-skin${
+                    currentVideo.useRoundedCorners ? ' video-js-rounded-corners' : ''
+                }`}
                 preload="auto"
                 poster={currentVideo.poster}
                 tabIndex="0"
@@ -2446,7 +2457,7 @@ function VideoJSPlayer({ videoId = 'default-video', showTitle = true, showRelate
                             default={track.default}
                         />
                     ))} */}
-                {/* 
+                {/*
                 <track kind="chapters" src="/sample-chapters.vtt" /> */}
                 {/* Add chapters track */}
                 {/*  {chaptersData &&

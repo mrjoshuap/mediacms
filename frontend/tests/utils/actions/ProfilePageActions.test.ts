@@ -25,6 +25,5 @@ describe('utils/actions', () => {
             (ProfilePageActions as any)[name](...args);
             expect(received).toStrictEqual([expected]);
         });
-
     });
 });

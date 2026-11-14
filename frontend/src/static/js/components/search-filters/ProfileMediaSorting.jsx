@@ -6,62 +6,67 @@ import '../management-table/ManageItemList-filters.scss';
 import { applyDefaultProps } from '../../utils/helpers/applyDefaultProps';
 
 const sortOptions = {
-  sort_by: [
-    { id: 'date_added_desc', title: translateString('Upload date - Newest') },
-    { id: 'date_added_asc', title: translateString('Upload date - Oldest') },
-    { id: 'alphabetically_asc', title: translateString('Alphabetically - A-Z') },
-    { id: 'alphabetically_desc', title: translateString('Alphabetically - Z-A') },
-    { id: 'plays_least', title: translateString('Plays - Least') },
-    { id: 'plays_most', title: translateString('Plays - Most') },
-    { id: 'likes_least', title: translateString('Likes - Least') },
-    { id: 'likes_most', title: translateString('Likes - Most') },
-  ],
+    sort_by: [
+        { id: 'date_added_desc', title: translateString('Upload date - Newest') },
+        { id: 'date_added_asc', title: translateString('Upload date - Oldest') },
+        { id: 'alphabetically_asc', title: translateString('Alphabetically - A-Z') },
+        { id: 'alphabetically_desc', title: translateString('Alphabetically - Z-A') },
+        { id: 'plays_least', title: translateString('Plays - Least') },
+        { id: 'plays_most', title: translateString('Plays - Most') },
+        { id: 'likes_least', title: translateString('Likes - Least') },
+        { id: 'likes_most', title: translateString('Likes - Most') },
+    ],
 };
 
 export function ProfileMediaSorting(rawProps) {
-  const props = applyDefaultProps(rawProps, ProfileMediaSorting.defaultPropValues);
-  const [isHidden, setIsHidden] = useState(props.hidden);
-  const [sortByFilter, setFilter_sort_by] = useState('date_added_desc');
+    const props = applyDefaultProps(rawProps, ProfileMediaSorting.defaultPropValues);
+    const [isHidden, setIsHidden] = useState(props.hidden);
+    const [sortByFilter, setFilter_sort_by] = useState('date_added_desc');
 
-  const containerRef = useRef(null);
-  const innerContainerRef = useRef(null);
+    const containerRef = useRef(null);
+    const innerContainerRef = useRef(null);
 
-  function onWindowResize() {
-    if (!isHidden) {
-      containerRef.current.style.height = 24 + innerContainerRef.current.offsetHeight + 'px';
+    function onWindowResize() {
+        if (!isHidden) {
+            containerRef.current.style.height = 24 + innerContainerRef.current.offsetHeight + 'px';
+        }
     }
-  }
 
-  function onFilterSelect(ev) {
-    const sortBy = ev.currentTarget.getAttribute('value');
-    setFilter_sort_by(sortBy);
-    props.onSortSelect(sortBy);
-  }
+    function onFilterSelect(ev) {
+        const sortBy = ev.currentTarget.getAttribute('value');
+        setFilter_sort_by(sortBy);
+        props.onSortSelect(sortBy);
+    }
 
-  useEffect(() => {
-    setIsHidden(props.hidden);
-    onWindowResize();
-  }, [props.hidden]);
+    useEffect(() => {
+        setIsHidden(props.hidden);
+        onWindowResize();
+    }, [props.hidden]);
 
-  useEffect(() => {
-    PageStore.on('window_resize', onWindowResize);
-    return () => PageStore.removeListener('window_resize', onWindowResize);
-  }, []);
+    useEffect(() => {
+        PageStore.on('window_resize', onWindowResize);
+        return () => PageStore.removeListener('window_resize', onWindowResize);
+    }, []);
 
-  return (
-    <div ref={containerRef} className={'mi-filters-row' + (isHidden ? ' hidden' : '')}>
-      <div ref={innerContainerRef} className="mi-filters-row-inner">
-        <div className="mi-filter">
-          <div className="mi-filter-title">{translateString('SORT BY')}</div>
-          <div className="mi-filter-options">
-            <FilterOptions id={'sort_by'} options={sortOptions.sort_by} selected={sortByFilter} onSelect={onFilterSelect} />
-          </div>
+    return (
+        <div ref={containerRef} className={'mi-filters-row' + (isHidden ? ' hidden' : '')}>
+            <div ref={innerContainerRef} className="mi-filters-row-inner">
+                <div className="mi-filter">
+                    <div className="mi-filter-title">{translateString('SORT BY')}</div>
+                    <div className="mi-filter-options">
+                        <FilterOptions
+                            id={'sort_by'}
+                            options={sortOptions.sort_by}
+                            selected={sortByFilter}
+                            onSelect={onFilterSelect}
+                        />
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }
 
 ProfileMediaSorting.defaultPropValues = {
-  hidden: false,
+    hidden: false,
 };

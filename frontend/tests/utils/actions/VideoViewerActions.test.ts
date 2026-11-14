@@ -28,6 +28,5 @@ describe('utils/actions', () => {
             (VideoViewerActions as any)[name](...args);
             expect(received).toStrictEqual([expected]);
         });
-
     });
 });

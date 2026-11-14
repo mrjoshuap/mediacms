@@ -3,4 +3,3 @@
 import audioPosterJpg from '../../public/audio-poster.jpg';
 
 export const AUDIO_POSTER_URL = audioPosterJpg;
-

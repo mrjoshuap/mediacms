@@ -99,10 +99,7 @@ export default class ViewerInfoVideoTitleBanner extends ViewerInfoTitleBanner {
                                 <MediaShareButton isVideo={true} />
                             ) : null}
 
-                            {!memberConfig.is.anonymous &&
-                            memberConfig.can.saveMedia ? (
-                                <MediaSaveButton />
-                            ) : null}
+                            {!memberConfig.is.anonymous && memberConfig.can.saveMedia ? <MediaSaveButton /> : null}
 
                             {!this.props.allowDownload || !memberConfig.can.downloadMedia ? null : !this
                                   .downloadLink ? (

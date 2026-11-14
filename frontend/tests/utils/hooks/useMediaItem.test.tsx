@@ -135,7 +135,9 @@ describe('utils/hooks', () => {
             hidden.unmount();
 
             const publish = renderMediaItem({ ...baseProps, showSelection: true, publishLink: '/publish?m=1' });
-            expect(publish.container.querySelector('.view a.item-view-icon')?.getAttribute('href')).toBe('/publish?m=1');
+            expect(publish.container.querySelector('.view a.item-view-icon')?.getAttribute('href')).toBe(
+                '/publish?m=1'
+            );
             publish.unmount();
 
             const fallback = renderMediaItem({ ...baseProps, showSelection: true });

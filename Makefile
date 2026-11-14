@@ -1,4 +1,4 @@
-.PHONY: admin-shell build-frontend test test-coverage test-frontend test-frontend-coverage docs-up docs-down docs-build docs-logs
+.PHONY: admin-shell build-frontend lint-frontend test test-coverage test-frontend test-frontend-coverage docs-up docs-down docs-build docs-logs
 
 COMPOSE_DEV := docker compose -f docker-compose-dev.yaml
 
@@ -27,6 +27,13 @@ test-frontend:
 
 test-frontend-coverage:
 	$(COMPOSE_DEV) exec -T frontend npm run test-coverage -- --ci --coverageReporters=text-summary --coverageReporters=html
+
+# Host-side ESLint for all frontend packages (requires local npm install in each).
+lint-frontend:
+	npm run lint --prefix frontend
+	npm run lint --prefix frontend-tools/video-js
+	npm run lint --prefix frontend-tools/video-editor
+	npm run lint --prefix frontend-tools/chapters-editor
 
 # MkDocs → site/, served by Django at http://localhost/documentation/
 docs-up:

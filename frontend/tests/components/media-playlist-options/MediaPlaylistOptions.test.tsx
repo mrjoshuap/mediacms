@@ -9,7 +9,9 @@ import { MediaPlaylistOptions } from '../../../src/static/js/components/media-pl
 
 jest.mock('axios');
 jest.mock('../../../src/static/js/utils/stores/', () => require('../../_support/compD_storeMocks').mockStoresModule());
-jest.mock('../../../src/static/js/utils/actions/', () => require('../../_support/compD_storeMocks').mockActionsModule());
+jest.mock('../../../src/static/js/utils/actions/', () =>
+    require('../../_support/compD_storeMocks').mockActionsModule()
+);
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
@@ -33,7 +35,9 @@ describe('components/media-playlist-options', () => {
 
         test('Starts on the main page and navigates to the confirmation page', () => {
             const { container, unmount } = renderIntoContainer(<MediaPlaylistOptions media_id="m1" playlist_id="p1" />);
-            expect(container.firstElementChild?.className).toBe('item-playlist-options-wrap item-playlist-options-main');
+            expect(container.firstElementChild?.className).toBe(
+                'item-playlist-options-wrap item-playlist-options-main'
+            );
             click(container.querySelector('.item-playlist-options-wrap > button'));
             expect(container.querySelector('.change-page')?.textContent).toContain('Remove from playlist');
             click(container.querySelector('[data-page-id="proceedMediaPlaylistRemoval"]'));
@@ -41,7 +45,9 @@ describe('components/media-playlist-options', () => {
             expect(container.querySelector('.popup-message-title')?.textContent).toBe('Media playlist removal');
             click(container.querySelector('.cancel-playlist-removal'));
             expect(container.querySelector('.popup-message')).toBeNull();
-            expect(container.firstElementChild?.className).toBe('item-playlist-options-wrap item-playlist-options-main');
+            expect(container.firstElementChild?.className).toBe(
+                'item-playlist-options-wrap item-playlist-options-main'
+            );
             unmount();
         });
 
@@ -60,7 +66,10 @@ describe('components/media-playlist-options', () => {
             act(() => {
                 jest.advanceTimersByTime(100);
             });
-            expect((PageActions as any).addNotification).toHaveBeenCalledWith('Media removed from playlist', 'mediaPlaylistRemove');
+            expect((PageActions as any).addNotification).toHaveBeenCalledWith(
+                'Media removed from playlist',
+                'mediaPlaylistRemove'
+            );
             expect((PlaylistPageActions as any).removedMediaFromPlaylist).toHaveBeenCalledWith('m1', 'p1');
             unmount();
         });
@@ -74,7 +83,10 @@ describe('components/media-playlist-options', () => {
             act(() => {
                 jest.advanceTimersByTime(100);
             });
-            expect((PageActions as any).addNotification).toHaveBeenCalledWith('Media removal from playlist failed', 'mediaPlaylistRemoveFail');
+            expect((PageActions as any).addNotification).toHaveBeenCalledWith(
+                'Media removal from playlist failed',
+                'mediaPlaylistRemoveFail'
+            );
             expect((PlaylistPageActions as any).removedMediaFromPlaylist).not.toHaveBeenCalled();
             unmount();
         });

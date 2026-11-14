@@ -13,7 +13,9 @@ const store = MediaPageStore as any;
 describe('components/media-actions', () => {
     describe('OtherMediaDownloadLink', () => {
         test('Renders a download anchor', () => {
-            const { container, unmount } = renderIntoContainer(<OtherMediaDownloadLink link="/media/file.pdf" title="file" />);
+            const { container, unmount } = renderIntoContainer(
+                <OtherMediaDownloadLink link="/media/file.pdf" title="file" />
+            );
             const a = container.querySelector('.download a') as HTMLAnchorElement;
             expect(a.getAttribute('href')).toBe('/media/file.pdf');
             expect(a.getAttribute('download')).toBe('file');
@@ -33,12 +35,24 @@ describe('components/media-actions', () => {
                     original_media_url: '/media/original/clip.mp4',
                     encodings_info: {
                         '720': {
-                            h264: { status: 'success', progress: 100, url: '/media/encoded/clip-720.mp4', title: 'h264-720', size: '5MB' },
+                            h264: {
+                                status: 'success',
+                                progress: 100,
+                                url: '/media/encoded/clip-720.mp4',
+                                title: 'h264-720',
+                                size: '5MB',
+                            },
                             vp9: { status: 'pending', progress: 50, url: null, title: 'vp9-720', size: '0' },
                         },
                         '480': {},
                         '360': {
-                            h264: { status: 'success', progress: 100, url: '/media/encoded/', title: 'h264-360', size: '2MB' },
+                            h264: {
+                                status: 'success',
+                                progress: 100,
+                                url: '/media/encoded/',
+                                title: 'h264-360',
+                                size: '2MB',
+                            },
                         },
                     },
                 },
@@ -51,7 +65,11 @@ describe('components/media-actions', () => {
             expect(container.querySelector('.popup')).toBeNull();
             click(container.querySelector('.video-downloads > button'));
             const links = Array.from(container.querySelectorAll('.main-options a')) as HTMLAnchorElement[];
-            expect(links.map((a) => a.textContent)).toEqual(['360 - H264 (2MB)', '720 - H264 (5MB)', 'Original file (10MB)']);
+            expect(links.map((a) => a.textContent)).toEqual([
+                '360 - H264 (2MB)',
+                '720 - H264 (5MB)',
+                'Original file (10MB)',
+            ]);
             expect(links[1].getAttribute('href')).toMatch(/^https:\/\/example\.com\/+media\/encoded\/clip-720\.mp4$/);
             expect(links[1].getAttribute('download')).toBe('clip-720.mp4');
             expect(links[0].getAttribute('download')).toBe('Clip');

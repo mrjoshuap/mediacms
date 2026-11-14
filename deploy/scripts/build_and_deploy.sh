@@ -17,7 +17,7 @@ cd ../../
 echo "Building chapters editor package..."
 cd frontend-tools/chapters-editor
 yarn build:django
-cd ../../   
+cd ../../
 
 # Build video js package
 echo "Building video js package..."

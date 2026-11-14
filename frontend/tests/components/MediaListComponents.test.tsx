@@ -35,7 +35,9 @@ describe('components', () => {
 
     describe('MediaListHeader', () => {
         test('Renders title and default view all link text', () => {
-            const { container, unmount } = renderIntoContainer(<MediaListHeader title="Latest" viewAllLink="/latest" />);
+            const { container, unmount } = renderIntoContainer(
+                <MediaListHeader title="Latest" viewAllLink="/latest" />
+            );
             expect(container.querySelector('h2')?.textContent).toBe('Latest');
             const link = container.querySelector('h3 a') as HTMLAnchorElement;
             expect(link.getAttribute('href')).toBe('/latest');
@@ -102,7 +104,13 @@ describe('components', () => {
             const onSelectAll = jest.fn();
             const onBulkAction = jest.fn();
             const { container, unmount } = renderIntoContainer(
-                <MediaListWrapper showBulkActions selectedCount={0} totalCount={3} onSelectAll={onSelectAll} onBulkAction={onBulkAction} />
+                <MediaListWrapper
+                    showBulkActions
+                    selectedCount={0}
+                    totalCount={3}
+                    onSelectAll={onSelectAll}
+                    onBulkAction={onBulkAction}
+                />
             );
             expect(container.querySelector('.bulk-actions-dropdown')).not.toBeNull();
             expect(container.querySelector('.add-media-button')).toBeNull();
@@ -119,7 +127,9 @@ describe('components', () => {
             act(() => {
                 (container.querySelector('.add-media-button button') as HTMLElement).click();
             });
-            const hrefs = Array.from(container.querySelectorAll('.add-media-button a')).map((a) => a.getAttribute('href'));
+            const hrefs = Array.from(container.querySelectorAll('.add-media-button a')).map((a) =>
+                a.getAttribute('href')
+            );
             expect(hrefs).toEqual(['/upload', '/record_screen']);
             unmount();
         });

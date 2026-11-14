@@ -154,7 +154,12 @@ export function buildMediaCMSGlobal(overrides: AnyObject = {}): AnyObject {
         pages: {
             home: { sections: { latest: { title: 'Latest' } } },
             search: { advancedFilters: true },
-            media: { categoriesWithTitle: false, htmlInDescription: false, hideViews: false, related: { initialSize: 15 } },
+            media: {
+                categoriesWithTitle: false,
+                htmlInDescription: false,
+                hideViews: false,
+                related: { initialSize: 15 },
+            },
             profile: { htmlInDescription: false, includeHistory: true, includeLikedMedia: true },
         },
     };

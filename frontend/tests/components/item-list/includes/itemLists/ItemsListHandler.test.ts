@@ -29,7 +29,11 @@ describe('components/item-list', () => {
             return next.url;
         }
 
-        const page1 = { count: 5, next: 'https://example.com/api/v1/media?page=2', results: [{ url: 'a' }, { url: 'b' }, { url: 'c' }] };
+        const page1 = {
+            count: 5,
+            next: 'https://example.com/api/v1/media?page=2',
+            results: [{ url: 'a' }, { url: 'b' }, { url: 'c' }],
+        };
         const page2 = { count: 5, next: null, results: [{ url: 'd' }, { url: 'e' }] };
 
         test('Requests first page, counts and loads first items', () => {
@@ -56,8 +60,13 @@ describe('components/item-list', () => {
 
         test('Fetches the next page when buffered items are not enough', () => {
             const loaded: string[][] = [];
-            const handler = ItemsListHandler(2, 99, undefined, 'https://example.com/api/v1/media', undefined, (items: any[]) =>
-                loaded.push(items.map((i) => i.url))
+            const handler = ItemsListHandler(
+                2,
+                99,
+                undefined,
+                'https://example.com/api/v1/media',
+                undefined,
+                (items: any[]) => loaded.push(items.map((i) => i.url))
             );
             respond(page1);
 

@@ -7,7 +7,12 @@ export function click(el) {
 }
 
 export function changeValue(el, value) {
-    const proto = 'SELECT' === el.tagName ? HTMLSelectElement.prototype : 'TEXTAREA' === el.tagName ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+    const proto =
+        'SELECT' === el.tagName
+            ? HTMLSelectElement.prototype
+            : 'TEXTAREA' === el.tagName
+              ? HTMLTextAreaElement.prototype
+              : HTMLInputElement.prototype;
     const setter = Object.getOwnPropertyDescriptor(proto, 'value').set;
     act(() => {
         setter.call(el, value);

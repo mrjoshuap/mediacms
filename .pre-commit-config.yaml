@@ -1,15 +1,67 @@
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^(static/|lms-plugins/|deploy/docker/reverse_proxy/certs/)
+      - id: end-of-file-fixer
+        exclude: ^(static/|lms-plugins/|deploy/docker/reverse_proxy/certs/)
+      - id: check-merge-conflict
+      - id: check-added-large-files
+      - id: detect-private-key
+        exclude: ^(deploy/docker/reverse_proxy/certs/|tests/lti/)
+      - id: check-yaml
+        exclude: ^(mkdocs\.yml|docs/en/reference/openapi\.yaml)$
+      - id: check-json
+        exclude: (^frontend/tsconfig\.json$|^frontend-tools/.+/tsconfig\.json$)
+
   - repo: https://github.com/pycqa/flake8
     rev: 6.1.0
     hooks:
       - id: flake8
+
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
     hooks:
       - id: isort
         args: ["--profile", "black"]
+
   - repo: https://github.com/psf/black
     rev: 24.10.0
     hooks:
       - id: black
         language_version: python3
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier
+        types_or: [javascript, jsx, ts, tsx, css, json]
+        files: ^(frontend/|frontend-tools/)
+
+  - repo: local
+    hooks:
+      - id: eslint-frontend
+        name: eslint (frontend)
+        entry: bash -lc 'cd frontend && npm run lint'
+        language: system
+        files: ^frontend/
+        pass_filenames: false
+      - id: eslint-video-js
+        name: eslint (frontend-tools/video-js)
+        entry: bash -lc 'cd frontend-tools/video-js && npm run lint'
+        language: system
+        files: ^frontend-tools/video-js/
+        pass_filenames: false
+      - id: eslint-video-editor
+        name: eslint (frontend-tools/video-editor)
+        entry: bash -lc 'cd frontend-tools/video-editor && npm run lint'
+        language: system
+        files: ^frontend-tools/video-editor/
+        pass_filenames: false
+      - id: eslint-chapters-editor
+        name: eslint (frontend-tools/chapters-editor)
+        entry: bash -lc 'cd frontend-tools/chapters-editor && npm run lint'
+        language: system
+        files: ^frontend-tools/chapters-editor/
+        pass_filenames: false

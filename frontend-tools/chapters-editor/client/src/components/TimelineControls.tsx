@@ -118,7 +118,7 @@ const TimelineControls = ({
     onZoomChange,
     onSeek,
     videoRef,
-    hasUnsavedChanges = false,
+    hasUnsavedChanges: _hasUnsavedChanges = false,
     isIOSUninitialized = false,
     isPlaying,
     setIsPlaying,
@@ -132,7 +132,7 @@ const TimelineControls = ({
         // Sort by start time to find chronological position
         const sortedSegments = allSegments.sort((a, b) => a.startTime - b.startTime);
         // Find the index of our new segment
-        const chapterIndex = sortedSegments.findIndex(seg => seg.startTime === newSegmentStartTime);
+        const chapterIndex = sortedSegments.findIndex((seg) => seg.startTime === newSegmentStartTime);
         return `Chapter ${chapterIndex + 1}`;
     };
 
@@ -151,7 +151,7 @@ const TimelineControls = ({
         }
     };
     const [showEmptySpaceTooltip, setShowEmptySpaceTooltip] = useState(false);
-    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+    const [_tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
     const [clickedTime, setClickedTime] = useState<number>(0);
     const [isZoomDropdownOpen, setIsZoomDropdownOpen] = useState(false);
     const [availableSegmentDuration, setAvailableSegmentDuration] = useState<number>(30); // Default 30 seconds
@@ -166,7 +166,7 @@ const TimelineControls = ({
 
     // Chapter editor state
     const [editingChapterTitle, setEditingChapterTitle] = useState<string>('');
-    const [chapterHasUnsavedChanges, setChapterHasUnsavedChanges] = useState(false);
+    const [_chapterHasUnsavedChanges, setChapterHasUnsavedChanges] = useState(false);
 
     // Sort segments by startTime for chapter editor
     const sortedSegments = [...clipSegments].sort((a, b) => a.startTime - b.startTime);
@@ -192,7 +192,6 @@ const TimelineControls = ({
     useEffect(() => {
         clipSegmentsRef.current = clipSegments;
     }, [clipSegments]);
-
 
     // Auto-save function
     const performAutoSave = useCallback(async () => {
@@ -311,7 +310,7 @@ const TimelineControls = ({
     }; */
 
     // Helper function for time adjustment buttons to maintain playback state
-   /*  const handleTimeAdjustment = (offsetSeconds: number) => (e: React.MouseEvent) => {
+    /*  const handleTimeAdjustment = (offsetSeconds: number) => (e: React.MouseEvent) => {
         e.stopPropagation();
 
         // Calculate new time based on offset (positive or negative)
@@ -439,7 +438,6 @@ const TimelineControls = ({
             onTouchStart: (e: React.TouchEvent) => {
                 e.stopPropagation();
                 e.preventDefault();
-                21;
 
                 // Update the initial last time value
                 lastTimeValue = clickedTime;
@@ -482,7 +480,7 @@ const TimelineControls = ({
     const [showProcessingModal, setShowProcessingModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
-    const [successMessage, setSuccessMessage] = useState('');
+    const [_successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [redirectUrl, setRedirectUrl] = useState('');
     const [saveType, setSaveType] = useState<'chapters'>('chapters');
@@ -517,7 +515,7 @@ const TimelineControls = ({
             if (onChapterSave) {
                 await onChapterSave(chapters);
                 setShowProcessingModal(false);
-                
+
                 if (chapters.length === 0) {
                     setSuccessMessage('All chapters cleared successfully!');
                 } else {
@@ -569,7 +567,7 @@ const TimelineControls = ({
             const rect = timelineRef.current.getBoundingClientRect();
 
             // Calculate the visible position of the marker after scrolling
-            const containerRect = scrollContainerRef.current.getBoundingClientRect();
+            const _containerRect = scrollContainerRef.current.getBoundingClientRect();
             const visibleTimelineLeft = rect.left - scrollContainerRef.current.scrollLeft;
             const markerX = visibleTimelineLeft + (currentTimePercent / 100) * rect.width;
 
@@ -597,7 +595,7 @@ const TimelineControls = ({
         if (videoRef.current) {
             // Always update display time when current time changes (both playing and paused)
             setDisplayTime(currentTime);
-            
+
             // If video is playing, also update the tooltip and perform segment checks
             if (!videoRef.current.paused) {
                 // Also update clicked time to keep them in sync when playing
@@ -899,14 +897,14 @@ const TimelineControls = ({
     useEffect(() => {
         const loadSavedSegments = () => {
             // Get savedSegments directly from window.MEDIA_DATA
-            let savedData = (typeof window !== 'undefined' && (window as any).MEDIA_DATA?.chapters) || null;
+            const savedData = (typeof window !== 'undefined' && (window as any).MEDIA_DATA?.chapters) || null;
 
             try {
                 if (savedData && savedData.chapters && savedData.chapters.length > 0) {
                     logger.debug('Found saved segments:', savedData);
 
                     // Convert the saved segments to the format expected by the component
-                    const convertedSegments: Segment[] = savedData.chapters.map((seg: any   , index: number) => ({  
+                    const convertedSegments: Segment[] = savedData.chapters.map((seg: any, index: number) => ({
                         id: Date.now() + index, // Generate unique IDs
                         chapterTitle: seg.chapterTitle || `Chapter ${index + 1}`,
                         startTime: parseTimeString(seg.startTime),
@@ -1109,14 +1107,14 @@ const TimelineControls = ({
 
         // Determine the amount of available space:
         // 1. Check remaining space until the end of video
-        const remainingDuration = Math.max(0, duration - startTime);
+        const _remainingDuration = Math.max(0, duration - startTime);
 
         // 2. Find the next segment (if any)
         const sortedSegments = [...segmentsToUse].sort((a, b) => a.startTime - b.startTime);
 
         // Find the next and previous segments
         const nextSegment = sortedSegments.find((seg) => seg.startTime > startTime);
-        const prevSegment = [...sortedSegments].reverse().find((seg) => seg.endTime < startTime);
+        const _prevSegment = [...sortedSegments].reverse().find((seg) => seg.endTime < startTime);
 
         // Calculate the actual available space
         let availableSpace;
@@ -1149,8 +1147,8 @@ const TimelineControls = ({
 
         // Find the next and previous segments
         const sortedSegments = [...currentSegments].sort((a, b) => a.startTime - b.startTime);
-        const nextSegment = sortedSegments.find((seg) => seg.startTime > currentPosition);
-        const prevSegment = [...sortedSegments].reverse().find((seg) => seg.endTime < currentPosition);
+        const _nextSegment = sortedSegments.find((seg) => seg.startTime > currentPosition);
+        const _prevSegment = [...sortedSegments].reverse().find((seg) => seg.endTime < currentPosition);
 
         if (segmentAtPosition) {
             // We're in or exactly at a segment boundary
@@ -1357,7 +1355,7 @@ const TimelineControls = ({
         if (!timelineRef.current) return;
 
         const timelineRect = timelineRef.current.getBoundingClientRect();
-        const timelineWidth = timelineRect.width;
+        const _timelineWidth = timelineRect.width;
 
         // Find the segment that's being resized
         const segment = clipSegments.find((seg) => seg.id === segmentId);
@@ -1640,9 +1638,9 @@ const TimelineControls = ({
                         currentTime >= segmentBeforeDrag.startTime && currentTime <= segmentBeforeDrag.endTime;
 
                     logger.debug(
-                        `Playhead was ${
-                            wasInsideSegmentBefore ? 'inside' : 'outside'
-                        } segment before drag, now ${isInsideSegment ? 'inside' : 'outside'}`
+                        `Playhead was ${wasInsideSegmentBefore ? 'inside' : 'outside'} segment before drag, now ${
+                            isInsideSegment ? 'inside' : 'outside'
+                        }`
                     );
 
                     // Update UI elements based on segment position
@@ -1877,7 +1875,7 @@ const TimelineControls = ({
 
         // Auto-scroll to center the clicked position for zoomed timeline
         if (zoomLevel > 1 && timelineRef.current && scrollContainerRef.current) {
-            const timelineRect = timelineRef.current.getBoundingClientRect();
+            const _timelineRect = timelineRef.current.getBoundingClientRect();
             const timelineWidth = timelineRef.current.clientWidth;
             const containerWidth = scrollContainerRef.current.clientWidth;
 
@@ -1915,7 +1913,7 @@ const TimelineControls = ({
     };
 
     // Show tooltip for the segment
-    const setShowTooltip = (show: boolean, segmentId: number, x: number, y: number) => {
+    const _setShowTooltip = (show: boolean, segmentId: number, x: number, y: number) => {
         setSelectedSegmentId(show ? segmentId : null);
         setTooltipPosition({ x, y });
     };
@@ -2001,7 +1999,7 @@ const TimelineControls = ({
                 setSelectedSegmentId(null);
                 setShowEmptySpaceTooltip(false);
                 setActiveSegment(null);
-                
+
                 logger.debug('All segments deleted - entering empty state');
             } else if (selectedSegmentId === segmentId) {
                 // Handle normal segment deletion
@@ -2248,7 +2246,6 @@ const TimelineControls = ({
         }
     }, [redirectUrl, saveType, showSuccessModal]);
 
-
     // Note: Removed the conflicting redirect effect - redirect is now handled by cancelRedirect function
 
     return (
@@ -2297,7 +2294,7 @@ const TimelineControls = ({
 
                                 // For ensuring accurate segment detection, refresh clipSegments first
                                 // This helps when clicking right after creating a new segment
-                                const refreshedSegmentAtCurrentTime = clipSegments.find(
+                                const _refreshedSegmentAtCurrentTime = clipSegments.find(
                                     (seg) => currentTime >= seg.startTime && currentTime <= seg.endTime
                                 );
 
@@ -3972,9 +3969,7 @@ const TimelineControls = ({
                             className="save-chapters-button"
                             {...(clipSegments.length === 0 && { 'data-tooltip': 'Clear all chapters' })}
                         >
-                            {clipSegments.length === 0 
-                                ? 'Clear Chapters' 
-                                : 'Save Chapters'}
+                            {clipSegments.length === 0 ? 'Clear Chapters' : 'Save Chapters'}
                         </button>
                     </div>
 
@@ -3995,17 +3990,17 @@ const TimelineControls = ({
                                     className="modal-button modal-button-primary"
                                     onClick={handleSaveChaptersConfirm}
                                 >
-                                    {clipSegments.length === 0 
-                                        ? 'Clear Chapters' 
-                                        : 'Save Chapters'}
+                                    {clipSegments.length === 0 ? 'Clear Chapters' : 'Save Chapters'}
                                 </button>
                             </>
                         }
                     >
                         <p className="modal-message">
-                            {clipSegments.length === 0 
-                                ? "Are you sure you want to clear all chapters? This will remove all existing chapters from the database."
-                                : `Are you sure you want to save the chapters? This will save ${clipSegments.filter((s) => s.chapterTitle && s.chapterTitle.trim()).length} chapters to the database.`}
+                            {clipSegments.length === 0
+                                ? 'Are you sure you want to clear all chapters? This will remove all existing chapters from the database.'
+                                : `Are you sure you want to save the chapters? This will save ${
+                                      clipSegments.filter((s) => s.chapterTitle && s.chapterTitle.trim()).length
+                                  } chapters to the database.`}
                         </p>
                     </Modal>
 
@@ -4031,11 +4026,12 @@ const TimelineControls = ({
               </p> */}
 
                             <p className="modal-message text-center redirect-message">
-                                <span style={{ fontWeight: 'bold' }}>Your chapters have been saved successfully!</span><br />
+                                <span style={{ fontWeight: 'bold' }}>Your chapters have been saved successfully!</span>
+                                <br />
                                 <a href={redirectUrl} className="media-page-link" style={mediaPageLinkStyles}>
                                     Click here to navigate to the media page
-                                </a>
-                                {' '}or close this window to continue editing the chapters.
+                                </a>{' '}
+                                or close this window to continue editing the chapters.
                             </p>
                         </div>
                     </Modal>

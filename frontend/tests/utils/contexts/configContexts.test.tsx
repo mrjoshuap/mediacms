@@ -8,7 +8,11 @@ import { MemberContext, MemberConsumer, memberConfig } from '../../../src/static
 import { PlaylistsContext } from '../../../src/static/js/utils/contexts/PlaylistsContext';
 import { ShareOptionsContext, shareOptionsConfig } from '../../../src/static/js/utils/contexts/ShareOptionsContext';
 import { SidebarContext, SidebarConsumer } from '../../../src/static/js/utils/contexts/SidebarContext';
-import SiteContextDefault, { SiteContext, SiteConsumer, siteConfig } from '../../../src/static/js/utils/contexts/SiteContext';
+import SiteContextDefault, {
+    SiteContext,
+    SiteConsumer,
+    siteConfig,
+} from '../../../src/static/js/utils/contexts/SiteContext';
 import { TextsContext, TextsConsumer, textsConfig } from '../../../src/static/js/utils/contexts/TextsContext';
 import * as contexts from '../../../src/static/js/utils/contexts';
 
@@ -97,7 +101,9 @@ describe('utils/contexts', () => {
                     <MemberConsumer>{(v: any) => <span id="member">{v.name}</span>}</MemberConsumer>
                     <SidebarConsumer>{(v: any) => <span id="sidebar">{String(v.hideHomeLink)}</span>}</SidebarConsumer>
                     <SiteConsumer>{(v: any) => <span id="site">{v.title}</span>}</SiteConsumer>
-                    <TextsConsumer>{(v: any) => <span id="texts">{v.notifications.removeFromLiked}</span>}</TextsConsumer>
+                    <TextsConsumer>
+                        {(v: any) => <span id="texts">{v.notifications.removeFromLiked}</span>}
+                    </TextsConsumer>
                 </div>
             );
             expect(container.querySelector('#api')?.textContent).toBe('https://example.com/api/v1/search?q=');

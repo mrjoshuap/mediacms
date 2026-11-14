@@ -44,7 +44,14 @@ describe('components', () => {
         });
 
         test('Debounces user search and shows results', async () => {
-            fetchMock.mockReturnValue(jsonResponse({ results: [{ name: 'Ann', username: 'ann', email: 'ann@x.org' }, { name: 'Bob', username: 'bob' }] }));
+            fetchMock.mockReturnValue(
+                jsonResponse({
+                    results: [
+                        { name: 'Ann', username: 'ann', email: 'ann@x.org' },
+                        { name: 'Bob', username: 'bob' },
+                    ],
+                })
+            );
             const { container, unmount } = setup();
             changeValue(container.querySelector('.search-box input'), 'a');
             changeValue(container.querySelector('.search-box input'), 'an n');

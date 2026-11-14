@@ -6,7 +6,9 @@ describe('components/_shared', () => {
     describe('CircleIconButton', () => {
         test('Renders a button by default wrapping children in two spans', () => {
             const onClick = jest.fn();
-            const { container, unmount } = renderIntoContainer(<CircleIconButton onClick={onClick}>X</CircleIconButton>);
+            const { container, unmount } = renderIntoContainer(
+                <CircleIconButton onClick={onClick}>X</CircleIconButton>
+            );
             const button = container.querySelector('button') as HTMLButtonElement;
             expect(button.className).toBe('circle-icon-button');
             expect(button.querySelector('span > span')?.textContent).toBe('X');

@@ -56,7 +56,13 @@ describe('utils/stores', () => {
             ['set_player_volume', 0.3, 'player-volume', 'player-volume', 'changed_player_volume'],
             ['set_player_sound_muted', true, 'player-sound-muted', 'player-sound-muted', 'changed_player_sound_muted'],
             ['set_video_quality', 480, 'video-quality', 'video-quality', 'changed_video_quality'],
-            ['set_video_playback_speed', 2, 'video-playback-speed', 'video-playback-speed', 'changed_video_playback_speed'],
+            [
+                'set_video_playback_speed',
+                2,
+                'video-playback-speed',
+                'video-playback-speed',
+                'changed_video_playback_speed',
+            ],
         ])('%s updates state, cache and emits', (actionName, value, getKey, cacheKey, eventName) => {
             const { store, actions } = loadStore();
             const listener = jest.fn();

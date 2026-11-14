@@ -26,7 +26,9 @@ describe('components/item-list', () => {
 
     beforeEach(() => {
         jest.useFakeTimers();
-        widthSpy = jest.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (this: HTMLElement) {
+        widthSpy = jest.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (
+            this: HTMLElement
+        ) {
             return this.classList.contains('items-list-wrap') ? 300 : 100;
         });
     });

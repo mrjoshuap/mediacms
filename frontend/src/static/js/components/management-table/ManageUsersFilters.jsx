@@ -7,87 +7,92 @@ import './ManageItemList-filters.scss';
 import { applyDefaultProps } from '../../utils/helpers/applyDefaultProps';
 
 const filters = {
-  role: [
-    { id: 'all', title: 'All' },
-    { id: 'editor', title: 'Editor' },
-    { id: 'manager', title: 'Manager' },
-  ],
-  approved: [
-    { id: 'all', title: 'All' },
-    { id: 'true', title: 'Yes' },
-    { id: 'false', title: 'No' },
-  ],
+    role: [
+        { id: 'all', title: 'All' },
+        { id: 'editor', title: 'Editor' },
+        { id: 'manager', title: 'Manager' },
+    ],
+    approved: [
+        { id: 'all', title: 'All' },
+        { id: 'true', title: 'Yes' },
+        { id: 'false', title: 'No' },
+    ],
 };
 
 export function ManageUsersFilters(rawProps) {
-  const props = applyDefaultProps(rawProps, ManageUsersFilters.defaultPropValues);
-  const { userCan } = useUser();
-  const [isHidden, setIsHidden] = useState(props.hidden);
+    const props = applyDefaultProps(rawProps, ManageUsersFilters.defaultPropValues);
+    const { userCan } = useUser();
+    const [isHidden, setIsHidden] = useState(props.hidden);
 
-  const [role, setFilterRole] = useState('all');
-  const [approved, setFilterApproved] = useState('all');
+    const [role, setFilterRole] = useState('all');
+    const [approved, setFilterApproved] = useState('all');
 
-  const containerRef = useRef(null);
-  const innerContainerRef = useRef(null);
+    const containerRef = useRef(null);
+    const innerContainerRef = useRef(null);
 
-  function onWindowResize() {
-    if (!isHidden) {
-      containerRef.current.style.height = 24 + innerContainerRef.current.offsetHeight + 'px';
+    function onWindowResize() {
+        if (!isHidden) {
+            containerRef.current.style.height = 24 + innerContainerRef.current.offsetHeight + 'px';
+        }
     }
-  }
 
-  function onFilterSelect(ev) {
-    const args = {
-      role: role,
-      is_approved: approved,
-    };
+    function onFilterSelect(ev) {
+        const args = {
+            role: role,
+            is_approved: approved,
+        };
 
-    switch (ev.currentTarget.getAttribute('filter')) {
-      case 'role':
-        args.role = ev.currentTarget.getAttribute('value');
-        props.onFiltersUpdate(args);
-        setFilterRole(args.role);
-        break;
-      case 'approved':
-        args.is_approved = ev.currentTarget.getAttribute('value');
-        props.onFiltersUpdate(args);
-        setFilterApproved(args.is_approved);
-        break;
+        switch (ev.currentTarget.getAttribute('filter')) {
+            case 'role':
+                args.role = ev.currentTarget.getAttribute('value');
+                props.onFiltersUpdate(args);
+                setFilterRole(args.role);
+                break;
+            case 'approved':
+                args.is_approved = ev.currentTarget.getAttribute('value');
+                props.onFiltersUpdate(args);
+                setFilterApproved(args.is_approved);
+                break;
+        }
     }
-  }
 
-  useEffect(() => {
-    setIsHidden(props.hidden);
-    onWindowResize();
-  }, [props.hidden]);
+    useEffect(() => {
+        setIsHidden(props.hidden);
+        onWindowResize();
+    }, [props.hidden]);
 
-  useEffect(() => {
-    PageStore.on('window_resize', onWindowResize);
-    return () => PageStore.removeListener('window_resize', onWindowResize);
-  }, []);
+    useEffect(() => {
+        PageStore.on('window_resize', onWindowResize);
+        return () => PageStore.removeListener('window_resize', onWindowResize);
+    }, []);
 
-  return (
-    <div ref={containerRef} className={'mi-filters-row' + (isHidden ? ' hidden' : '')}>
-      <div ref={innerContainerRef} className="mi-filters-row-inner">
-        <div className="mi-filter">
-          <div className="mi-filter-title">ROLE</div>
-          <div className="mi-filter-options">
-            <FilterOptions id={'role'} options={filters.role} selected={role} onSelect={onFilterSelect} />
-          </div>
-        </div>
-        {userCan.usersNeedsToBeApproved ? (
-          <div className="mi-filter">
-            <div className="mi-filter-title">APPROVED</div>
-            <div className="mi-filter-options">
-              <FilterOptions id={'approved'} options={filters.approved} selected={approved} onSelect={onFilterSelect} />
+    return (
+        <div ref={containerRef} className={'mi-filters-row' + (isHidden ? ' hidden' : '')}>
+            <div ref={innerContainerRef} className="mi-filters-row-inner">
+                <div className="mi-filter">
+                    <div className="mi-filter-title">ROLE</div>
+                    <div className="mi-filter-options">
+                        <FilterOptions id={'role'} options={filters.role} selected={role} onSelect={onFilterSelect} />
+                    </div>
+                </div>
+                {userCan.usersNeedsToBeApproved ? (
+                    <div className="mi-filter">
+                        <div className="mi-filter-title">APPROVED</div>
+                        <div className="mi-filter-options">
+                            <FilterOptions
+                                id={'approved'}
+                                options={filters.approved}
+                                selected={approved}
+                                onSelect={onFilterSelect}
+                            />
+                        </div>
+                    </div>
+                ) : null}
             </div>
-          </div>
-        ) : null}
-      </div>
-    </div>
-  );
+        </div>
+    );
 }
 
 ManageUsersFilters.defaultPropValues = {
-  hidden: false,
+    hidden: false,
 };

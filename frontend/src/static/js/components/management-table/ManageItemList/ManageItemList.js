@@ -12,754 +12,810 @@ import { translateString } from '../../../utils/helpers/';
 import './ManageItemList.scss';
 import { applyDefaultProps } from '../../../utils/helpers/applyDefaultProps';
 
-function AddNewUser({ onUserAdded, setMessage }) {
-  const [popupRef, PopupContent, PopupTrigger] = usePopup();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
+function AddNewUser({ onUserAdded: _onUserAdded, setMessage }) {
+    const [popupRef, PopupContent, PopupTrigger] = usePopup();
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
+    const [name, setName] = useState('');
 
-  function clearForm() {
-    setUsername('');
-    setPassword('');
-    setEmail('');
-    setName('');
-  }
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (setMessage) {
-      setMessage({ type: '', text: '' });
+    function clearForm() {
+        setUsername('');
+        setPassword('');
+        setEmail('');
+        setName('');
     }
 
-    const formData = new FormData();
-    formData.append('username', username);
-    formData.append('password', password);
-    formData.append('email', email);
-    formData.append('name', name);
-
-    fetch('/api/v1/users', {
-      method: 'POST',
-      body: formData,
-      headers: { 'X-CSRFToken': csrfToken() },
-    })
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-        return res.json().then((data) => {
-          throw new Error(data.detail || 'Failed to create user.');
-        });
-      })
-      .then(() => {
-        rememberMessage({ type: 'success', text: 'User created successfully.' });
-        window.location.reload();
-      })
-      .catch((err) => {
+    function handleSubmit(e) {
+        e.preventDefault();
         if (setMessage) {
-          setMessage({ type: 'error', text: err.message });
+            setMessage({ type: '', text: '' });
         }
-      });
-  }
 
-  return (
-    <div className="add-new-user-container">
-      <PopupTrigger contentRef={popupRef}>
-        <button className="add-new-user-btn">Add New User</button>
-      </PopupTrigger>
-      <PopupContent contentRef={popupRef} hideCallback={clearForm}>
-        <PopupMain>
-          <form onSubmit={handleSubmit}>
-            <div className="popup-message">
-              <span className="popup-message-title">Add New User</span>
-              <div className="popup-message-main">
-                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" required style={{ width: '100%', padding: '8px', boxSizing: 'border-box', marginBottom: '10px' }} />
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required style={{ width: '100%', padding: '8px', boxSizing: 'border-box', marginBottom: '10px' }} />
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required style={{ width: '100%', padding: '8px', boxSizing: 'border-box', marginBottom: '10px' }} />
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" required style={{ width: '100%', padding: '8px', boxSizing: 'border-box', marginBottom: '10px' }} />
-              </div>
-            </div>
-            <hr />
-            <span className="popup-message-bottom">
-              <button type="button" className="button-link cancel-profile-removal" onClick={() => popupRef.current.tryToHide()}>CANCEL</button>
-              <button type="submit" className="button-link proceed-profile-removal">SUBMIT</button>
-            </span>
-          </form>
-        </PopupMain>
-      </PopupContent>
-    </div>
-  );
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
+        formData.append('email', email);
+        formData.append('name', name);
+
+        fetch('/api/v1/users', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-CSRFToken': csrfToken() },
+        })
+            .then((res) => {
+                if (res.ok) {
+                    return res.json();
+                }
+                return res.json().then((data) => {
+                    throw new Error(data.detail || 'Failed to create user.');
+                });
+            })
+            .then(() => {
+                rememberMessage({ type: 'success', text: 'User created successfully.' });
+                window.location.reload();
+            })
+            .catch((err) => {
+                if (setMessage) {
+                    setMessage({ type: 'error', text: err.message });
+                }
+            });
+    }
+
+    return (
+        <div className="add-new-user-container">
+            <PopupTrigger contentRef={popupRef}>
+                <button className="add-new-user-btn">Add New User</button>
+            </PopupTrigger>
+            <PopupContent contentRef={popupRef} hideCallback={clearForm}>
+                <PopupMain>
+                    <form onSubmit={handleSubmit}>
+                        <div className="popup-message">
+                            <span className="popup-message-title">Add New User</span>
+                            <div className="popup-message-main">
+                                <input
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    placeholder="Username"
+                                    required
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px',
+                                        boxSizing: 'border-box',
+                                        marginBottom: '10px',
+                                    }}
+                                />
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="Password"
+                                    required
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px',
+                                        boxSizing: 'border-box',
+                                        marginBottom: '10px',
+                                    }}
+                                />
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="Email"
+                                    required
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px',
+                                        boxSizing: 'border-box',
+                                        marginBottom: '10px',
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    placeholder="Name"
+                                    required
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px',
+                                        boxSizing: 'border-box',
+                                        marginBottom: '10px',
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <hr />
+                        <span className="popup-message-bottom">
+                            <button
+                                type="button"
+                                className="button-link cancel-profile-removal"
+                                onClick={() => popupRef.current.tryToHide()}
+                            >
+                                CANCEL
+                            </button>
+                            <button type="submit" className="button-link proceed-profile-removal">
+                                SUBMIT
+                            </button>
+                        </span>
+                    </form>
+                </PopupMain>
+            </PopupContent>
+        </div>
+    );
 }
 
 function useManageItemList(props, itemsListRef) {
-  let previousItemsLength = 0;
+    let previousItemsLength = 0;
 
-  let itemsListInstance = null;
+    let itemsListInstance = null;
 
-  const [items, setItems] = useState([]);
+    const [items, setItems] = useState([]);
 
-  const [countedItems, setCountedItems] = useState(false);
-  const [listHandler, setListHandler] = useState(null);
+    const [countedItems, setCountedItems] = useState(false);
+    const [listHandler, setListHandler] = useState(null);
 
-  function onItemsLoad(itemsArray) {
-    setItems([...itemsArray]);
-  }
-
-  function onItemsCount(totalItems) {
-    setCountedItems(true);
-    if (void 0 !== props.itemsCountCallback) {
-      props.itemsCountCallback(totalItems);
+    function onItemsLoad(itemsArray) {
+        setItems([...itemsArray]);
     }
-  }
 
-  function addListItems() {
-    if (previousItemsLength < items.length) {
-      if (null === itemsListInstance) {
-        itemsListInstance = initManageItemsList([itemsListRef.current])[0];
-      }
-
-      // FIXME: Should get item elements from children components.
-      const itemsElem = itemsListRef.current.querySelectorAll('.item');
-
-      if (!itemsElem || !itemsElem.length) {
-        return;
-      }
-
-      let i = previousItemsLength;
-
-      while (i < items.length) {
-        itemsListInstance.appendItems(itemsElem[i]);
-        i += 1;
-      }
-
-      previousItemsLength = items.length;
+    function onItemsCount(totalItems) {
+        setCountedItems(true);
+        if (void 0 !== props.itemsCountCallback) {
+            props.itemsCountCallback(totalItems);
+        }
     }
-  }
 
-  useEffect(() => {
-    if (void 0 !== props.itemsLoadCallback) {
-      props.itemsLoadCallback();
+    function addListItems() {
+        if (previousItemsLength < items.length) {
+            if (null === itemsListInstance) {
+                itemsListInstance = initManageItemsList([itemsListRef.current])[0];
+            }
+
+            // FIXME: Should get item elements from children components.
+            const itemsElem = itemsListRef.current.querySelectorAll('.item');
+
+            if (!itemsElem || !itemsElem.length) {
+                return;
+            }
+
+            let i = previousItemsLength;
+
+            while (i < items.length) {
+                itemsListInstance.appendItems(itemsElem[i]);
+                i += 1;
+            }
+
+            previousItemsLength = items.length;
+        }
     }
-  }, [items]);
 
-  return [items, countedItems, listHandler, setListHandler, onItemsLoad, onItemsCount, addListItems];
+    useEffect(() => {
+        if (void 0 !== props.itemsLoadCallback) {
+            props.itemsLoadCallback();
+        }
+    }, [items]);
+
+    return [items, countedItems, listHandler, setListHandler, onItemsLoad, onItemsCount, addListItems];
 }
 
 function useManageItemListSync(props) {
-  const itemsListRef = useRef(null);
-  const itemsListWrapperRef = useRef(null);
+    const itemsListRef = useRef(null);
+    const itemsListWrapperRef = useRef(null);
 
-  const [items, countedItems, listHandler, setListHandler, onItemsLoad, onItemsCount, addListItems] = useManageItemList(
-    { ...props, itemsCountCallback },
-    itemsListRef
-  );
+    const [items, countedItems, listHandler, setListHandler, onItemsLoad, onItemsCount, addListItems] =
+        useManageItemList({ ...props, itemsCountCallback }, itemsListRef);
 
-  const [totalItems, setTotalItems] = useState(null);
+    const [totalItems, setTotalItems] = useState(null);
 
-  let classname = {
-    list: 'manage-items-list',
-    listOuter: 'items-list-outer' + ('string' === typeof props.className ? ' ' + props.className.trim() : ''),
-  };
+    let classname = {
+        list: 'manage-items-list',
+        listOuter: 'items-list-outer' + ('string' === typeof props.className ? ' ' + props.className.trim() : ''),
+    };
 
-  function onClickLoadMore() {
-    listHandler.loadItems();
-  }
-
-  function itemsCountCallback(itemsSumm) {
-    setTotalItems(itemsSumm);
-  }
-
-  function afterItemsLoad() {}
-
-  function renderBeforeListWrap() {
-    return null;
-  }
-
-  function renderAfterListWrap() {
-    if (!listHandler) {
-      return null;
+    function onClickLoadMore() {
+        listHandler.loadItems();
     }
 
-    return 1 > listHandler.totalPages() || listHandler.loadedAllItems() ? null : (
-      <button className="load-more" onClick={onClickLoadMore}>
-        {translateString("SHOW MORE")}
-      </button>
-    );
-  }
+    function itemsCountCallback(itemsSumm) {
+        setTotalItems(itemsSumm);
+    }
 
-  useEffect(() => {
-    addListItems();
-    afterItemsLoad();
-  }, [items]);
+    function afterItemsLoad() {}
 
-  return [
-    countedItems,
-    totalItems,
-    items,
-    listHandler,
-    setListHandler,
-    classname,
-    itemsListWrapperRef,
-    itemsListRef,
-    onItemsCount,
-    onItemsLoad,
-    renderBeforeListWrap,
-    renderAfterListWrap,
-  ];
+    function renderBeforeListWrap() {
+        return null;
+    }
+
+    function renderAfterListWrap() {
+        if (!listHandler) {
+            return null;
+        }
+
+        return 1 > listHandler.totalPages() || listHandler.loadedAllItems() ? null : (
+            <button className="load-more" onClick={onClickLoadMore}>
+                {translateString('SHOW MORE')}
+            </button>
+        );
+    }
+
+    useEffect(() => {
+        addListItems();
+        afterItemsLoad();
+    }, [items]);
+
+    return [
+        countedItems,
+        totalItems,
+        items,
+        listHandler,
+        setListHandler,
+        classname,
+        itemsListWrapperRef,
+        itemsListRef,
+        onItemsCount,
+        onItemsLoad,
+        renderBeforeListWrap,
+        renderAfterListWrap,
+    ];
 }
 
 function pageUrlQuery(baseQuery, pageNumber) {
-  let queryParams = [];
-  let pos = 0;
+    let queryParams = [];
+    let pos = 0;
 
-  if ('' !== baseQuery) {
-    queryParams = baseQuery.split('?')[1].split('&');
+    if ('' !== baseQuery) {
+        queryParams = baseQuery.split('?')[1].split('&');
 
-    let param;
+        let param;
 
-    let i = 0;
+        let i = 0;
 
-    while (i < queryParams.length) {
-      param = queryParams[i].split('=');
+        while (i < queryParams.length) {
+            param = queryParams[i].split('=');
 
-      if ('page' === param[0]) {
-        pos = i;
-        break;
-      }
+            if ('page' === param[0]) {
+                pos = i;
+                break;
+            }
 
-      i += 1;
+            i += 1;
+        }
     }
-  }
 
-  queryParams[pos] = 'page=' + pageNumber;
+    queryParams[pos] = 'page=' + pageNumber;
 
-  return '?' + queryParams.join('&');
+    return '?' + queryParams.join('&');
 }
 
 function pageUrl(parsedUrl, query) {
-  return parsedUrl.set('query', query).href;
+    return parsedUrl.set('query', query).href;
 }
 
 function BulkActions(props) {
-  const [popupContentRef, PopupContent, PopupTrigger] = usePopup();
+    const [popupContentRef, PopupContent, PopupTrigger] = usePopup();
 
-  const [selectedBulkAction, setSelectedBulkAction] = useState('');
-  const [selectedItemsSize, setSelectedItemsSize] = useState(props.selectedItemsSize);
+    const [selectedBulkAction, setSelectedBulkAction] = useState('');
+    const [selectedItemsSize, setSelectedItemsSize] = useState(props.selectedItemsSize);
 
-  function onBulkActionSelect(ev) {
-    setSelectedBulkAction(ev.currentTarget.value);
-  }
-
-  function onClickProceed() {
-    if ('function' === typeof props.onProceedRemoval) {
-      props.onProceedRemoval();
+    function onBulkActionSelect(ev) {
+        setSelectedBulkAction(ev.currentTarget.value);
     }
 
-    popupContentRef.current.tryToHide();
-  }
+    function onClickProceed() {
+        if ('function' === typeof props.onProceedRemoval) {
+            props.onProceedRemoval();
+        }
 
-  function onClickCancel() {
-    popupContentRef.current.tryToHide();
-  }
+        popupContentRef.current.tryToHide();
+    }
 
-  useEffect(() => {
-    setSelectedItemsSize(props.selectedItemsSize);
-  }, [props.selectedItemsSize]);
+    function onClickCancel() {
+        popupContentRef.current.tryToHide();
+    }
 
-  return (
-    <div className="manage-items-bulk-action">
-      <select value={selectedBulkAction} onChange={onBulkActionSelect}>
-        <option value="">Bulk actions</option>
-        <option value="delete">Delete selected</option>
-      </select>
+    useEffect(() => {
+        setSelectedItemsSize(props.selectedItemsSize);
+    }, [props.selectedItemsSize]);
 
-      {!selectedItemsSize || !selectedBulkAction ? null : (
-        <PopupTrigger contentRef={popupContentRef}>
-          <button>Apply</button>
-        </PopupTrigger>
-      )}
+    return (
+        <div className="manage-items-bulk-action">
+            <select value={selectedBulkAction} onChange={onBulkActionSelect}>
+                <option value="">Bulk actions</option>
+                <option value="delete">Delete selected</option>
+            </select>
 
-      <PopupContent contentRef={popupContentRef}>
-        <PopupMain>
-          <div className="popup-message">
-            <span className="popup-message-title">Bulk removal</span>
-            <span className="popup-message-main">You're willing to remove selected items permanently?</span>
-          </div>
-          <hr />
-          <span className="popup-message-bottom">
-            <button className="button-link cancel-profile-removal" onClick={onClickCancel}>
-              CANCEL
-            </button>
-            <button className="button-link proceed-profile-removal" onClick={onClickProceed}>
-              PROCEED
-            </button>
-          </span>
-        </PopupMain>
-      </PopupContent>
-    </div>
-  );
+            {!selectedItemsSize || !selectedBulkAction ? null : (
+                <PopupTrigger contentRef={popupContentRef}>
+                    <button>Apply</button>
+                </PopupTrigger>
+            )}
+
+            <PopupContent contentRef={popupContentRef}>
+                <PopupMain>
+                    <div className="popup-message">
+                        <span className="popup-message-title">Bulk removal</span>
+                        <span className="popup-message-main">You're willing to remove selected items permanently?</span>
+                    </div>
+                    <hr />
+                    <span className="popup-message-bottom">
+                        <button className="button-link cancel-profile-removal" onClick={onClickCancel}>
+                            CANCEL
+                        </button>
+                        <button className="button-link proceed-profile-removal" onClick={onClickProceed}>
+                            PROCEED
+                        </button>
+                    </span>
+                </PopupMain>
+            </PopupContent>
+        </div>
+    );
 }
 
 function ManageItemsOptions(props) {
-  return (
-    <div className={props.className}>
-      <BulkActions selectedItemsSize={props.items.length} onProceedRemoval={props.onProceedRemoval} />
-      {1 === props.pagesSize ? null : (
-        <div className="manage-items-pagination">
-          <PaginationButtons
-            totalItems={props.totalItems}
-            pageItems={props.pageItems}
-            onPageButtonClick={props.onPageButtonClick}
-            query={props.query}
-          />
+    return (
+        <div className={props.className}>
+            <BulkActions selectedItemsSize={props.items.length} onProceedRemoval={props.onProceedRemoval} />
+            {1 === props.pagesSize ? null : (
+                <div className="manage-items-pagination">
+                    <PaginationButtons
+                        totalItems={props.totalItems}
+                        pageItems={props.pageItems}
+                        onPageButtonClick={props.onPageButtonClick}
+                        query={props.query}
+                    />
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 }
 
 function PaginationButtons(props) {
-  const buttons = [];
+    const buttons = [];
 
-  let i;
+    let i;
 
-  let maxPagin = 11;
+    let maxPagin = 11;
 
-  const newPagesNumber = {
-    last: Math.ceil(props.totalItems / props.pageItems),
-    current: 1,
-  };
+    const newPagesNumber = {
+        last: Math.ceil(props.totalItems / props.pageItems),
+        current: 1,
+    };
 
-  if ('' !== props.query) {
-    const queryParams = props.query.split('?')[1].split('&');
+    if ('' !== props.query) {
+        const queryParams = props.query.split('?')[1].split('&');
 
-    let param;
+        let param;
 
-    let i = 0;
-    while (i < queryParams.length) {
-      param = queryParams[i].split('=');
-      if ('page' === param[0]) {
-        newPagesNumber.current = parseInt(param[1], 10);
-        break;
-      }
-      i += 1;
-    }
-  }
-
-  const paginButtonsData = paginationButtonsList(maxPagin, newPagesNumber);
-
-  i = 0;
-  while (i < paginButtonsData.length) {
-    if ('button' === paginButtonsData[i].type) {
-      buttons.push(
-        <button
-          key={i + '[button]'}
-          onClick={props.onPageButtonClick}
-          page={paginButtonsData[i].number}
-          className={newPagesNumber.current === paginButtonsData[i].number ? 'active' : ''}
-        >
-          {paginButtonsData[i].number}
-        </button>
-      );
-    } else if ('dots' === paginButtonsData[i].type) {
-      buttons.push(
-        <span key={i + '[dots]'} className="pagination-dots">
-          ...
-        </span>
-      );
+        let i = 0;
+        while (i < queryParams.length) {
+            param = queryParams[i].split('=');
+            if ('page' === param[0]) {
+                newPagesNumber.current = parseInt(param[1], 10);
+                break;
+            }
+            i += 1;
+        }
     }
 
-    i += 1;
-  }
+    const paginButtonsData = paginationButtonsList(maxPagin, newPagesNumber);
 
-  return buttons;
+    i = 0;
+    while (i < paginButtonsData.length) {
+        if ('button' === paginButtonsData[i].type) {
+            buttons.push(
+                <button
+                    key={i + '[button]'}
+                    onClick={props.onPageButtonClick}
+                    page={paginButtonsData[i].number}
+                    className={newPagesNumber.current === paginButtonsData[i].number ? 'active' : ''}
+                >
+                    {paginButtonsData[i].number}
+                </button>
+            );
+        } else if ('dots' === paginButtonsData[i].type) {
+            buttons.push(
+                <span key={i + '[dots]'} className="pagination-dots">
+                    ...
+                </span>
+            );
+        }
+
+        i += 1;
+    }
+
+    return buttons;
 }
 
 function paginationButtonsList(maxPagin, pagesNumber) {
-  if (3 > maxPagin) {
-    maxPagin = 3;
-  }
-
-  let i;
-
-  let maxCurr;
-  let maxEdge = 1;
-
-  if (maxPagin >= pagesNumber.last) {
-    maxPagin = pagesNumber.last;
-    maxCurr = pagesNumber.last;
-    maxEdge = 0;
-  } else {
-    if (5 < maxPagin) {
-      if (7 >= maxPagin) {
-        maxEdge = 2;
-      } else {
-        maxEdge = Math.floor(maxPagin / 4);
-      }
+    if (3 > maxPagin) {
+        maxPagin = 3;
     }
 
-    maxCurr = maxPagin - 2 * maxEdge;
-  }
+    let i;
 
-  const currentArr = [];
-  const firstArr = [];
-  const lastArr = [];
+    let maxCurr;
+    let maxEdge = 1;
 
-  if (pagesNumber.current <= maxCurr + maxEdge - pagesNumber.current) {
-    i = 1;
+    if (maxPagin >= pagesNumber.last) {
+        maxPagin = pagesNumber.last;
+        maxCurr = pagesNumber.last;
+        maxEdge = 0;
+    } else {
+        if (5 < maxPagin) {
+            if (7 >= maxPagin) {
+                maxEdge = 2;
+            } else {
+                maxEdge = Math.floor(maxPagin / 4);
+            }
+        }
 
-    while (i <= maxCurr + maxEdge) {
-      currentArr.push(i);
-      i += 1;
+        maxCurr = maxPagin - 2 * maxEdge;
     }
 
-    i = pagesNumber.last - maxPagin + currentArr.length + 1;
+    const currentArr = [];
+    const firstArr = [];
+    const lastArr = [];
 
-    while (i <= pagesNumber.last) {
-      lastArr.push(i);
-      i += 1;
+    if (pagesNumber.current <= maxCurr + maxEdge - pagesNumber.current) {
+        i = 1;
+
+        while (i <= maxCurr + maxEdge) {
+            currentArr.push(i);
+            i += 1;
+        }
+
+        i = pagesNumber.last - maxPagin + currentArr.length + 1;
+
+        while (i <= pagesNumber.last) {
+            lastArr.push(i);
+            i += 1;
+        }
+    } else if (pagesNumber.current > pagesNumber.last - (maxCurr + maxEdge - 1)) {
+        i = pagesNumber.last - (maxCurr + maxEdge - 1);
+
+        while (i <= pagesNumber.last) {
+            currentArr.push(i);
+            i += 1;
+        }
+
+        i = 1;
+        while (i <= maxPagin - currentArr.length) {
+            firstArr.push(i);
+            i += 1;
+        }
+    } else {
+        currentArr.push(pagesNumber.current);
+
+        i = 1;
+        while (maxCurr > currentArr.length) {
+            currentArr.push(pagesNumber.current + i);
+
+            if (maxCurr === currentArr.length) {
+                break;
+            }
+
+            currentArr.unshift(pagesNumber.current - i);
+
+            i += 1;
+        }
+
+        i = 1;
+        while (i <= maxEdge) {
+            firstArr.push(i);
+            i += 1;
+        }
+
+        i = pagesNumber.last - (maxPagin - (firstArr.length + currentArr.length) - 1);
+        while (i <= pagesNumber.last) {
+            lastArr.push(i);
+            i += 1;
+        }
     }
-  } else if (pagesNumber.current > pagesNumber.last - (maxCurr + maxEdge - 1)) {
-    i = pagesNumber.last - (maxCurr + maxEdge - 1);
 
-    while (i <= pagesNumber.last) {
-      currentArr.push(i);
-      i += 1;
+    const ret = [];
+
+    i = 0;
+    while (i < firstArr.length) {
+        ret.push({
+            type: 'button',
+            number: firstArr[i],
+        });
+        i += 1;
     }
 
-    i = 1;
-    while (i <= maxPagin - currentArr.length) {
-      firstArr.push(i);
-      i += 1;
-    }
-  } else {
-    currentArr.push(pagesNumber.current);
-
-    i = 1;
-    while (maxCurr > currentArr.length) {
-      currentArr.push(pagesNumber.current + i);
-
-      if (maxCurr === currentArr.length) {
-        break;
-      }
-
-      currentArr.unshift(pagesNumber.current - i);
-
-      i += 1;
+    if (firstArr.length && currentArr.length && firstArr[firstArr.length - 1] + 1 < currentArr[0]) {
+        ret.push({
+            type: 'dots',
+        });
     }
 
-    i = 1;
-    while (i <= maxEdge) {
-      firstArr.push(i);
-      i += 1;
+    i = 0;
+    while (i < currentArr.length) {
+        ret.push({
+            type: 'button',
+            number: currentArr[i],
+        });
+        i += 1;
     }
 
-    i = pagesNumber.last - (maxPagin - (firstArr.length + currentArr.length) - 1);
-    while (i <= pagesNumber.last) {
-      lastArr.push(i);
-      i += 1;
+    if (currentArr.length && lastArr.length && currentArr[currentArr.length - 1] + 1 < lastArr[0]) {
+        ret.push({
+            type: 'dots',
+        });
     }
-  }
 
-  const ret = [];
+    i = 0;
+    while (i < lastArr.length) {
+        ret.push({
+            type: 'button',
+            number: lastArr[i],
+        });
+        i += 1;
+    }
 
-  i = 0;
-  while (i < firstArr.length) {
-    ret.push({
-      type: 'button',
-      number: firstArr[i],
-    });
-    i += 1;
-  }
-
-  if (firstArr.length && currentArr.length && firstArr[firstArr.length - 1] + 1 < currentArr[0]) {
-    ret.push({
-      type: 'dots',
-    });
-  }
-
-  i = 0;
-  while (i < currentArr.length) {
-    ret.push({
-      type: 'button',
-      number: currentArr[i],
-    });
-    i += 1;
-  }
-
-  if (currentArr.length && lastArr.length && currentArr[currentArr.length - 1] + 1 < lastArr[0]) {
-    ret.push({
-      type: 'dots',
-    });
-  }
-
-  i = 0;
-  while (i < lastArr.length) {
-    ret.push({
-      type: 'button',
-      number: lastArr[i],
-    });
-    i += 1;
-  }
-
-  return ret;
+    return ret;
 }
 
 export function ManageItemList(rawProps) {
-  const props = applyDefaultProps(rawProps, ManageItemList.defaultPropValues);
-  const [
-    countedItems,
-    totalItems,
-    items,
-    listHandler,
-    setListHandler,
-    classname,
-    itemsListWrapperRef,
-    itemsListRef,
-    onItemsCount,
-    onItemsLoad,
-  ] = useManageItemListSync(props);
+    const props = applyDefaultProps(rawProps, ManageItemList.defaultPropValues);
+    const [
+        countedItems,
+        totalItems,
+        items,
+        listHandler,
+        setListHandler,
+        classname,
+        itemsListWrapperRef,
+        itemsListRef,
+        onItemsCount,
+        onItemsLoad,
+    ] = useManageItemListSync(props);
 
-  const [message, setMessage] = useState({ type: '', text: '' });
+    const [message, setMessage] = useState({ type: '', text: '' });
 
-  useEffect(() => {
-    const storedMessage = takeRememberedMessage();
-    if (storedMessage) {
-      setMessage(storedMessage);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (message.text) {
-      const timer = setTimeout(() => setMessage({ type: '', text: '' }), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
-
-  function refreshList() {
-    if (props.onPageChange && parsedRequestUrl) {
-      const queryParams = new URLSearchParams(parsedRequestUrlQuery || '');
-      const currentPage = queryParams.get('page') || '1';
-      const clickedPageUrl = pageUrl(parsedRequestUrl, pageUrlQuery(parsedRequestUrlQuery, currentPage));
-      props.onPageChange(clickedPageUrl, currentPage);
-    } else {
-      // Fallback for when onPageChange is not available
-      setListHandler(new ManageItemsListHandler(props.pageItems, props.maxItems, props.requestUrl, onItemsCount, onItemsLoad));
-    }
-  }
-
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [selectedAllItems, setSelectedAllItems] = useState(false);
-
-  const [parsedRequestUrl, setParsedRequestUrl] = useState(null);
-  const [parsedRequestUrlQuery, setParsedRequestUrlQuery] = useState(null);
-
-  function onPageButtonClick(ev) {
-    const clickedPageUrl = pageUrl(
-      parsedRequestUrl,
-      pageUrlQuery(parsedRequestUrlQuery, ev.currentTarget.getAttribute('page'))
-    );
-
-    if ('function' === typeof props.onPageChange) {
-      props.onPageChange(clickedPageUrl, ev.currentTarget.getAttribute('page'));
-    }
-  }
-
-  function onBulkItemsRemoval() {
-    deleteSelectedItems();
-  }
-
-  function onAllRowsCheck(selectedAllRows, tableType) {
-    const newSelected = [];
-
-    if (selectedAllRows) {
-      if (items.length !== selectedItems.length) {
-        let entry;
-
-        if ('media' === tableType) {
-          for (entry of items) {
-            newSelected.push(entry.friendly_token);
-          }
-        } else if ('users' === tableType) {
-          for (entry of items) {
-            newSelected.push(entry.username);
-          }
-        } else if ('comments' === tableType) {
-          for (entry of items) {
-            newSelected.push(entry.uid);
-          }
+    useEffect(() => {
+        const storedMessage = takeRememberedMessage();
+        if (storedMessage) {
+            setMessage(storedMessage);
         }
-      }
+    }, []);
+
+    useEffect(() => {
+        if (message.text) {
+            const timer = setTimeout(() => setMessage({ type: '', text: '' }), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [message]);
+
+    function refreshList() {
+        if (props.onPageChange && parsedRequestUrl) {
+            const queryParams = new URLSearchParams(parsedRequestUrlQuery || '');
+            const currentPage = queryParams.get('page') || '1';
+            const clickedPageUrl = pageUrl(parsedRequestUrl, pageUrlQuery(parsedRequestUrlQuery, currentPage));
+            props.onPageChange(clickedPageUrl, currentPage);
+        } else {
+            // Fallback for when onPageChange is not available
+            setListHandler(
+                new ManageItemsListHandler(props.pageItems, props.maxItems, props.requestUrl, onItemsCount, onItemsLoad)
+            );
+        }
     }
 
-    setSelectedItems(newSelected);
-    setSelectedAllItems(newSelected.length === items.length);
-  }
+    const [selectedItems, setSelectedItems] = useState([]);
+    const [selectedAllItems, setSelectedAllItems] = useState(false);
 
-  function onRowCheck(token, isSelected) {
-    if (void 0 !== token) {
-      let newSelected;
+    const [parsedRequestUrl, setParsedRequestUrl] = useState(null);
+    const [parsedRequestUrlQuery, setParsedRequestUrlQuery] = useState(null);
 
-      if (-1 === selectedItems.indexOf(token)) {
-        if (isSelected) {
-          newSelected = [...selectedItems, token];
+    function onPageButtonClick(ev) {
+        const clickedPageUrl = pageUrl(
+            parsedRequestUrl,
+            pageUrlQuery(parsedRequestUrlQuery, ev.currentTarget.getAttribute('page'))
+        );
 
-          setSelectedItems(newSelected);
-          setSelectedAllItems(newSelected.length === items.length);
+        if ('function' === typeof props.onPageChange) {
+            props.onPageChange(clickedPageUrl, ev.currentTarget.getAttribute('page'));
         }
-      } else {
-        if (!isSelected) {
-          newSelected = [];
+    }
 
-          let entry;
-          for (entry of selectedItems) {
-            if (token !== entry) {
-              newSelected.push(entry);
+    function onBulkItemsRemoval() {
+        deleteSelectedItems();
+    }
+
+    function onAllRowsCheck(selectedAllRows, tableType) {
+        const newSelected = [];
+
+        if (selectedAllRows) {
+            if (items.length !== selectedItems.length) {
+                let entry;
+
+                if ('media' === tableType) {
+                    for (entry of items) {
+                        newSelected.push(entry.friendly_token);
+                    }
+                } else if ('users' === tableType) {
+                    for (entry of items) {
+                        newSelected.push(entry.username);
+                    }
+                } else if ('comments' === tableType) {
+                    for (entry of items) {
+                        newSelected.push(entry.uid);
+                    }
+                }
             }
-          }
-
-          setSelectedItems(newSelected);
-          setSelectedAllItems(newSelected.length === items.length);
         }
-      }
+
+        setSelectedItems(newSelected);
+        setSelectedAllItems(newSelected.length === items.length);
     }
-  }
 
-  function removeBulkMediaResponse(response) {
-    if (response && 204 === response.status) {
-      setSelectedItems([]);
-      setSelectedAllItems(false);
+    function onRowCheck(token, isSelected) {
+        if (void 0 !== token) {
+            let newSelected;
 
-      if ('function' === typeof props.onRowsDelete) {
-        props.onRowsDelete(true);
-      }
+            if (-1 === selectedItems.indexOf(token)) {
+                if (isSelected) {
+                    newSelected = [...selectedItems, token];
+
+                    setSelectedItems(newSelected);
+                    setSelectedAllItems(newSelected.length === items.length);
+                }
+            } else {
+                if (!isSelected) {
+                    newSelected = [];
+
+                    let entry;
+                    for (entry of selectedItems) {
+                        if (token !== entry) {
+                            newSelected.push(entry);
+                        }
+                    }
+
+                    setSelectedItems(newSelected);
+                    setSelectedAllItems(newSelected.length === items.length);
+                }
+            }
+        }
     }
-  }
 
-  function removeBulkMediaFail() {
-    if ('function' === typeof props.onRowsDeleteFail) {
-      props.onRowsDeleteFail(true);
+    function removeBulkMediaResponse(response) {
+        if (response && 204 === response.status) {
+            setSelectedItems([]);
+            setSelectedAllItems(false);
+
+            if ('function' === typeof props.onRowsDelete) {
+                props.onRowsDelete(true);
+            }
+        }
     }
-  }
 
-  function deleteItem(token, isManageComments) {
-    deleteRequest(
-      props.requestUrl.split('?')[0] + ('comments' === props.manageType ? '?comment_ids=' : '?tokens=') + token,
-      {
-        headers: {
-          'X-CSRFToken': csrfToken(),
-        },
-        tokens: token,
-      },
-      false,
-      removeMediaResponse,
-      removeMediaFail
+    function removeBulkMediaFail() {
+        if ('function' === typeof props.onRowsDeleteFail) {
+            props.onRowsDeleteFail(true);
+        }
+    }
+
+    function deleteItem(token, _isManageComments) {
+        deleteRequest(
+            props.requestUrl.split('?')[0] + ('comments' === props.manageType ? '?comment_ids=' : '?tokens=') + token,
+            {
+                headers: {
+                    'X-CSRFToken': csrfToken(),
+                },
+                tokens: token,
+            },
+            false,
+            removeMediaResponse,
+            removeMediaFail
+        );
+    }
+
+    function deleteSelectedItems() {
+        deleteRequest(
+            props.requestUrl.split('?')[0] +
+                ('comments' === props.manageType ? '?comment_ids=' : '?tokens=') +
+                selectedItems.join(','),
+            {
+                headers: {
+                    'X-CSRFToken': csrfToken(),
+                },
+            },
+            false,
+            removeBulkMediaResponse,
+            removeBulkMediaFail
+        );
+    }
+
+    function removeMediaResponse(response) {
+        if (response && 204 === response.status) {
+            props.onRowsDelete(false);
+        }
+    }
+
+    function removeMediaFail() {
+        props.onRowsDeleteFail(false);
+    }
+
+    useEffect(() => {
+        if (parsedRequestUrl) {
+            setParsedRequestUrlQuery(parsedRequestUrl.query);
+        }
+    }, [parsedRequestUrl]);
+
+    useEffect(() => {
+        setParsedRequestUrl(urlParse(props.requestUrl));
+    }, [props.requestUrl]);
+
+    useEffect(() => {
+        setListHandler(
+            new ManageItemsListHandler(props.pageItems, props.maxItems, props.requestUrl, onItemsCount, onItemsLoad)
+        );
+
+        return () => {
+            if (listHandler) {
+                // listHandler.cancelAll();
+                setListHandler(null);
+            }
+        };
+    }, [props.requestUrl]);
+
+    return !countedItems ? (
+        <PendingItemsList className={classname.listOuter} />
+    ) : (
+        <div className={classname.listOuter}>
+            {message.text && (
+                <div className={`message ${message.type === 'error' ? 'error' : 'success'}`}>{message.text}</div>
+            )}
+            {'users' === props.manageType && <AddNewUser onUserAdded={refreshList} setMessage={setMessage} />}
+            {!items.length ? null : (
+                <>
+                    <ManageItemsOptions
+                        totalItems={totalItems}
+                        pageItems={props.pageItems}
+                        onPageButtonClick={onPageButtonClick}
+                        query={parsedRequestUrlQuery || ''}
+                        className="manage-items-options"
+                        items={selectedItems}
+                        pagesSize={listHandler.totalPages()}
+                        onProceedRemoval={onBulkItemsRemoval}
+                    />
+
+                    <div ref={itemsListWrapperRef} className="items-list-wrap">
+                        <div ref={itemsListRef} className={classname.list}>
+                            {renderManageItems(items, {
+                                ...props,
+                                onAllRowsCheck: onAllRowsCheck,
+                                onRowCheck: onRowCheck,
+                                selectedItems: selectedItems,
+                                selectedAllItems: selectedAllItems,
+                                onDelete: deleteItem,
+                                onUserUpdate: refreshList,
+                                setMessage: setMessage,
+                            })}
+                        </div>
+                    </div>
+
+                    <ManageItemsOptions
+                        totalItems={totalItems}
+                        pageItems={props.pageItems}
+                        onPageButtonClick={onPageButtonClick}
+                        query={parsedRequestUrlQuery || ''}
+                        className="manage-items-options popup-on-top"
+                        items={selectedItems}
+                        pagesSize={listHandler.totalPages()}
+                        onProceedRemoval={onBulkItemsRemoval}
+                    />
+                </>
+            )}
+        </div>
     );
-  }
-
-  function deleteSelectedItems() {
-    deleteRequest(
-      props.requestUrl.split('?')[0] +
-        ('comments' === props.manageType ? '?comment_ids=' : '?tokens=') +
-        selectedItems.join(','),
-      {
-        headers: {
-          'X-CSRFToken': csrfToken(),
-        },
-      },
-      false,
-      removeBulkMediaResponse,
-      removeBulkMediaFail
-    );
-  }
-
-  function removeMediaResponse(response) {
-    if (response && 204 === response.status) {
-      props.onRowsDelete(false);
-    }
-  }
-
-  function removeMediaFail() {
-    props.onRowsDeleteFail(false);
-  }
-
-  useEffect(() => {
-    if (parsedRequestUrl) {
-      setParsedRequestUrlQuery(parsedRequestUrl.query);
-    }
-  }, [parsedRequestUrl]);
-
-  useEffect(() => {
-    setParsedRequestUrl(urlParse(props.requestUrl));
-  }, [props.requestUrl]);
-
-  useEffect(() => {
-    setListHandler(
-      new ManageItemsListHandler(props.pageItems, props.maxItems, props.requestUrl, onItemsCount, onItemsLoad)
-    );
-
-    return () => {
-      if (listHandler) {
-        // listHandler.cancelAll();
-        setListHandler(null);
-      }
-    };
-  }, [props.requestUrl]);
-
-  return !countedItems ? (
-    <PendingItemsList className={classname.listOuter} />
-  ) : (
-    <div className={classname.listOuter}>
-      {message.text && (
-        <div className={`message ${message.type === 'error' ? 'error' : 'success'}`}>{message.text}</div>
-      )}
-      {'users' === props.manageType && <AddNewUser onUserAdded={refreshList} setMessage={setMessage} />}
-      {!items.length ? null : (
-        <>
-          <ManageItemsOptions
-            totalItems={totalItems}
-            pageItems={props.pageItems}
-            onPageButtonClick={onPageButtonClick}
-            query={parsedRequestUrlQuery || ''}
-            className="manage-items-options"
-            items={selectedItems}
-            pagesSize={listHandler.totalPages()}
-            onProceedRemoval={onBulkItemsRemoval}
-          />
-
-          <div ref={itemsListWrapperRef} className="items-list-wrap">
-            <div ref={itemsListRef} className={classname.list}>
-              {renderManageItems(items, {
-                ...props,
-                onAllRowsCheck: onAllRowsCheck,
-                onRowCheck: onRowCheck,
-                selectedItems: selectedItems,
-                selectedAllItems: selectedAllItems,
-                onDelete: deleteItem,
-                onUserUpdate: refreshList,
-                setMessage: setMessage,
-              })}
-            </div>
-          </div>
-
-          <ManageItemsOptions
-            totalItems={totalItems}
-            pageItems={props.pageItems}
-            onPageButtonClick={onPageButtonClick}
-            query={parsedRequestUrlQuery || ''}
-            className="manage-items-options popup-on-top"
-            items={selectedItems}
-            pagesSize={listHandler.totalPages()}
-            onProceedRemoval={onBulkItemsRemoval}
-          />
-        </>
-      )}
-    </div>
-  );
 }
 
 ManageItemList.defaultPropValues = {
-  maxItems: 99999,
-  pageItems: 24,
-  requestUrl: null,
+    maxItems: 99999,
+    pageItems: 24,
+    requestUrl: null,
 };

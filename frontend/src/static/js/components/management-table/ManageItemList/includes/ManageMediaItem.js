@@ -1,13 +1,13 @@
 export default class MediaItem {
-  constructor(item) {
-    if (!Node.prototype.isPrototypeOf(item)) {
-      return null;
+    constructor(item) {
+        if (!Node.prototype.isPrototypeOf(item)) {
+            return null;
+        }
+
+        this.element = item;
     }
 
-    this.element = item;
-  }
-
-  element() {
-    return this.element;
-  }
+    element() {
+        return this.element;
+    }
 }

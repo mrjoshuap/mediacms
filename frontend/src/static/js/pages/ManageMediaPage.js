@@ -9,149 +9,147 @@ import { ManageItemList } from '../components/management-table/ManageItemList/Ma
 import { Page } from './_Page';
 
 function searchArgs() {
-  const query = SearchFieldStore.get('search-query');
-  const owner = SearchFieldStore.get('search-owner');
-  return [query ? 'q=' + encodeURIComponent(query) : '', owner ? 'owner=' + encodeURIComponent(owner) : '']
-    .filter((arg) => '' !== arg)
-    .join('&');
+    const query = SearchFieldStore.get('search-query');
+    const owner = SearchFieldStore.get('search-owner');
+    return [query ? 'q=' + encodeURIComponent(query) : '', owner ? 'owner=' + encodeURIComponent(owner) : '']
+        .filter((arg) => '' !== arg)
+        .join('&');
 }
 
 function genReqUrl(url, filters, sort, page) {
-  const ret = url + '?' + filters + ('' === filters ? '' : '&') + sort + ('' === sort ? '' : '&') + 'page=' + page;
-  return ret;
+    const ret = url + '?' + filters + ('' === filters ? '' : '&') + sort + ('' === sort ? '' : '&') + 'page=' + page;
+    return ret;
 }
 
 export class ManageMediaPage extends Page {
-  constructor(props) {
-    super(props, 'manage-media');
+    constructor(props) {
+        super(props, 'manage-media');
 
-    this.searchArgs = searchArgs();
+        this.searchArgs = searchArgs();
 
-    this.state = {
-      resultsCount: null,
-      currentPage: 1,
-      requestUrl: genReqUrl(apiUrlConfig.manage.media, this.searchArgs, '', 1),
-      pageTitle: props.title,
-      hiddenFilters: true,
-      filterArgs: this.searchArgs,
-      sortingArgs: '',
-      sortBy: 'add_date',
-      ordering: 'desc',
-      refresh: 0,
-    };
+        this.state = {
+            resultsCount: null,
+            currentPage: 1,
+            requestUrl: genReqUrl(apiUrlConfig.manage.media, this.searchArgs, '', 1),
+            pageTitle: props.title,
+            hiddenFilters: true,
+            filterArgs: this.searchArgs,
+            sortingArgs: '',
+            sortBy: 'add_date',
+            ordering: 'desc',
+            refresh: 0,
+        };
 
-    this.getCountFunc = this.getCountFunc.bind(this);
-    this.onTablePageChange = this.onTablePageChange.bind(this);
-    this.onToggleFiltersClick = this.onToggleFiltersClick.bind(this);
-    this.onFiltersUpdate = this.onFiltersUpdate.bind(this);
-    this.onColumnSortClick = this.onColumnSortClick.bind(this);
-    this.onItemsRemoval = this.onItemsRemoval.bind(this);
-    this.onItemsRemovalFail = this.onItemsRemovalFail.bind(this);
-  }
-
-  onTablePageChange(newPageUrl, updatedPage) {
-    this.setState({
-      currentPage: updatedPage,
-      requestUrl: genReqUrl(
-        apiUrlConfig.manage.media,
-        this.state.filterArgs,
-        this.state.sortingArgs,
-        updatedPage
-      ),
-    });
-  }
-
-  onToggleFiltersClick() {
-    this.setState({
-      hiddenFilters: !this.state.hiddenFilters,
-    });
-  }
-
-  getCountFunc(resultsCount) {
-    this.setState({
-      resultsCount: resultsCount,
-      pageTitle: this.state.pageTitle,
-    });
-  }
-
-  onFiltersUpdate(updatedArgs) {
-    const newArgs = '' === this.searchArgs ? [] : [this.searchArgs];
-
-    for (let arg in updatedArgs) {
-      if (null !== updatedArgs[arg] && 'all' !== updatedArgs[arg]) {
-        newArgs.push(arg + '=' + updatedArgs[arg]);
-      }
+        this.getCountFunc = this.getCountFunc.bind(this);
+        this.onTablePageChange = this.onTablePageChange.bind(this);
+        this.onToggleFiltersClick = this.onToggleFiltersClick.bind(this);
+        this.onFiltersUpdate = this.onFiltersUpdate.bind(this);
+        this.onColumnSortClick = this.onColumnSortClick.bind(this);
+        this.onItemsRemoval = this.onItemsRemoval.bind(this);
+        this.onItemsRemovalFail = this.onItemsRemovalFail.bind(this);
     }
 
-    this.setState({
-      filterArgs: newArgs.join('&'),
-      requestUrl: genReqUrl(
-        apiUrlConfig.manage.media,
-        newArgs.join('&'),
-        this.state.sortingArgs,
-        this.state.currentPage
-      ),
-    });
-  }
+    onTablePageChange(newPageUrl, updatedPage) {
+        this.setState({
+            currentPage: updatedPage,
+            requestUrl: genReqUrl(
+                apiUrlConfig.manage.media,
+                this.state.filterArgs,
+                this.state.sortingArgs,
+                updatedPage
+            ),
+        });
+    }
 
-  onColumnSortClick(sort, order) {
-    const newArgs = 'sort_by=' + sort + '&ordering=' + order;
-    this.setState({
-      sortBy: sort,
-      ordering: order,
-      sortingArgs: newArgs,
-      requestUrl: genReqUrl(
-        apiUrlConfig.manage.media,
-        this.state.filterArgs,
-        newArgs,
-        this.state.currentPage
-      ),
-    });
-  }
+    onToggleFiltersClick() {
+        this.setState({
+            hiddenFilters: !this.state.hiddenFilters,
+        });
+    }
 
-  onItemsRemoval(multipleItems) {
-    this.setState(
-      {
-        resultsCount: null,
-        refresh: this.state.refresh + 1,
-        requestUrl: genReqUrl(apiUrlConfig.manage.media, this.searchArgs, '', 1),
-      },
-      function () {
-        PageActions.addNotification('The media deleted successfully.', 'mediaRemovalSucceed');
-      }
-    );
-  }
+    getCountFunc(resultsCount) {
+        this.setState({
+            resultsCount: resultsCount,
+            pageTitle: this.state.pageTitle,
+        });
+    }
 
-  onItemsRemovalFail(multipleItems) {
-    PageActions.addNotification('The media removal failed. Please try again.', 'mediaRemovalFailed');
-  }
+    onFiltersUpdate(updatedArgs) {
+        const newArgs = '' === this.searchArgs ? [] : [this.searchArgs];
 
-  pageContent() {
-    return (
-      <MediaListWrapper
-        title={this.state.pageTitle + (null === this.state.resultsCount ? '' : ' (' + this.state.resultsCount + ')')}
-        className=""
-      >
-        <FiltersToggleButton onClick={this.onToggleFiltersClick} />
-        <ManageMediaFilters hidden={this.state.hiddenFilters} onFiltersUpdate={this.onFiltersUpdate} />
-        <ManageItemList
-          pageItems={50}
-          manageType={'media'}
-          key={this.state.requestUrl + '[' + this.state.refresh + ']'}
-          requestUrl={this.state.requestUrl}
-          itemsCountCallback={this.getCountFunc}
-          onPageChange={this.onTablePageChange}
-          sortBy={this.state.sortBy}
-          ordering={this.state.ordering}
-          onRowsDelete={this.onItemsRemoval}
-          onRowsDeleteFail={this.onItemsRemovalFail}
-          onClickColumnSort={this.onColumnSortClick}
-        />
-      </MediaListWrapper>
-    );
-  }
+        for (let arg in updatedArgs) {
+            if (null !== updatedArgs[arg] && 'all' !== updatedArgs[arg]) {
+                newArgs.push(arg + '=' + updatedArgs[arg]);
+            }
+        }
+
+        this.setState({
+            filterArgs: newArgs.join('&'),
+            requestUrl: genReqUrl(
+                apiUrlConfig.manage.media,
+                newArgs.join('&'),
+                this.state.sortingArgs,
+                this.state.currentPage
+            ),
+        });
+    }
+
+    onColumnSortClick(sort, order) {
+        const newArgs = 'sort_by=' + sort + '&ordering=' + order;
+        this.setState({
+            sortBy: sort,
+            ordering: order,
+            sortingArgs: newArgs,
+            requestUrl: genReqUrl(apiUrlConfig.manage.media, this.state.filterArgs, newArgs, this.state.currentPage),
+        });
+    }
+
+    onItemsRemoval(_multipleItems) {
+        this.setState(
+            {
+                resultsCount: null,
+                refresh: this.state.refresh + 1,
+                requestUrl: genReqUrl(apiUrlConfig.manage.media, this.searchArgs, '', 1),
+            },
+            function () {
+                PageActions.addNotification('The media deleted successfully.', 'mediaRemovalSucceed');
+            }
+        );
+    }
+
+    onItemsRemovalFail(_multipleItems) {
+        PageActions.addNotification('The media removal failed. Please try again.', 'mediaRemovalFailed');
+    }
+
+    pageContent() {
+        return (
+            <MediaListWrapper
+                title={
+                    this.state.pageTitle +
+                    (null === this.state.resultsCount ? '' : ' (' + this.state.resultsCount + ')')
+                }
+                className=""
+            >
+                <FiltersToggleButton onClick={this.onToggleFiltersClick} />
+                <ManageMediaFilters hidden={this.state.hiddenFilters} onFiltersUpdate={this.onFiltersUpdate} />
+                <ManageItemList
+                    pageItems={50}
+                    manageType={'media'}
+                    key={this.state.requestUrl + '[' + this.state.refresh + ']'}
+                    requestUrl={this.state.requestUrl}
+                    itemsCountCallback={this.getCountFunc}
+                    onPageChange={this.onTablePageChange}
+                    sortBy={this.state.sortBy}
+                    ordering={this.state.ordering}
+                    onRowsDelete={this.onItemsRemoval}
+                    onRowsDeleteFail={this.onItemsRemovalFail}
+                    onClickColumnSort={this.onColumnSortClick}
+                />
+            </MediaListWrapper>
+        );
+    }
 }
 
 ManageMediaPage.defaultProps = {
-  title: 'Manage media',
+    title: 'Manage media',
 };

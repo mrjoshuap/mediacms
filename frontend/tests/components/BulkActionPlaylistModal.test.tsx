@@ -23,10 +23,18 @@ describe('components', () => {
         });
 
         async function setup(all: any[] = [p1, p2], existing: any[] = [p1], selectedMediaIds = ids) {
-            fetchMock.mockReturnValueOnce(jsonResponse({ results: all })).mockReturnValueOnce(jsonResponse({ results: existing }));
+            fetchMock
+                .mockReturnValueOnce(jsonResponse({ results: all }))
+                .mockReturnValueOnce(jsonResponse({ results: existing }));
             const props = { onCancel: jest.fn(), onSuccess: jest.fn(), onError: jest.fn() };
             const view = renderIntoContainer(
-                <BulkActionPlaylistModal isOpen selectedMediaIds={selectedMediaIds} csrfToken="tok" username="jo hn" {...props} />
+                <BulkActionPlaylistModal
+                    isOpen
+                    selectedMediaIds={selectedMediaIds}
+                    csrfToken="tok"
+                    username="jo hn"
+                    {...props}
+                />
             );
             await flush();
             return { ...view, ...props };
@@ -34,12 +42,22 @@ describe('components', () => {
 
         const leftPanel = (c: HTMLElement) => c.querySelectorAll('.playlist-panel')[0];
         const rightTitles = (c: HTMLElement) =>
-            Array.from(c.querySelectorAll('.playlist-panel')[1].querySelectorAll('.playlist-item span')).map((s) => s.textContent);
+            Array.from(c.querySelectorAll('.playlist-panel')[1].querySelectorAll('.playlist-item span')).map(
+                (s) => s.textContent
+            );
         const proceed = (c: HTMLElement) => c.querySelector('.playlist-btn-proceed') as HTMLButtonElement;
 
         test('Renders nothing when closed', () => {
             const view = renderIntoContainer(
-                <BulkActionPlaylistModal isOpen={false} selectedMediaIds={ids} csrfToken="t" username="u" onCancel={jest.fn()} onSuccess={jest.fn()} onError={jest.fn()} />
+                <BulkActionPlaylistModal
+                    isOpen={false}
+                    selectedMediaIds={ids}
+                    csrfToken="t"
+                    username="u"
+                    onCancel={jest.fn()}
+                    onSuccess={jest.fn()}
+                    onError={jest.fn()}
+                />
             );
             expect(view.container.innerHTML).toBe('');
             view.unmount();
@@ -48,7 +66,10 @@ describe('components', () => {
         test('Loads author playlists and membership', async () => {
             const { container, unmount } = await setup();
             expect(fetchMock.mock.calls[0][0]).toBe('/api/v1/playlists?author=jo%20hn');
-            expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({ action: 'playlist_membership', media_ids: ids });
+            expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({
+                action: 'playlist_membership',
+                media_ids: ids,
+            });
             const items = leftPanel(container).querySelectorAll('.playlist-item');
             expect(items[0].className).toContain('playlist-item-disabled');
             expect((items[0].querySelector('.add-btn') as HTMLButtonElement).disabled).toBe(true);
@@ -61,7 +82,9 @@ describe('components', () => {
         test('Reports load errors', async () => {
             fetchMock.mockReturnValueOnce(jsonResponse({}, false));
             const props = { onCancel: jest.fn(), onSuccess: jest.fn(), onError: jest.fn() };
-            const view = renderIntoContainer(<BulkActionPlaylistModal isOpen selectedMediaIds={ids} csrfToken="t" username="u" {...props} />);
+            const view = renderIntoContainer(
+                <BulkActionPlaylistModal isOpen selectedMediaIds={ids} csrfToken="t" username="u" {...props} />
+            );
             await flush();
             expect(props.onError).toHaveBeenCalledWith('Failed to load playlists');
             view.unmount();
@@ -70,7 +93,9 @@ describe('components', () => {
         test('Filters playlists by search term and shows empty message', async () => {
             const { container, unmount } = await setup();
             changeValue(container.querySelector('.search-box input'), 'WORK');
-            expect(Array.from(leftPanel(container).querySelectorAll('.playlist-item span')).map((s) => s.textContent)).toEqual(['Workout']);
+            expect(
+                Array.from(leftPanel(container).querySelectorAll('.playlist-item span')).map((s) => s.textContent)
+            ).toEqual(['Workout']);
             changeValue(container.querySelector('.search-box input'), 'zzz');
             expect(leftPanel(container).querySelector('.empty-message')?.textContent).toBe('No playlists available');
             unmount();
@@ -87,7 +112,9 @@ describe('components', () => {
             click(removes[1]);
             expect(proceed(container).disabled).toBe(true);
             click(container.querySelectorAll('.playlist-panel')[1].querySelector('.remove-btn'));
-            expect(container.querySelectorAll('.playlist-panel')[1].querySelector('.empty-message')?.textContent).toBe('No playlists selected');
+            expect(container.querySelectorAll('.playlist-panel')[1].querySelector('.empty-message')?.textContent).toBe(
+                'No playlists selected'
+            );
             unmount();
         });
 
@@ -98,8 +125,16 @@ describe('components', () => {
             fetchMock.mockReturnValueOnce(jsonResponse({})).mockReturnValueOnce(jsonResponse({}));
             click(proceed(container));
             await flush();
-            expect(JSON.parse(fetchMock.mock.calls[2][1].body)).toEqual({ action: 'add_to_playlist', media_ids: ids, playlist_ids: [2] });
-            expect(JSON.parse(fetchMock.mock.calls[3][1].body)).toEqual({ action: 'remove_from_playlist', media_ids: ids, playlist_ids: [1] });
+            expect(JSON.parse(fetchMock.mock.calls[2][1].body)).toEqual({
+                action: 'add_to_playlist',
+                media_ids: ids,
+                playlist_ids: [2],
+            });
+            expect(JSON.parse(fetchMock.mock.calls[3][1].body)).toEqual({
+                action: 'remove_from_playlist',
+                media_ids: ids,
+                playlist_ids: [1],
+            });
             expect(onSuccess).toHaveBeenCalledWith('Successfully updated playlist membership');
             expect(onCancel).toHaveBeenCalled();
             unmount();
@@ -145,7 +180,9 @@ describe('components', () => {
             changeValue(input(), 'Night');
             fetchMock.mockReturnValueOnce(jsonResponse({ id: 10, friendly_token: 'p10', title: 'Night' }));
             act(() => {
-                input().dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter', keyCode: 13, charCode: 13, bubbles: true }));
+                input().dispatchEvent(
+                    new KeyboardEvent('keypress', { key: 'Enter', keyCode: 13, charCode: 13, bubbles: true })
+                );
             });
             await flush();
             expect(JSON.parse(fetchMock.mock.calls[3][1].body)).toEqual({ title: 'Night' });

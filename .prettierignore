@@ -1,7 +1,16 @@
 /templates/cms/*
 /templates/*.html
 *.scss
-/frontend/
+
+# Dependencies and build outputs
+**/node_modules/
+frontend/dist/
+frontend/coverage/
+frontend-tools/**/dist/
+static/video_js/
+static/video_editor/
+static/chapters_editor/
+static/js/
 
 # MkDocs output and generated pages (source styles live in docs/_shared/)
 /site/

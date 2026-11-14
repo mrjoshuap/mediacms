@@ -42,14 +42,14 @@ class AutoplayCountdownOverlay extends Component {
             </button>
             <div class="autoplay-countdown-content">
                 <div class="countdown-label">Up Next</div>
-                
+
                 <div class="next-video-title">${nextVideoTitle}</div>
                 ${this.nextVideoData?.author ? `<div class="next-video-author">${this.nextVideoData.author}</div>` : ''}
-                
+
                 <div class="circular-countdown">
                     <svg class="countdown-circle" viewBox="0 0 100 100" width="100" height="100">
                         <circle cx="50" cy="50" r="45" stroke="rgba(255,255,255,0.2)" stroke-width="3" fill="none"/>
-                        <circle class="countdown-progress" cx="50" cy="50" r="45" stroke="white" stroke-width="3" fill="none" 
+                        <circle class="countdown-progress" cx="50" cy="50" r="45" stroke="white" stroke-width="3" fill="none"
                                 stroke-dasharray="282.74" stroke-dashoffset="282.74" transform="rotate(-90 50 50)"/>
                         <g class="play-icon">
                             <circle cx="50" cy="50" r="20" fill="rgba(255,255,255,0.9)" stroke="none"/>

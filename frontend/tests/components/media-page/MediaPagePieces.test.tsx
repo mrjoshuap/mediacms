@@ -7,7 +7,9 @@ import { AutoPlay } from '../../../src/static/js/components/media-page/AutoPlay'
 import { RelatedMedia } from '../../../src/static/js/components/media-page/RelatedMedia';
 
 jest.mock('../../../src/static/js/utils/stores/', () => require('../../_support/compD_storeMocks').mockStoresModule());
-jest.mock('../../../src/static/js/utils/actions/', () => require('../../_support/compD_storeMocks').mockActionsModule());
+jest.mock('../../../src/static/js/utils/actions/', () =>
+    require('../../_support/compD_storeMocks').mockActionsModule()
+);
 jest.mock('../../../src/static/js/components/item-list/ItemList', () => require('../../_support/compD_itemListMock'));
 
 const { __calls: itemListCalls } = require('../../_support/compD_itemListMock');
@@ -43,7 +45,14 @@ describe('components/media-page', () => {
             const items = [{ id: 1 }];
             const { unmount } = renderIntoContainer(<PlaylistPlaybackMedia items={items} playlistActiveItem={3} />);
             expect(lastItemListProps()).toEqual(
-                expect.objectContaining({ items, className: 'items-list-hor', inPlaylistView: true, playlistActiveItem: 3, hidePlaylistOrderNumber: false, pageItems: 9999 })
+                expect.objectContaining({
+                    items,
+                    className: 'items-list-hor',
+                    inPlaylistView: true,
+                    playlistActiveItem: 3,
+                    hidePlaylistOrderNumber: false,
+                    pageItems: 9999,
+                })
             );
             unmount();
         });
@@ -73,7 +82,9 @@ describe('components/media-page', () => {
                 pageStore.emit('switched_media_auto_play');
             });
             expect(container.querySelector('.auto-play .next-label')?.textContent).toBe('Up next');
-            expect(lastItemListProps()).toEqual(expect.objectContaining({ items: [{ id: 'r1' }], maxItems: 1, hideViews: true, hideAuthor: false }));
+            expect(lastItemListProps()).toEqual(
+                expect.objectContaining({ items: [{ id: 'r1' }], maxItems: 1, hideViews: true, hideAuthor: false })
+            );
             unmount();
             expect(mediaStore.listenerCount('loaded_media_data')).toBe(0);
             expect(pageStore.listenerCount('switched_media_auto_play')).toBe(0);
@@ -90,7 +101,14 @@ describe('components/media-page', () => {
         test('Lists related media with configured page size', () => {
             mediaStore.__set('media-data', { related_media: [{ id: 'a' }, { id: 'b' }] });
             const { unmount } = renderIntoContainer(<RelatedMedia />);
-            expect(lastItemListProps()).toEqual(expect.objectContaining({ items: [{ id: 'a' }, { id: 'b' }], pageItems: 7, hideViews: true, hideAuthor: false }));
+            expect(lastItemListProps()).toEqual(
+                expect.objectContaining({
+                    items: [{ id: 'a' }, { id: 'b' }],
+                    pageItems: 7,
+                    hideViews: true,
+                    hideAuthor: false,
+                })
+            );
             unmount();
         });
 

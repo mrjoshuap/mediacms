@@ -1,8 +1,8 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const insertUserSchema = z.object({
-  username: z.string(),
-  password: z.string(),
+    username: z.string(),
+    password: z.string(),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

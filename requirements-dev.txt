@@ -13,4 +13,3 @@ pytest-factoryboy==2.7.0
 pytest-xdist==3.8.0
 Faker==35.2.0
 django-cors-headers==4.7.0
-

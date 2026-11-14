@@ -30,11 +30,20 @@ describe('components', () => {
         }
 
         const panelTitles = (c: HTMLElement, i: number) =>
-            Array.from(c.querySelectorAll('.category-panel')[i].querySelectorAll('.category-item span')).map((s) => s.textContent);
+            Array.from(c.querySelectorAll('.category-panel')[i].querySelectorAll('.category-item span')).map(
+                (s) => s.textContent
+            );
 
         test('Renders nothing when closed', () => {
             const view = renderIntoContainer(
-                <BulkActionCourseCleanupModal isOpen={false} selectedMediaIds={[]} csrfToken="t" onCancel={jest.fn()} onSuccess={jest.fn()} onError={jest.fn()} />
+                <BulkActionCourseCleanupModal
+                    isOpen={false}
+                    selectedMediaIds={[]}
+                    csrfToken="t"
+                    onCancel={jest.fn()}
+                    onSuccess={jest.fn()}
+                    onError={jest.fn()}
+                />
             );
             expect(view.container.innerHTML).toBe('');
             expect(fetchMock).not.toHaveBeenCalled();
@@ -52,9 +61,14 @@ describe('components', () => {
         });
 
         test('With selection limits courses to those the media belongs to', async () => {
-            fetchMock.mockReturnValueOnce(jsonResponse({ results: courses })).mockReturnValueOnce(jsonResponse({ results: [{ uid: 'c2', title: 'Physics' }] }));
+            fetchMock
+                .mockReturnValueOnce(jsonResponse({ results: courses }))
+                .mockReturnValueOnce(jsonResponse({ results: [{ uid: 'c2', title: 'Physics' }] }));
             const { container, unmount } = await setup(['m1']);
-            expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({ action: 'category_membership', media_ids: ['m1'] });
+            expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({
+                action: 'category_membership',
+                media_ids: ['m1'],
+            });
             expect(panelTitles(container, 0)).toEqual(['Physics']);
             expect(container.querySelectorAll('.course-cleanup-checkbox').length).toBe(3);
             unmount();
@@ -79,12 +93,16 @@ describe('components', () => {
             expect(proceed().disabled).toBe(false);
             click(container.querySelectorAll('.category-panel')[1].querySelector('.remove-btn'));
             expect(panelTitles(container, 0)).toEqual(['Physics', 'Biology']);
-            expect(container.querySelectorAll('.category-panel')[1].querySelector('.empty-message')?.textContent).toBe('No courses selected');
+            expect(container.querySelectorAll('.category-panel')[1].querySelector('.empty-message')?.textContent).toBe(
+                'No courses selected'
+            );
             unmount();
         });
 
         test('Proceed posts course_cleanup with chosen options', async () => {
-            fetchMock.mockReturnValueOnce(jsonResponse(courses)).mockReturnValueOnce(jsonResponse({ results: courses }));
+            fetchMock
+                .mockReturnValueOnce(jsonResponse(courses))
+                .mockReturnValueOnce(jsonResponse({ results: courses }));
             const { container, onSuccess, onCancel, unmount } = await setup(['m1', 'm2']);
             click(findByText(container, '.category-item.clickable', 'Physics+'));
             const boxes = container.querySelectorAll('.course-cleanup-checkbox input');

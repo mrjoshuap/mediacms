@@ -1,11 +1,11 @@
 import urlParse from 'url-parse';
 
 export function formatInnerLink(url, baseUrl) {
-  let link = urlParse(url, {});
+    let link = urlParse(url, {});
 
-  if ('' === link.origin || 'null' === link.origin || !link.origin) {
-    link = urlParse(String(baseUrl).replace(/\/+$/, '') + '/' + url.replace(/^\//g, ''), {});
-  }
+    if ('' === link.origin || 'null' === link.origin || !link.origin) {
+        link = urlParse(String(baseUrl).replace(/\/+$/, '') + '/' + url.replace(/^\//g, ''), {});
+    }
 
-  return link.toString();
+    return link.toString();
 }

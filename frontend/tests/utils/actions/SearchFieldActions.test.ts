@@ -18,12 +18,13 @@ describe('utils/actions', () => {
             received.length = 0;
         });
 
-        test.each([
-            ['requestPredictions', ['cats'], { type: 'REQUEST_PREDICTIONS', query: 'cats' }],
-        ] as [string, any[], any][])('%s dispatches the expected payload', (name, args, expected) => {
+        test.each([['requestPredictions', ['cats'], { type: 'REQUEST_PREDICTIONS', query: 'cats' }]] as [
+            string,
+            any[],
+            any,
+        ][])('%s dispatches the expected payload', (name, args, expected) => {
             (SearchFieldActions as any)[name](...args);
             expect(received).toStrictEqual([expected]);
         });
-
     });
 });

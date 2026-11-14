@@ -2,7 +2,7 @@
 import logger from '../lib/logger';
 
 // Helper function to simulate delay
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const _delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Auto-save interface
 interface AutoSaveRequest {
@@ -55,7 +55,7 @@ export const autoSaveVideo = async (mediaId: string, data: AutoSaveRequest): Pro
                         timestamp: new Date().toISOString(),
                         error: errorData.error || 'Auto-save failed (videoApi.ts)',
                     };
-                } catch (parseError) {
+                } catch (_parseError) {
                     return {
                         success: false,
                         timestamp: new Date().toISOString(),
@@ -74,8 +74,7 @@ export const autoSaveVideo = async (mediaId: string, data: AutoSaveRequest): Pro
             timestamp: jsonResponse.updated_at || new Date().toISOString(),
             ...jsonResponse,
         };
-
-    } catch (error) {
+    } catch (_error) {
         // For any fetch errors, return mock success response
         const timestamp = new Date().toISOString();
         return {

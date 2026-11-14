@@ -54,7 +54,9 @@ describe('components/_shared', () => {
         });
 
         test('Renders link with icon only and no title', () => {
-            const { container, unmount } = renderIntoContainer(<NavigationMenuList items={[{ link: '/x', icon: 'star' }]} />);
+            const { container, unmount } = renderIntoContainer(
+                <NavigationMenuList items={[{ link: '/x', icon: 'star' }]} />
+            );
             const link = container.querySelector('a') as HTMLAnchorElement;
             expect(link.hasAttribute('title')).toBe(false);
             expect(link.children).toHaveLength(1);

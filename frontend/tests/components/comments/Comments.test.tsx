@@ -17,12 +17,21 @@ function CommentsList() {
 }
 
 jest.mock('../../../src/static/js/utils/stores/', () => require('../../_support/compD_storeMocks').mockStoresModule());
-jest.mock('../../../src/static/js/utils/actions/', () => require('../../_support/compD_storeMocks').mockActionsModule());
+jest.mock('../../../src/static/js/utils/actions/', () =>
+    require('../../_support/compD_storeMocks').mockActionsModule()
+);
 
 const mediaStore = MediaPageStore as any;
 
 function comment(uid: string, add_date: string, text: string) {
-    return { uid, add_date, text, author_name: 'Author ' + uid, author_profile: '/user/' + uid, author_thumbnail_url: '/thumbs/' + uid + '.jpg' };
+    return {
+        uid,
+        add_date,
+        text,
+        author_name: 'Author ' + uid,
+        author_profile: '/user/' + uid,
+        author_thumbnail_url: '/thumbs/' + uid + '.jpg',
+    };
 }
 
 describe('components/comments', () => {
@@ -39,7 +48,10 @@ describe('components/comments', () => {
             mediaStore.__reset({
                 'media-id': 'm1',
                 'media-data': { enable_comments: true, state: 'public' },
-                'media-comments': [comment('a', '2024-01-01T00:00:00Z', 'first'), comment('b', '2024-02-01T00:00:00Z', 'second\nline')],
+                'media-comments': [
+                    comment('a', '2024-01-01T00:00:00Z', 'first'),
+                    comment('b', '2024-02-01T00:00:00Z', 'second\nline'),
+                ],
             });
         });
 
@@ -59,7 +71,9 @@ describe('components/comments', () => {
             const author = container.querySelector('.comment-author a') as HTMLAnchorElement;
             expect(author.getAttribute('href')).toBe('/user/b');
             expect(author.textContent).toBe('Author b');
-            expect(container.querySelector('.comment-author-thumb img')?.getAttribute('src')).toMatch(/^https:\/\/example\.com\/+thumbs\/b\.jpg$/);
+            expect(container.querySelector('.comment-author-thumb img')?.getAttribute('src')).toMatch(
+                /^https:\/\/example\.com\/+thumbs\/b\.jpg$/
+            );
             expect(container.querySelector('.comment-date')?.textContent).not.toBe('');
             expect(container.querySelector('.comments-order-label')?.textContent).toBe('Newest first');
             click(container.querySelector('.comments-order-toggle'));
@@ -131,7 +145,9 @@ describe('components/comments', () => {
             });
             expect(textarea.value).toBe('');
             expect(container.querySelector('h2')?.firstChild?.textContent).toBe('1 Comment');
-            const anchors = Array.from(container.querySelectorAll('.comment-text-inner a.video-timestamp')) as HTMLAnchorElement[];
+            const anchors = Array.from(
+                container.querySelectorAll('.comment-text-inner a.video-timestamp')
+            ) as HTMLAnchorElement[];
             expect(anchors.map((a) => [a.textContent, a.getAttribute('data-timestamp')])).toEqual([
                 ['1:02:03', '3723'],
                 ['4:05', '245'],
@@ -213,7 +229,9 @@ describe('components/comments', () => {
         });
 
         test('The owner of an unlisted media without comments sees the post upload message', () => {
-            (PageStore as any).__set('config-contents', { uploader: { postUploadMessage: 'Share it with your class' } });
+            (PageStore as any).__set('config-contents', {
+                uploader: { postUploadMessage: 'Share it with your class' },
+            });
             const ownProfile = linksConfig.profile.media;
             mediaStore.__set('media-data', { enable_comments: true, state: 'unlisted', author_profile: ownProfile });
             const { unmount } = renderIntoContainer(<CommentsList />);

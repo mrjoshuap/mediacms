@@ -80,7 +80,12 @@ describe('utils/stores', () => {
 
             actions.loadPlaylistData();
 
-            expect(requests.getRequest).toHaveBeenCalledWith(playlistApi, false, expect.any(Function), expect.any(Function));
+            expect(requests.getRequest).toHaveBeenCalledWith(
+                playlistApi,
+                false,
+                expect.any(Function),
+                expect.any(Function)
+            );
             requests.getRequest.mock.calls[0][2]({ data: playlistData });
             requests.getRequest.mock.calls[0][2](undefined);
 

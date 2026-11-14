@@ -7,7 +7,9 @@ import { MediaPageActions, PageActions } from '../../../src/static/js/utils/acti
 import { MediaShareEmbed } from '../../../src/static/js/components/media-actions/MediaShareEmbed';
 
 jest.mock('../../../src/static/js/utils/stores/', () => require('../../_support/compD_storeMocks').mockStoresModule());
-jest.mock('../../../src/static/js/utils/actions/', () => require('../../_support/compD_storeMocks').mockActionsModule());
+jest.mock('../../../src/static/js/utils/actions/', () =>
+    require('../../_support/compD_storeMocks').mockActionsModule()
+);
 
 const mediaStore = MediaPageStore as any;
 const pageStore = PageStore as any;
@@ -18,7 +20,9 @@ function embedCode(container: HTMLElement) {
 }
 
 function checkbox(container: HTMLElement, label: string) {
-    const lbl = Array.from(container.querySelectorAll('label')).find((l) => (l.textContent || '').trim() === label) as HTMLElement;
+    const lbl = Array.from(container.querySelectorAll('label')).find(
+        (l) => (l.textContent || '').trim() === label
+    ) as HTMLElement;
     return lbl.querySelector('input') as HTMLInputElement;
 }
 
@@ -29,7 +33,9 @@ describe('components/media-actions', () => {
             jest.clearAllMocks();
             mediaStore.__reset({ 'media-id': 'abc' });
             pageStore.__reset({
-                'config-options': { embedded: { video: { dimensions: { width: 560, widthUnit: 'px', height: 315, heightUnit: 'px' } } } },
+                'config-options': {
+                    embedded: { video: { dimensions: { width: 560, widthUnit: 'px', height: 315, heightUnit: 'px' } } },
+                },
             });
         });
 
@@ -38,7 +44,9 @@ describe('components/media-actions', () => {
             expect(embedCode(container)).toBe(
                 `<iframe width="560" height="315" src="${BASE}&showTitle=1&showRelated=1&showUserAvatar=1&linkTitle=1" frameBorder="0" allowFullScreen></iframe>`
             );
-            expect(container.querySelector('.on-left iframe')?.getAttribute('src')).toBe(`${BASE}&showTitle=1&showRelated=1&showUserAvatar=1&linkTitle=1`);
+            expect(container.querySelector('.on-left iframe')?.getAttribute('src')).toBe(
+                `${BASE}&showTitle=1&showRelated=1&showUserAvatar=1&linkTitle=1`
+            );
             expect(container.querySelectorAll('.num-value-unit').length).toBe(2);
             unmount();
         });
@@ -60,7 +68,9 @@ describe('components/media-actions', () => {
         test('Start at converts the time to seconds', () => {
             const { container, unmount } = renderIntoContainer(<MediaShareEmbed />);
             click(checkbox(container, 'Start at'));
-            const timeInput = checkbox(container, 'Start at').parentElement!.parentElement!.querySelector('input[type="text"]');
+            const timeInput = checkbox(container, 'Start at').parentElement!.parentElement!.querySelector(
+                'input[type="text"]'
+            );
             expect(embedCode(container)).not.toContain('&t=');
             changeValue(timeInput, '1:02:03');
             expect(embedCode(container)).toContain('&t=3723');
@@ -72,7 +82,9 @@ describe('components/media-actions', () => {
             const { container, unmount } = renderIntoContainer(<MediaShareEmbed />);
             click(checkbox(container, 'Responsive'));
             expect(container.querySelectorAll('.num-value-unit').length).toBe(0);
-            expect(embedCode(container)).toContain('style="width:100%;max-width:calc(100vh * 16 / 9);aspect-ratio:16 / 9;display:block;margin:auto;border:0;"');
+            expect(embedCode(container)).toContain(
+                'style="width:100%;max-width:calc(100vh * 16 / 9);aspect-ratio:16 / 9;display:block;margin:auto;border:0;"'
+            );
             changeValue(container.querySelector('select'), 'custom');
             expect(embedCode(container)).toContain('aspect-ratio:560 / 315;');
             unmount();
@@ -121,13 +133,18 @@ describe('components/media-actions', () => {
             jest.useFakeTimers();
             const { container, unmount } = renderIntoContainer(<MediaShareEmbed />);
             click(container.querySelector('.on-right-bottom button'));
-            expect((MediaPageActions as any).copyEmbedMediaCode).toHaveBeenCalledWith(container.querySelector('textarea'));
+            expect((MediaPageActions as any).copyEmbedMediaCode).toHaveBeenCalledWith(
+                container.querySelector('textarea')
+            );
             act(() => {
                 mediaStore.emit('copied_embed_media_code');
             });
             expect((PageActions as any).addNotification).not.toHaveBeenCalled();
             jest.advanceTimersByTime(100);
-            expect((PageActions as any).addNotification).toHaveBeenCalledWith('Embed media code copied to clipboard', 'clipboardEmbedMediaCodeCopy');
+            expect((PageActions as any).addNotification).toHaveBeenCalledWith(
+                'Embed media code copied to clipboard',
+                'clipboardEmbedMediaCodeCopy'
+            );
             act(() => {
                 pageStore.emit('window_resize');
             });
@@ -138,7 +155,9 @@ describe('components/media-actions', () => {
 
         test('Close button triggers popup close callback', () => {
             const triggerPopupClose = jest.fn();
-            const { container, unmount } = renderIntoContainer(<MediaShareEmbed triggerPopupClose={triggerPopupClose} />);
+            const { container, unmount } = renderIntoContainer(
+                <MediaShareEmbed triggerPopupClose={triggerPopupClose} />
+            );
             click(container.querySelector('.on-right-top button'));
             expect(triggerPopupClose).toHaveBeenCalledTimes(1);
             unmount();

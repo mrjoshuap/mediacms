@@ -33,7 +33,9 @@ describe('components/item-list', () => {
             );
             const outer = container.firstElementChild as HTMLElement;
             expect(outer.className).toBe('items-list-outer extra');
-            const titles = Array.from(outer.querySelectorAll('.items-list-wrap .items-list .item h3')).map((h) => h.textContent);
+            const titles = Array.from(outer.querySelectorAll('.items-list-wrap .items-list .item h3')).map(
+                (h) => h.textContent
+            );
             expect(titles).toStrictEqual(['Media 0', 'Media 1']);
             expect(itemsCountCallback).toHaveBeenCalledWith(5);
             expect(itemsLoadCallback).toHaveBeenCalled();

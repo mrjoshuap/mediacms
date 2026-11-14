@@ -19,6 +19,7 @@ def test_use_fork_whats_new_channels():
     mod = _load()
     assert mod.use_fork_whats_new("beta") is True
     assert mod.use_fork_whats_new("local") is True
+    assert mod.use_fork_whats_new("pr") is True
     assert mod.use_fork_whats_new("unknown-channel") is False
 
 

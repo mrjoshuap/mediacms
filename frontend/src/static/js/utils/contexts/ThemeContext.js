@@ -6,100 +6,100 @@ import SiteContext from './SiteContext';
 const config = mediacmsConfig(window.MediaCMS);
 
 function initLogo(logo) {
-  let light = null;
-  let dark = null;
+    let light = null;
+    let dark = null;
 
-  if (void 0 !== logo.darkMode) {
-    if (supportsSvgAsImg() && void 0 !== logo.darkMode.svg && '' !== logo.darkMode.svg) {
-      dark = logo.darkMode.svg;
-    } else if (void 0 !== logo.darkMode.img && '' !== logo.darkMode.img) {
-      dark = logo.darkMode.img;
+    if (void 0 !== logo.darkMode) {
+        if (supportsSvgAsImg() && void 0 !== logo.darkMode.svg && '' !== logo.darkMode.svg) {
+            dark = logo.darkMode.svg;
+        } else if (void 0 !== logo.darkMode.img && '' !== logo.darkMode.img) {
+            dark = logo.darkMode.img;
+        }
     }
-  }
 
-  if (void 0 !== logo.lightMode) {
-    if (supportsSvgAsImg() && void 0 !== logo.lightMode.svg && '' !== logo.lightMode.svg) {
-      light = logo.lightMode.svg;
-    } else if (void 0 !== logo.lightMode.img && '' !== logo.lightMode.img) {
-      light = logo.lightMode.img;
+    if (void 0 !== logo.lightMode) {
+        if (supportsSvgAsImg() && void 0 !== logo.lightMode.svg && '' !== logo.lightMode.svg) {
+            light = logo.lightMode.svg;
+        } else if (void 0 !== logo.lightMode.img && '' !== logo.lightMode.img) {
+            light = logo.lightMode.img;
+        }
     }
-  }
 
-  if (null !== light || null !== dark) {
-    if (null === light) {
-      light = dark;
-    } else if (null === dark) {
-      dark = light;
+    if (null !== light || null !== dark) {
+        if (null === light) {
+            light = dark;
+        } else if (null === dark) {
+            dark = light;
+        }
     }
-  }
 
-  return {
-    light,
-    dark,
-  };
+    return {
+        light,
+        dark,
+    };
 }
 
 function initMode(cachedValue, defaultValue) {
-  return 'light' === cachedValue || 'dark' === cachedValue ? cachedValue : defaultValue;
+    return 'light' === cachedValue || 'dark' === cachedValue ? cachedValue : defaultValue;
 }
 
 function storedMode(key) {
-  try {
-    return localStorage.getItem(key);
-  } catch (error) {
-    return null;
-  }
+    try {
+        return localStorage.getItem(key);
+    } catch (_error) {
+        return null;
+    }
 }
 
 function storeMode(key, mode) {
-  try {
-    localStorage.setItem(key, mode);
-  } catch (error) {}
+    try {
+        localStorage.setItem(key, mode);
+    } catch (_error) {}
 }
 
 export const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const site = useContext(SiteContext);
-  const storageKey = 'MediaCMS[' + site.id + '][theme][mode]';
-  const [themeMode, setThemeMode] = useState(initMode(storedMode(storageKey), config.theme.mode));
-  const logos = initLogo(config.theme.logo);
-  const [logo, setLogo] = useState(logos[themeMode]);
+    const site = useContext(SiteContext);
+    const storageKey = 'MediaCMS[' + site.id + '][theme][mode]';
+    const [themeMode, setThemeMode] = useState(initMode(storedMode(storageKey), config.theme.mode));
+    const logos = initLogo(config.theme.logo);
+    const [logo, setLogo] = useState(logos[themeMode]);
 
-  const changeMode = () => {
-    setThemeMode('light' === themeMode ? 'dark' : 'light');
-  };
+    const changeMode = () => {
+        setThemeMode('light' === themeMode ? 'dark' : 'light');
+    };
 
-  useEffect(() => {
-    if ('dark' === themeMode) {
-      addClassname(document.body, 'dark_theme');
-    } else {
-      removeClassname(document.body, 'dark_theme');
-    }
-    storeMode(storageKey, themeMode);
-    setLogo(logos[themeMode]);
-    window.dispatchEvent(new CustomEvent('mediacms-theme', { detail: themeMode }));
-  }, [themeMode]);
+    useEffect(() => {
+        if ('dark' === themeMode) {
+            addClassname(document.body, 'dark_theme');
+        } else {
+            removeClassname(document.body, 'dark_theme');
+        }
+        storeMode(storageKey, themeMode);
+        setLogo(logos[themeMode]);
+        window.dispatchEvent(new CustomEvent('mediacms-theme', { detail: themeMode }));
+    }, [themeMode]);
 
-  useEffect(() => {
-    function onTheme(event) {
-      const mode = event.detail;
-      if ('light' === mode || 'dark' === mode) {
-        setThemeMode(mode);
-      }
-    }
-    window.addEventListener('mediacms-theme', onTheme);
-    return () => window.removeEventListener('mediacms-theme', onTheme);
-  }, []);
+    useEffect(() => {
+        function onTheme(event) {
+            const mode = event.detail;
+            if ('light' === mode || 'dark' === mode) {
+                setThemeMode(mode);
+            }
+        }
+        window.addEventListener('mediacms-theme', onTheme);
+        return () => window.removeEventListener('mediacms-theme', onTheme);
+    }, []);
 
-  const value = {
-    logo,
-    currentThemeMode: themeMode,
-    changeThemeMode: changeMode,
-    themeModeSwitcher: config.theme.switch,
-  };
+    const value = {
+        logo,
+        currentThemeMode: themeMode,
+        changeThemeMode: changeMode,
+        themeModeSwitcher: config.theme.switch,
+    };
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+    return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };
 
 export const ThemeConsumer = ThemeContext.Consumer;

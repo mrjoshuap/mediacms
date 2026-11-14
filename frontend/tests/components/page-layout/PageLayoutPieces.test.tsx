@@ -84,17 +84,20 @@ describe('components/page-layout', () => {
             ['footer', SidebarBottom, 'page-sidebar-bottom'],
             ['belowNavMenu', SidebarBelowNavigationMenu, 'page-sidebar-under-nav-menus'],
             ['belowThemeSwitcher', SidebarBelowThemeSwitcher, 'page-sidebar-below-theme-switcher'],
-        ] as Array<[string, React.ComponentType, string]>)('Renders %s html content when configured', (key, Component, className) => {
-            pageStore.__reset({ 'config-contents': { sidebar: { [key]: '<b>Hi</b>' } } });
-            const filled = renderIntoContainer(<Component />);
-            expect(filled.container.innerHTML).toBe(`<div class="${className}"><b>Hi</b></div>`);
-            filled.unmount();
+        ] as Array<[string, React.ComponentType, string]>)(
+            'Renders %s html content when configured',
+            (key, Component, className) => {
+                pageStore.__reset({ 'config-contents': { sidebar: { [key]: '<b>Hi</b>' } } });
+                const filled = renderIntoContainer(<Component />);
+                expect(filled.container.innerHTML).toBe(`<div class="${className}"><b>Hi</b></div>`);
+                filled.unmount();
 
-            pageStore.__reset({ 'config-contents': { sidebar: { [key]: '' } } });
-            const empty = renderIntoContainer(<Component />);
-            expect(empty.container.innerHTML).toBe('');
-            empty.unmount();
-        });
+                pageStore.__reset({ 'config-contents': { sidebar: { [key]: '' } } });
+                const empty = renderIntoContainer(<Component />);
+                expect(empty.container.innerHTML).toBe('');
+                empty.unmount();
+            }
+        );
     });
 
     describe('SidebarThemeSwitcher', () => {
@@ -123,19 +126,27 @@ describe('components/page-layout', () => {
         });
 
         test('Marks light icon active in light mode', () => {
-            const { container, unmount } = render({ currentThemeMode: 'light', changeThemeMode: jest.fn(), themeModeSwitcher: { enabled: true, position: 'sidebar' } });
+            const { container, unmount } = render({
+                currentThemeMode: 'light',
+                changeThemeMode: jest.fn(),
+                themeModeSwitcher: { enabled: true, position: 'sidebar' },
+            });
             expect(container.querySelectorAll('.theme-icon')[0].className).toBe('theme-icon active');
             unmount();
         });
 
-        test.each([
-            [{ enabled: false, position: 'sidebar' }],
-            [{ enabled: true, position: 'header' }],
-        ])('Renders nothing for %p', (themeModeSwitcher) => {
-            const { container, unmount } = render({ currentThemeMode: 'light', changeThemeMode: jest.fn(), themeModeSwitcher });
-            expect(container.querySelector('.sidebar-theme-switcher')).toBeNull();
-            unmount();
-        });
+        test.each([[{ enabled: false, position: 'sidebar' }], [{ enabled: true, position: 'header' }]])(
+            'Renders nothing for %p',
+            (themeModeSwitcher) => {
+                const { container, unmount } = render({
+                    currentThemeMode: 'light',
+                    changeThemeMode: jest.fn(),
+                    themeModeSwitcher,
+                });
+                expect(container.querySelector('.sidebar-theme-switcher')).toBeNull();
+                unmount();
+            }
+        );
     });
 
     describe('Logo', () => {
@@ -151,7 +162,9 @@ describe('components/page-layout', () => {
         });
 
         test('Uses explicit alt, href and loading', () => {
-            const { container, unmount } = renderIntoContainer(<Logo src="/l.png" title="T" alt="A" href="/" loading="eager" />);
+            const { container, unmount } = renderIntoContainer(
+                <Logo src="/l.png" title="T" alt="A" href="/" loading="eager" />
+            );
             expect(container.querySelector('a')?.getAttribute('href')).toBe('/');
             expect(container.querySelector('img')?.alt).toBe('A');
             expect(container.querySelector('img')?.getAttribute('loading')).toBe('eager');

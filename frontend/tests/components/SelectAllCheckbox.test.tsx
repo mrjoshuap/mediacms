@@ -9,7 +9,12 @@ describe('components', () => {
             const onSelectAll = jest.fn();
             const onDeselectAll = jest.fn();
             const view = renderIntoContainer(
-                <SelectAllCheckbox totalCount={totalCount} selectedCount={selectedCount} onSelectAll={onSelectAll} onDeselectAll={onDeselectAll} />
+                <SelectAllCheckbox
+                    totalCount={totalCount}
+                    selectedCount={selectedCount}
+                    onSelectAll={onSelectAll}
+                    onDeselectAll={onDeselectAll}
+                />
             );
             const input = view.container.querySelector('input') as HTMLInputElement;
             return { ...view, input, onSelectAll, onDeselectAll };

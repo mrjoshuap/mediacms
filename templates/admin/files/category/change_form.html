@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const fieldNames = [
     'rbac_groups',
   ];
-  
+
   // Process each field
   fieldNames.forEach(fieldName => {
     const fieldElement = document.querySelector(`.field-${fieldName}`);
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (label) {
           label.remove();
         }
-        
+
         fieldElement.classList.remove('col-sm-7');
         fieldElement.classList.add('col-sm-12');
 
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
         otherColElements.forEach(colElement => {
           colElement.classList.remove('col-sm-7');
           colElement.classList.add('col-sm-12');
-        });	      
+        });
       }
     }
   });
@@ -35,4 +35,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 {% endblock %}
-

@@ -78,19 +78,19 @@ export function MediaItemEditLink(props) {
         link = '/edit-media.html';
     }
 
-  return !link ? null : (
-    <a href={link} title={translateString("Edit media")} className="item-edit-icon">
-      <i className="material-icons">edit</i>
-    </a>
-  );
+    return !link ? null : (
+        <a href={link} title={translateString('Edit media')} className="item-edit-icon">
+            <i className="material-icons">edit</i>
+        </a>
+    );
 }
 
 export function MediaItemViewLink(props) {
-  return !props.link ? null : (
-    <a href={props.link} title={translateString("Publish media")} className="item-view-icon">
-      <i className="material-icons">publish</i>
-    </a>
-  );
+    return !props.link ? null : (
+        <a href={props.link} title={translateString('Publish media')} className="item-view-icon">
+            <i className="material-icons">publish</i>
+        </a>
+    );
 }
 
 export function MediaItemThumbnailLink(props) {
@@ -216,7 +216,7 @@ export function MediaItemVideoPreviewer(props) {
     return <span className="item-img-preview" data-src={src} data-ext={ext}></span>;
 }
 
-export function MediaItemVideoPlayer(props) {
+export function MediaItemVideoPlayer(_props) {
     return (
         <div className="item-player-wrapper">
             <div className="item-player-wrapper-inner">

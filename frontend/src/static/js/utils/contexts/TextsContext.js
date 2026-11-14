@@ -4,7 +4,7 @@ import { config as mediacmsConfig } from '../settings/config.js';
 const notifications = mediacmsConfig(window.MediaCMS).notifications.messages;
 
 export const textsConfig = {
-  notifications,
+    notifications,
 };
 
 export const TextsContext = createContext(textsConfig);

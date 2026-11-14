@@ -8,7 +8,9 @@ import { UserProvider } from '../../../src/static/js/utils/contexts/UserContext'
 import { MediaMoreOptionsIcon } from '../../../src/static/js/components/media-actions/MediaMoreOptionsIcon';
 
 jest.mock('../../../src/static/js/utils/stores/', () => require('../../_support/compD_storeMocks').mockStoresModule());
-jest.mock('../../../src/static/js/utils/actions/', () => require('../../_support/compD_storeMocks').mockActionsModule());
+jest.mock('../../../src/static/js/utils/actions/', () =>
+    require('../../_support/compD_storeMocks').mockActionsModule()
+);
 
 const mediaStore = MediaPageStore as any;
 
@@ -24,7 +26,9 @@ function videoData(extra: { [key: string]: any } = {}) {
         size: '9MB',
         original_media_url: '/media/original/clip.mp4',
         encodings_info: {
-            '720': { h264: { status: 'success', progress: 100, url: '/media/enc/720.mp4', title: 'h264-720', size: '4MB' } },
+            '720': {
+                h264: { status: 'success', progress: 100, url: '/media/enc/720.mp4', title: 'h264-720', size: '4MB' },
+            },
         },
         ...extra,
     };
@@ -69,7 +73,9 @@ describe('components/media-actions', () => {
             const { container, unmount } = render();
             click(container.querySelector('.more-options button'));
             click(container.querySelector('[data-page-id="mediaDelete"]'));
-            expect(container.querySelector('.media-delete-confirm .popup-message-main')?.textContent).toBe("You're willing to remove media permanently?");
+            expect(container.querySelector('.media-delete-confirm .popup-message-main')?.textContent).toBe(
+                "You're willing to remove media permanently?"
+            );
             expect((MediaPageActions as any).removeMedia).not.toHaveBeenCalled();
             click(container.querySelector('.media-delete-confirm .proceed-comment-removal'));
             expect((MediaPageActions as any).removeMedia).toHaveBeenCalledTimes(1);
@@ -92,7 +98,13 @@ describe('components/media-actions', () => {
             click(container.querySelector('.more-options button'));
             click(container.querySelector('[data-page-id="mediaStatusInfo"]'));
             const items = Array.from(container.querySelectorAll('.media-status-info li')).map((li) => li.textContent);
-            expect(items).toEqual(['Media type: video', 'State: N/A', 'Review state: Pending review', 'Encoding Status: success', 'Reports: 2']);
+            expect(items).toEqual([
+                'Media type: video',
+                'State: N/A',
+                'Review state: Pending review',
+                'Encoding Status: success',
+                'Reports: 2',
+            ]);
             expect(container.querySelector('.nav-page-mediaStatusInfo')).not.toBeNull();
             unmount();
         });
@@ -124,7 +136,9 @@ describe('components/media-actions', () => {
             const { container, unmount } = render();
             click(container.querySelector('.more-options button'));
             click(container.querySelector('[data-page-id="loggedInReportMedia"]'));
-            expect((container.querySelector('.report-form input') as HTMLInputElement).value).toBe('https://example.com/view?m=abc');
+            expect((container.querySelector('.report-form input') as HTMLInputElement).value).toBe(
+                'https://example.com/view?m=abc'
+            );
             changeValue(container.querySelector('.report-form textarea'), 'bad content');
             click(container.querySelectorAll('.form-actions-bottom button')[1]);
             expect((MediaPageActions as any).reportMedia).toHaveBeenCalledWith('bad content');

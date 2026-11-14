@@ -34,7 +34,7 @@ const ClipSegments = ({ segments, selectedSegmentId }: ClipSegmentsProps) => {
     };
 
     // Get selected segment
-    const selectedSegment = sortedSegments.find((seg) => seg.id === selectedSegmentId);
+    const _selectedSegment = sortedSegments.find((seg) => seg.id === selectedSegmentId);
 
     return (
         <div className="clip-segments-container">
@@ -43,7 +43,9 @@ const ClipSegments = ({ segments, selectedSegmentId }: ClipSegmentsProps) => {
             {sortedSegments.map((segment, index) => (
                 <div
                     key={segment.id}
-                    className={`segment-item ${getSegmentColorClass(index)} ${selectedSegmentId === segment.id ? 'selected' : ''}`}
+                    className={`segment-item ${getSegmentColorClass(index)} ${
+                        selectedSegmentId === segment.id ? 'selected' : ''
+                    }`}
                 >
                     <div className="segment-content">
                         <div className="segment-info">

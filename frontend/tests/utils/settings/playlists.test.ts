@@ -37,7 +37,7 @@ describe('utils/settings', () => {
         });
 
         // @todo: Revisit this behavior
-        test('Rejects non-exact case values (e.g., \"Audio\")', () => {
+        test('Rejects non-exact case values (e.g., "Audio")', () => {
             const cfg = playlistsConfig({ mediaTypes: ['Audio', 'Video'] });
             expect(cfg.mediaTypes).toEqual(['audio', 'video']);
         });

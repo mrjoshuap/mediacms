@@ -15,7 +15,9 @@ jest.mock('../../../src/static/js/utils/stores/', () => require('../../_support/
 const pageStore = PageStore as any;
 
 function group(container: HTMLElement, title: string) {
-    return Array.from(container.querySelectorAll('.mi-filter')).find((f) => f.querySelector('.mi-filter-title')?.textContent === title) as HTMLElement;
+    return Array.from(container.querySelectorAll('.mi-filter')).find(
+        (f) => f.querySelector('.mi-filter-title')?.textContent === title
+    ) as HTMLElement;
 }
 
 function active(el: HTMLElement) {
@@ -34,14 +36,28 @@ describe('components/search-filters', () => {
     describe('SearchResultsFilters', () => {
         test('Reports merged filter values and tracks the selection', () => {
             const onFiltersUpdate = jest.fn();
-            const { container, unmount } = renderIntoContainer(<SearchResultsFilters onFiltersUpdate={onFiltersUpdate} />);
+            const { container, unmount } = renderIntoContainer(
+                <SearchResultsFilters onFiltersUpdate={onFiltersUpdate} />
+            );
             expect(active(container)).toEqual(['All', 'All', 'Upload date (newest)']);
             pick(group(container, 'MEDIA TYPE'), 'Audio');
-            expect(onFiltersUpdate).toHaveBeenLastCalledWith({ media_type: 'audio', upload_date: 'all', sort_by: 'date_added_desc' });
+            expect(onFiltersUpdate).toHaveBeenLastCalledWith({
+                media_type: 'audio',
+                upload_date: 'all',
+                sort_by: 'date_added_desc',
+            });
             pick(group(container, 'UPLOAD DATE'), 'This week');
-            expect(onFiltersUpdate).toHaveBeenLastCalledWith({ media_type: 'audio', upload_date: 'this_week', sort_by: 'date_added_desc' });
+            expect(onFiltersUpdate).toHaveBeenLastCalledWith({
+                media_type: 'audio',
+                upload_date: 'this_week',
+                sort_by: 'date_added_desc',
+            });
             pick(group(container, 'SORT BY'), 'Like count');
-            expect(onFiltersUpdate).toHaveBeenLastCalledWith({ media_type: 'audio', upload_date: 'this_week', sort_by: 'most_likes' });
+            expect(onFiltersUpdate).toHaveBeenLastCalledWith({
+                media_type: 'audio',
+                upload_date: 'this_week',
+                sort_by: 'most_likes',
+            });
             expect(active(container)).toEqual(['Audio', 'This week', 'Like count']);
             act(() => {
                 pageStore.emit('window_resize');
@@ -52,7 +68,9 @@ describe('components/search-filters', () => {
         });
 
         test('Applies hidden class', () => {
-            const { container, unmount } = renderIntoContainer(<SearchResultsFilters hidden onFiltersUpdate={jest.fn()} />);
+            const { container, unmount } = renderIntoContainer(
+                <SearchResultsFilters hidden onFiltersUpdate={jest.fn()} />
+            );
             expect(container.firstElementChild?.className).toBe('mi-filters-row hidden');
             unmount();
         });
@@ -77,8 +95,14 @@ describe('components/search-filters', () => {
     describe('ProfileMediaTags', () => {
         test('Selects a tag and deselects it on second click', () => {
             const onTagSelect = jest.fn();
-            const { container, unmount } = renderIntoContainer(<ProfileMediaTags tags={['news', 'art']} onTagSelect={onTagSelect} />);
-            expect(Array.from(container.querySelectorAll('button span')).map((s) => s.textContent)).toEqual(['All', 'news', 'art']);
+            const { container, unmount } = renderIntoContainer(
+                <ProfileMediaTags tags={['news', 'art']} onTagSelect={onTagSelect} />
+            );
+            expect(Array.from(container.querySelectorAll('button span')).map((s) => s.textContent)).toEqual([
+                'All',
+                'news',
+                'art',
+            ]);
             pick(container, 'art');
             expect(onTagSelect).toHaveBeenLastCalledWith('art');
             expect(active(container)).toEqual(['art']);
@@ -106,11 +130,25 @@ describe('components/search-filters', () => {
         });
 
         test('Uses titles per mode', () => {
-            const byMe = renderIntoContainer(<ProfileMediaSharing sharedUsers={users} sharedGroups={groups} onSharingSelect={jest.fn()} />);
-            expect(Array.from(byMe.container.querySelectorAll('.mi-filter-title')).map((t) => t.textContent)).toEqual(['SHARED WITH USERS', 'SHARED WITH GROUPS']);
+            const byMe = renderIntoContainer(
+                <ProfileMediaSharing sharedUsers={users} sharedGroups={groups} onSharingSelect={jest.fn()} />
+            );
+            expect(Array.from(byMe.container.querySelectorAll('.mi-filter-title')).map((t) => t.textContent)).toEqual([
+                'SHARED WITH USERS',
+                'SHARED WITH GROUPS',
+            ]);
             byMe.unmount();
-            const withMe = renderIntoContainer(<ProfileMediaSharing mode="shared_with_me" sharedUsers={users} sharedGroups={groups} onSharingSelect={jest.fn()} />);
-            expect(Array.from(withMe.container.querySelectorAll('.mi-filter-title')).map((t) => t.textContent)).toEqual(['USERS SHARING', 'GROUPS SHARING']);
+            const withMe = renderIntoContainer(
+                <ProfileMediaSharing
+                    mode="shared_with_me"
+                    sharedUsers={users}
+                    sharedGroups={groups}
+                    onSharingSelect={jest.fn()}
+                />
+            );
+            expect(Array.from(withMe.container.querySelectorAll('.mi-filter-title')).map((t) => t.textContent)).toEqual(
+                ['USERS SHARING', 'GROUPS SHARING']
+            );
             withMe.unmount();
         });
 
@@ -123,7 +161,13 @@ describe('components/search-filters', () => {
             pick(group(container, 'SHARED WITH USERS'), 'Ann');
             expect(onSharingSelect).toHaveBeenLastCalledWith('user', 'ann');
             rerender(
-                <ProfileMediaSharing sharedUsers={users} sharedGroups={groups} onSharingSelect={onSharingSelect} selectedSharingType="user" selectedSharingValue="ann" />
+                <ProfileMediaSharing
+                    sharedUsers={users}
+                    sharedGroups={groups}
+                    onSharingSelect={onSharingSelect}
+                    selectedSharingType="user"
+                    selectedSharingValue="ann"
+                />
             );
             expect(active(container)).toEqual(['Ann', 'All']);
             pick(group(container, 'SHARED WITH USERS'), 'Ann');
@@ -148,7 +192,14 @@ describe('components/search-filters', () => {
                 'DURATION',
                 'PUBLISH STATE',
             ]);
-            const base = { media_type: 'all', upload_date: 'all', duration: 'all', publish_state: 'all', sort_by: 'most_views', tag: 'news' };
+            const base = {
+                media_type: 'all',
+                upload_date: 'all',
+                duration: 'all',
+                publish_state: 'all',
+                sort_by: 'most_views',
+                tag: 'news',
+            };
             pick(group(container, 'MEDIA TYPE'), 'Video');
             expect(onFiltersUpdate).toHaveBeenLastCalledWith({ ...base, media_type: 'video' });
             pick(group(container, 'MEDIA TYPE'), 'Video');
@@ -172,10 +223,14 @@ describe('components/search-filters', () => {
 
         test('Falls back to internal sort and tag defaults', () => {
             const onFiltersUpdate = jest.fn();
-            const { container, unmount } = renderIntoContainer(<ProfileMediaFilters hidden onFiltersUpdate={onFiltersUpdate} />);
+            const { container, unmount } = renderIntoContainer(
+                <ProfileMediaFilters hidden onFiltersUpdate={onFiltersUpdate} />
+            );
             expect(container.firstElementChild?.className).toBe('mi-filters-row hidden');
             pick(group(container, 'MEDIA TYPE'), 'Pdf');
-            expect(onFiltersUpdate).toHaveBeenLastCalledWith(expect.objectContaining({ sort_by: 'date_added_desc', tag: 'all', media_type: 'pdf' }));
+            expect(onFiltersUpdate).toHaveBeenLastCalledWith(
+                expect.objectContaining({ sort_by: 'date_added_desc', tag: 'all', media_type: 'pdf' })
+            );
             unmount();
         });
     });
@@ -189,18 +244,26 @@ describe('components/search-filters', () => {
 
         test('Reports default args on mount', () => {
             const onFiltersUpdate = jest.fn();
-            const { container, unmount } = renderIntoContainer(<SearchMediaFiltersRow onFiltersUpdate={onFiltersUpdate} />);
+            const { container, unmount } = renderIntoContainer(
+                <SearchMediaFiltersRow onFiltersUpdate={onFiltersUpdate} />
+            );
             expect(onFiltersUpdate).toHaveBeenLastCalledWith({ sort_by: null, ordering: null, media_type: null });
-            expect(container.querySelector('.media-type-filters .filter-button-label-text')?.textContent).toBe('All media types');
+            expect(container.querySelector('.media-type-filters .filter-button-label-text')?.textContent).toBe(
+                'All media types'
+            );
             unmount();
         });
 
         test('Type filter hides the selected option and updates its label', () => {
             const onFiltersUpdate = jest.fn();
-            const { container, unmount } = renderIntoContainer(<SearchMediaFiltersRow onFiltersUpdate={onFiltersUpdate} />);
+            const { container, unmount } = renderIntoContainer(
+                <SearchMediaFiltersRow onFiltersUpdate={onFiltersUpdate} />
+            );
             const typeFilter = container.querySelector('.media-type-filters .media-filter') as HTMLElement;
             click(typeFilter.querySelector('.popup-trigger'));
-            expect(Array.from(typeFilter.querySelectorAll('.media-filter-option button')).map((b) => b.textContent)).toEqual(['Video', 'Audio', 'Images', 'Pdf']);
+            expect(
+                Array.from(typeFilter.querySelectorAll('.media-filter-option button')).map((b) => b.textContent)
+            ).toEqual(['Video', 'Audio', 'Images', 'Pdf']);
             click(findByText(typeFilter, '.media-filter-option button', 'Images'));
             expect(onFiltersUpdate).toHaveBeenLastCalledWith({ sort_by: null, ordering: null, media_type: 'image' });
             expect(typeFilter.querySelector('.filter-button-label-text')?.textContent).toBe('Images');
@@ -214,7 +277,9 @@ describe('components/search-filters', () => {
             ['Pdf', 'Upload date (oldest)', { media_type: 'pdf', sort_by: null, ordering: 'asc' }],
         ])('Combines %s type with %s sorting', (type, sort, expected) => {
             const onFiltersUpdate = jest.fn();
-            const { container, unmount } = renderIntoContainer(<SearchMediaFiltersRow onFiltersUpdate={onFiltersUpdate} />);
+            const { container, unmount } = renderIntoContainer(
+                <SearchMediaFiltersRow onFiltersUpdate={onFiltersUpdate} />
+            );
             openAndPick(container, 0, type);
             openAndPick(container, 1, sort);
             expect(onFiltersUpdate).toHaveBeenLastCalledWith(expected);

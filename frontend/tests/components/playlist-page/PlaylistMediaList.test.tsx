@@ -74,7 +74,9 @@ describe('components/playlist-page', () => {
             });
 
             expect(listEl.classList.contains('on-dragging')).toBe(false);
-            const orders = Array.from(listEl.querySelectorAll('.item-order-number div div')).map((d: any) => d.getAttribute('data-order'));
+            const orders = Array.from(listEl.querySelectorAll('.item-order-number div div')).map((d: any) =>
+                d.getAttribute('data-order')
+            );
             expect(orders).toEqual(['1', '2', '3']);
             expect(mockedAxios.put.mock.calls.map((c) => c[1])).toEqual([
                 { type: 'ordering', ordering: 1, media_friendly_token: 'c' },

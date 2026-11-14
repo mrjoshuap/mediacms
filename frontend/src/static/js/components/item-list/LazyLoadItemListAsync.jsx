@@ -8,86 +8,88 @@ import { ItemsListHandler } from './includes/itemLists/ItemsListHandler';
 import { applyDefaultProps } from '../../utils/helpers/applyDefaultProps';
 
 export function LazyLoadItemListAsync(rawProps) {
-  const props = applyDefaultProps(rawProps, LazyLoadItemListAsync.defaultPropValues);
-  const [
-    items,
-    countedItems,
-    listHandler,
-    setListHandler,
-    classname,
-    onItemsCount,
-    onItemsLoad,
-    onWindowScroll,
-    onDocumentVisibilityChange,
-    itemsListWrapperRef,
-    itemsListRef,
-    renderBeforeListWrap,
-    renderAfterListWrap,
-  ] = useItemListLazyLoad(props);
-
-  useEffect(() => {
-    setListHandler(
-      new ItemsListHandler(
-        props.pageItems,
-        props.maxItems,
-        props.firstItemRequestUrl,
-        props.requestUrl,
+    const props = applyDefaultProps(rawProps, LazyLoadItemListAsync.defaultPropValues);
+    const [
+        items,
+        countedItems,
+        listHandler,
+        setListHandler,
+        classname,
         onItemsCount,
         onItemsLoad,
-        props.onResponseDataLoaded
-      )
-    );
+        onWindowScroll,
+        onDocumentVisibilityChange,
+        itemsListWrapperRef,
+        itemsListRef,
+        renderBeforeListWrap,
+        renderAfterListWrap,
+    ] = useItemListLazyLoad(props);
 
-    PageStore.on('window_scroll', onWindowScroll);
-    PageStore.on('document_visibility_change', onDocumentVisibilityChange);
+    useEffect(() => {
+        setListHandler(
+            new ItemsListHandler(
+                props.pageItems,
+                props.maxItems,
+                props.firstItemRequestUrl,
+                props.requestUrl,
+                onItemsCount,
+                onItemsLoad,
+                props.onResponseDataLoaded
+            )
+        );
 
-    onWindowScroll();
+        PageStore.on('window_scroll', onWindowScroll);
+        PageStore.on('document_visibility_change', onDocumentVisibilityChange);
 
-    return () => {
-      PageStore.removeListener('window_scroll', onWindowScroll);
-      PageStore.removeListener('document_visibility_change', onDocumentVisibilityChange);
+        onWindowScroll();
 
-      if (listHandler) {
-        listHandler.cancelAll();
-        setListHandler(null);
-      }
-    };
-  }, []);
+        return () => {
+            PageStore.removeListener('window_scroll', onWindowScroll);
+            PageStore.removeListener('document_visibility_change', onDocumentVisibilityChange);
 
-  useEffect(() => {
-    if (props.onItemsUpdate && items.length > 0) {
-      props.onItemsUpdate(items);
-    }
-  }, [items]);
+            if (listHandler) {
+                listHandler.cancelAll();
+                setListHandler(null);
+            }
+        };
+    }, []);
 
-  return !countedItems ? (
-    <PendingItemsList className={classname.listOuter} />
-  ) : !items.length ? null : (
-    <div className={classname.listOuter}>
-      {renderBeforeListWrap()}
+    useEffect(() => {
+        if (props.onItemsUpdate && items.length > 0) {
+            props.onItemsUpdate(items);
+        }
+    }, [items]);
 
-      <div ref={itemsListWrapperRef} className="items-list-wrap">
-        <div ref={itemsListRef} className={classname.list}>
-          {items.map((itm, index) => (
-            <ListItem
-              key={index}
-              {...listItemProps(props, itm, index)}
-              showSelection={props.showSelection}
-              hasAnySelection={props.hasAnySelection}
-              isSelected={props.selectedMedia && props.selectedMedia.has(itm.friendly_token || itm.uid || itm.id)}
-              onSelectionChange={props.onMediaSelection}
-              mediaId={itm.friendly_token || itm.uid || itm.id}
-            />
-          ))}
+    return !countedItems ? (
+        <PendingItemsList className={classname.listOuter} />
+    ) : !items.length ? null : (
+        <div className={classname.listOuter}>
+            {renderBeforeListWrap()}
+
+            <div ref={itemsListWrapperRef} className="items-list-wrap">
+                <div ref={itemsListRef} className={classname.list}>
+                    {items.map((itm, index) => (
+                        <ListItem
+                            key={index}
+                            {...listItemProps(props, itm, index)}
+                            showSelection={props.showSelection}
+                            hasAnySelection={props.hasAnySelection}
+                            isSelected={
+                                props.selectedMedia && props.selectedMedia.has(itm.friendly_token || itm.uid || itm.id)
+                            }
+                            onSelectionChange={props.onMediaSelection}
+                            mediaId={itm.friendly_token || itm.uid || itm.id}
+                        />
+                    ))}
+                </div>
+            </div>
+
+            {renderAfterListWrap()}
         </div>
-      </div>
-
-      {renderAfterListWrap()}
-    </div>
-  );
+    );
 }
 
 LazyLoadItemListAsync.defaultPropValues = {
-  ...ItemListAsync.defaultPropValues,
-  pageItems: 2,
+    ...ItemListAsync.defaultPropValues,
+    pageItems: 2,
 };

@@ -185,10 +185,19 @@ See [Tests](tests.md) for the test commands.
 ## Check the code style
 
 1. Install the hook once: `pre-commit install`.
-2. Run all checks: `pre-commit run --all`.
-3. Fix every problem the checks report.
+2. Install Node dependencies in each frontend package you touch (or all four):
 
-Python uses `black`, `isort` (profile `black`), and `flake8`. The frontend uses Prettier. The Prettier settings are in `.prettierrc`.
+    ```bash
+    npm install --prefix frontend
+    npm install --prefix frontend-tools/video-js
+    npm install --prefix frontend-tools/video-editor
+    npm install --prefix frontend-tools/chapters-editor
+    ```
+
+3. Run all checks: `pre-commit run --all`.
+4. Fix every problem the checks report.
+
+Python uses `black`, `isort` (profile `black`), and `flake8`. JavaScript and TypeScript use Prettier (`.prettierrc`) and ESLint. Pre-commit also runs hygiene hooks (end-of-file, trailing whitespace, YAML/JSON, merge conflicts, large files, private keys). Local ESLint hooks need the package `node_modules` above. You can also run `make lint-frontend` on the host.
 
 ## Fake media for development
 

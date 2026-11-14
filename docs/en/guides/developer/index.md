@@ -42,7 +42,7 @@ Read [Architecture](architecture.md) for the full stack.
 
 ## Rules for every change
 
-- Run `pre-commit run --all` before you commit. It runs `black`, `isort`, and `flake8` for Python.
+- Run `pre-commit run --all` before you commit. It runs `black`, `isort`, and `flake8` for Python, plus Prettier, ESLint, and hygiene hooks for the frontend packages.
 - Use Conventional Commit messages: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`, `test`, `depr`.
 - Do not change the version in `package.json`. Releases are automatic.
 - Do not edit `CHANGELOG.md`. Releases are automatic.

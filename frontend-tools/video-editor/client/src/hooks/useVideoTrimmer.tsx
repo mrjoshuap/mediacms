@@ -162,7 +162,7 @@ const useVideoTrimmer = () => {
     }, []);
 
     // Play/pause video
-    const playPauseVideo = () => {
+    const _playPauseVideo = () => {
         const video = videoRef.current;
         if (!video) return;
 
@@ -354,7 +354,9 @@ const useVideoTrimmer = () => {
 
                 // Log the update details
                 logger.debug(
-                    `Updating segments with action: ${actionType}, recordHistory: ${isSignificantChange ? 'true' : 'false'}`
+                    `Updating segments with action: ${actionType}, recordHistory: ${
+                        isSignificantChange ? 'true' : 'false'
+                    }`
                 );
 
                 // Update segment state immediately for UI feedback
@@ -588,7 +590,9 @@ const useVideoTrimmer = () => {
         if (historyPosition > 0) {
             const previousState = history[historyPosition - 1];
             logger.debug(
-                `** UNDO ** to position ${historyPosition - 1}, action: ${previousState.action}, segments: ${previousState.clipSegments.length}`
+                `** UNDO ** to position ${historyPosition - 1}, action: ${previousState.action}, segments: ${
+                    previousState.clipSegments.length
+                }`
             );
 
             // Log segment details to help debug
@@ -616,7 +620,9 @@ const useVideoTrimmer = () => {
         if (historyPosition < history.length - 1) {
             const nextState = history[historyPosition + 1];
             logger.debug(
-                `** REDO ** to position ${historyPosition + 1}, action: ${nextState.action}, segments: ${nextState.clipSegments.length}`
+                `** REDO ** to position ${historyPosition + 1}, action: ${nextState.action}, segments: ${
+                    nextState.clipSegments.length
+                }`
             );
 
             // Log segment details to help debug
@@ -645,7 +651,7 @@ const useVideoTrimmer = () => {
     };
 
     // Handle play/pause of the full video
-    const handlePlay = () => {
+    const _handlePlay = () => {
         const video = videoRef.current;
         if (!video) return;
 

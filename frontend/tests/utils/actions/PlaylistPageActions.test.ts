@@ -23,12 +23,15 @@ describe('utils/actions', () => {
             ['toggleSave', [], { type: 'TOGGLE_SAVE' }],
             ['updatePlaylist', [{ title: 'T' }], { type: 'UPDATE_PLAYLIST', playlist_data: { title: 'T' } }],
             ['removePlaylist', [], { type: 'REMOVE_PLAYLIST' }],
-            ['removedMediaFromPlaylist', ['m1', 'p1'], { type: 'MEDIA_REMOVED_FROM_PLAYLIST', media_id: 'm1', playlist_id: 'p1' }],
+            [
+                'removedMediaFromPlaylist',
+                ['m1', 'p1'],
+                { type: 'MEDIA_REMOVED_FROM_PLAYLIST', media_id: 'm1', playlist_id: 'p1' },
+            ],
             ['reorderedMediaInPlaylist', [[1, 2]], { type: 'PLAYLIST_MEDIA_REORDERED', playlist_media: [1, 2] }],
         ] as [string, any[], any][])('%s dispatches the expected payload', (name, args, expected) => {
             (PlaylistPageActions as any)[name](...args);
             expect(received).toStrictEqual([expected]);
         });
-
     });
 });

@@ -13,7 +13,14 @@ describe('components/_shared', () => {
 
         test('Renders label, bounded input and unit options', () => {
             const { container, unmount } = renderIntoContainer(
-                <NumericInputWithUnit label="Width" units={units} defaultValue={50} minValue={10} maxValue={100} defaultUnit="percent" />
+                <NumericInputWithUnit
+                    label="Width"
+                    units={units}
+                    defaultValue={50}
+                    minValue={10}
+                    maxValue={100}
+                    defaultUnit="percent"
+                />
             );
             expect(container.querySelector('.num-value-unit .label')?.textContent).toBe('Width');
             const input = container.querySelector('input.value-input') as HTMLInputElement;
@@ -89,7 +96,9 @@ describe('components/_shared', () => {
         });
 
         test('Accepts changes without callbacks', () => {
-            const { container, unmount } = renderIntoContainer(<NumericInputWithUnit units={units} defaultValue={20} />);
+            const { container, unmount } = renderIntoContainer(
+                <NumericInputWithUnit units={units} defaultValue={20} />
+            );
             const input = container.querySelector('input') as HTMLInputElement;
             const select = container.querySelector('select') as HTMLSelectElement;
             expect(() =>

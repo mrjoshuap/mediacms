@@ -130,7 +130,9 @@ describe('components/item-list', () => {
 
             const picture = item.querySelector('.item-img-preview picture') as HTMLElement;
             expect(picture).toBe(previewer.element);
-            expect(picture.querySelector('source')?.getAttribute('srcset')).toMatch(/^https:\/\/example\.com\/+media\/preview\.gif$/);
+            expect(picture.querySelector('source')?.getAttribute('srcset')).toMatch(
+                /^https:\/\/example\.com\/+media\/preview\.gif$/
+            );
             const img = picture.querySelector('img') as HTMLImageElement;
             expect(img.getAttribute('src')).toMatch(/\/media\/preview\.gif$/);
             expect(img.getAttribute('width')).toBe('1px');

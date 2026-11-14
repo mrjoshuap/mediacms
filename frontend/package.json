@@ -13,7 +13,10 @@
         "test": "jest",
         "test-coverage": "npx rimraf ./coverage && jest --coverage",
         "test-coverage-watch": "npm run test-coverage -- --watchAll",
-        "test-watch": "jest --watch"
+        "test-watch": "jest --watch",
+        "lint": "eslint .",
+        "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,json}\" \"tests/**/*.{js,jsx,ts,tsx,css,json}\"",
+        "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css,json}\" \"tests/**/*.{js,jsx,ts,tsx,css,json}\""
     },
     "browserslist": [
         "defaults"
@@ -22,6 +25,7 @@
         "@babel/core": "^7.29.7",
         "@babel/preset-env": "^7.29.7",
         "@babel/preset-react": "^7.29.7",
+        "@eslint/js": "^9.39.5",
         "@types/jest": "^30.0.0",
         "@types/minimatch": "^5.1.2",
         "@types/react": "^19.3.0",
@@ -34,6 +38,9 @@
         "copy-webpack-plugin": "^14.0.0",
         "core-js": "^3.50.0",
         "css-loader": "^7.1.2",
+        "eslint": "^9.39.5",
+        "eslint-plugin-react-hooks": "^5.2.0",
+        "globals": "^16.5.0",
         "jest": "^30.5.2",
         "jest-environment-jsdom": "^30.5.2",
         "jsdom": "^27.3.0",
@@ -45,14 +52,15 @@
         "ts-jest": "^29.4.14",
         "ts-loader": "^9.5.2",
         "typescript": "^5.9.3",
+        "typescript-eslint": "^8.72.2",
         "webpack": "^5.111.1",
         "webpack-cli": "^7.2.3",
         "webpack-dev-server": "^5.2.2"
     },
-    "dependencies": {
+    "dependencies": {
         "axios": "^1.20.0",
         "events": "^3.3.0",
-        "normalize.css": "^8.0.1",
+        "normalize.css": "^8.0.1",
         "react": "^19.3.0",
         "react-dom": "^19.3.0",
         "sortablejs": "^1.15.7",

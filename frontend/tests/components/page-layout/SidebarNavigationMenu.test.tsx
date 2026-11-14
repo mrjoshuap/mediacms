@@ -10,7 +10,9 @@ import { PageSidebar } from '../../../src/static/js/components/page-layout/PageS
 import PageStore from '../../../src/static/js/utils/stores/PageStore';
 
 function classes(container: HTMLElement) {
-    return Array.from(container.querySelectorAll('li')).map((li) => li.className.split(' ').find((c) => c.startsWith('nav-item-')));
+    return Array.from(container.querySelectorAll('li')).map((li) =>
+        li.className.split(' ').find((c) => c.startsWith('nav-item-'))
+    );
 }
 
 describe('components/page-layout', () => {
@@ -71,7 +73,12 @@ describe('components/page-layout', () => {
                 info: (sidebar.infoItems || []).slice(),
                 manage: (sidebar.manageItems || []).slice(),
             };
-            const item = (text: string, link: string, className: string) => ({ text, link, icon: 'article', className });
+            const item = (text: string, link: string, className: string) => ({
+                text,
+                link,
+                icon: 'article',
+                className,
+            });
             sidebar.mainMenuExtra.items = [item('Handbook', '/handbook', 'nav-item-cms-page-handbook')];
             sidebar.libraryItems = [item('Drafts', '/drafts', 'nav-item-cms-page-drafts')];
             sidebar.personalItems = [item('Notes', '/notes', 'nav-item-cms-page-notes')];
@@ -84,11 +91,21 @@ describe('components/page-layout', () => {
                 </UserProvider>
             );
             const signedInClasses = classes(signedIn.container);
-            expect(signedInClasses.indexOf('nav-item-members')).toBeLessThan(signedInClasses.indexOf('nav-item-cms-page-handbook'));
-            expect(signedInClasses.indexOf('nav-item-my-playlists')).toBeLessThan(signedInClasses.indexOf('nav-item-cms-page-drafts'));
-            expect(signedInClasses.indexOf('nav-item-liked')).toBeLessThan(signedInClasses.indexOf('nav-item-cms-page-notes'));
-            expect(signedInClasses.indexOf('nav-item-language')).toBeLessThan(signedInClasses.indexOf('nav-item-cms-page-guide'));
-            expect(signedInClasses.indexOf('nav-item-manage-comments')).toBeLessThan(signedInClasses.indexOf('nav-item-cms-page-policy'));
+            expect(signedInClasses.indexOf('nav-item-members')).toBeLessThan(
+                signedInClasses.indexOf('nav-item-cms-page-handbook')
+            );
+            expect(signedInClasses.indexOf('nav-item-my-playlists')).toBeLessThan(
+                signedInClasses.indexOf('nav-item-cms-page-drafts')
+            );
+            expect(signedInClasses.indexOf('nav-item-liked')).toBeLessThan(
+                signedInClasses.indexOf('nav-item-cms-page-notes')
+            );
+            expect(signedInClasses.indexOf('nav-item-language')).toBeLessThan(
+                signedInClasses.indexOf('nav-item-cms-page-guide')
+            );
+            expect(signedInClasses.indexOf('nav-item-manage-comments')).toBeLessThan(
+                signedInClasses.indexOf('nav-item-cms-page-policy')
+            );
             expect(signedIn.container.textContent).not.toContain('under the menu');
             signedIn.unmount();
 
@@ -117,7 +134,9 @@ describe('components/page-layout', () => {
             const user = { isAnonymous: true, userCan: { canSeeMembersPage: false }, pages: {} };
             const { container, unmount } = renderIntoContainer(
                 <UserContext.Provider value={user as any}>
-                    <SidebarContext.Provider value={{ hideHomeLink: true, hideTagsLink: true, hideCategoriesLink: true } as any}>
+                    <SidebarContext.Provider
+                        value={{ hideHomeLink: true, hideTagsLink: true, hideCategoriesLink: true } as any}
+                    >
                         <SidebarNavigationMenu />
                     </SidebarContext.Provider>
                 </UserContext.Provider>
@@ -142,7 +161,15 @@ describe('components/page-layout', () => {
             const { container, unmount } = renderIntoContainer(
                 <UserProvider>
                     <LayoutContext.Provider value={{ visibleSidebar: true, toggleSidebar: jest.fn() } as any}>
-                        <ThemeContext.Provider value={{ currentThemeMode: 'light', changeThemeMode: jest.fn(), themeModeSwitcher: { enabled: true, position: 'sidebar' } } as any}>
+                        <ThemeContext.Provider
+                            value={
+                                {
+                                    currentThemeMode: 'light',
+                                    changeThemeMode: jest.fn(),
+                                    themeModeSwitcher: { enabled: true, position: 'sidebar' },
+                                } as any
+                            }
+                        >
                             <PageSidebar />
                         </ThemeContext.Provider>
                     </LayoutContext.Provider>

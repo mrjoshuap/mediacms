@@ -36,7 +36,11 @@ describe('components/item-list', () => {
         test('Shows pending list until the response arrives then renders items', () => {
             const itemsCountCallback = jest.fn();
             const { container, unmount } = renderIntoContainer(
-                <List requestUrl="https://example.com/api/v1/media" pageItems={2} itemsCountCallback={itemsCountCallback} />
+                <List
+                    requestUrl="https://example.com/api/v1/media"
+                    pageItems={2}
+                    itemsCountCallback={itemsCountCallback}
+                />
             );
             expect(container.querySelector('.items-list-wrap-waiting')).not.toBeNull();
 

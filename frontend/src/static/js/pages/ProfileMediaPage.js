@@ -2,7 +2,13 @@ import React from 'react';
 import { apiUrlConfig, LinksConsumer, memberConfig } from '../utils/contexts';
 import { PageStore, ProfilePageStore } from '../utils/stores';
 import { ProfilePageActions, PageActions } from '../utils/actions';
-import { inEmbeddedApp, inSelectMediaEmbedMode, isDeepLinkSelection, submitDeepLinkSelection, translateString } from '../utils/helpers/';
+import {
+    inEmbeddedApp,
+    inSelectMediaEmbedMode,
+    isDeepLinkSelection,
+    submitDeepLinkSelection,
+    translateString,
+} from '../utils/helpers/';
 import { MediaListWrapper } from '../components/MediaListWrapper';
 import ProfilePagesHeader from '../components/profile-page/ProfilePagesHeader';
 import ProfilePagesContent from '../components/profile-page/ProfilePagesContent';
@@ -176,11 +182,14 @@ class ProfileMediaPage extends Page {
             const embedUrl = `${baseUrl}/embed?m=${mediaId}`;
 
             if (window.parent !== window) {
-                window.parent.postMessage({
-                    type: 'videoSelected',
-                    embedUrl: embedUrl,
-                    videoId: mediaId,
-                }, '*');
+                window.parent.postMessage(
+                    {
+                        type: 'videoSelected',
+                        embedUrl: embedUrl,
+                        videoId: mediaId,
+                    },
+                    '*'
+                );
             }
         }
     }
@@ -393,8 +402,7 @@ class ProfileMediaPage extends Page {
                         encodeURIComponent(this.state.query) +
                         this.state.filterArgs;
                 } else {
-                    requestUrl =
-                        apiUrlConfig.media + '?author=' + this.state.author.id + this.state.filterArgs;
+                    requestUrl = apiUrlConfig.media + '?author=' + this.state.author.id + this.state.filterArgs;
                 }
 
                 this.setState({
@@ -461,7 +469,11 @@ class ProfileMediaPage extends Page {
                         className="items-list-ver"
                         style={inEmbeddedApp() ? { marginTop: '24px' } : undefined}
                         showBulkActions={!isSelectMediaMode && isMediaAuthor}
-                        selectedCount={isSelectMediaMode ? this.state.selectedMedia.size : this.props.bulkActions.selectedMedia.size}
+                        selectedCount={
+                            isSelectMediaMode
+                                ? this.state.selectedMedia.size
+                                : this.props.bulkActions.selectedMedia.size
+                        }
                         totalCount={isSelectMediaMode ? 0 : this.props.bulkActions.availableMediaIds.length}
                         onBulkAction={this.props.bulkActions.handleBulkAction}
                         onSelectAll={this.props.bulkActions.handleSelectAll}
@@ -499,9 +511,19 @@ class ProfileMediaPage extends Page {
                             hideDate={!PageStore.get('config-media-item').displayPublishDate}
                             canEdit={isMediaAuthor}
                             showSelection={isMediaAuthor || isSelectMediaMode}
-                            hasAnySelection={isSelectMediaMode ? this.state.selectedMedia.size > 0 : this.props.bulkActions.selectedMedia.size > 0}
-                            selectedMedia={isSelectMediaMode ? this.state.selectedMedia : this.props.bulkActions.selectedMedia}
-                            onMediaSelection={isSelectMediaMode ? this.handleMediaSelection : this.props.bulkActions.handleMediaSelection}
+                            hasAnySelection={
+                                isSelectMediaMode
+                                    ? this.state.selectedMedia.size > 0
+                                    : this.props.bulkActions.selectedMedia.size > 0
+                            }
+                            selectedMedia={
+                                isSelectMediaMode ? this.state.selectedMedia : this.props.bulkActions.selectedMedia
+                            }
+                            onMediaSelection={
+                                isSelectMediaMode
+                                    ? this.handleMediaSelection
+                                    : this.props.bulkActions.handleMediaSelection
+                            }
                             onItemsUpdate={!isSelectMediaMode ? this.props.bulkActions.handleItemsUpdate : undefined}
                             onResponseDataLoaded={this.onResponseDataLoaded}
                         />

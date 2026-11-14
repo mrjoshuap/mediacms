@@ -80,7 +80,7 @@ export default function ViewerInfoContent(props) {
 
     // Filter to show only LMS courses when in embed mode
     if (inEmbeddedApp()) {
-        mediaCategories = mediaCategories.filter(cat => cat.is_lms_course === true);
+        mediaCategories = mediaCategories.filter((cat) => cat.is_lms_course === true);
     }
 
     const categoriesContent = PageStore.get('config-options').pages.media.categoriesWithTitle
@@ -94,7 +94,7 @@ export default function ViewerInfoContent(props) {
 
     summary = summary ? summary.trim() : '';
 
-    const [hasSummary, setHasSummary] = useState('' !== summary);
+    const [hasSummary, _setHasSummary] = useState('' !== summary);
     const [isContentVisible, setIsContentVisible] = useState('' == summary);
 
     function onMediaDelete(mediaId) {
@@ -103,9 +103,7 @@ export default function ViewerInfoContent(props) {
             PageActions.addNotification('Media removed. Redirecting...', 'mediaDelete');
             setTimeout(function () {
                 window.location.href =
-                    siteConfig.url +
-                    '/' +
-                    MediaPageStore.get('media-data').author_profile.replace(/^\//g, '');
+                    siteConfig.url + '/' + MediaPageStore.get('media-data').author_profile.replace(/^\//g, '');
             }, 2000);
         }, 100);
 
@@ -142,7 +140,7 @@ export default function ViewerInfoContent(props) {
     const authorThumb = formatInnerLink(props.author.thumb, siteConfig.url);
 
     function setTimestampAnchors(text) {
-        function wrapTimestampWithAnchor(match, string) {
+        function wrapTimestampWithAnchor(match, _string) {
             let split = match.split(':'),
                 s = 0,
                 m = 1;
@@ -199,12 +197,12 @@ export default function ViewerInfoContent(props) {
                             value={categoriesContent}
                             title={
                                 inEmbeddedApp()
-                                    ? (1 < categoriesContent.length
+                                    ? 1 < categoriesContent.length
                                         ? translateString('Courses')
-                                        : translateString('Course'))
-                                    : (1 < categoriesContent.length
-                                        ? translateString('Categories')
-                                        : translateString('Category'))
+                                        : translateString('Course')
+                                    : 1 < categoriesContent.length
+                                      ? translateString('Categories')
+                                      : translateString('Category')
                             }
                             id="categories"
                         />

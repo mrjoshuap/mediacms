@@ -11,7 +11,7 @@ function storedSidebar(key) {
     try {
         const value = localStorage.getItem(key);
         return 'true' === value ? true : 'false' === value ? false : null;
-    } catch (error) {
+    } catch (_error) {
         return null;
     }
 }
@@ -19,7 +19,7 @@ function storedSidebar(key) {
 function storeSidebar(key, visible) {
     try {
         localStorage.setItem(key, visible ? 'true' : 'false');
-    } catch (error) {}
+    } catch (_error) {}
 }
 
 function onSidebarVisibilityChange(visibleSidebar) {
@@ -61,7 +61,10 @@ export const LayoutProvider = ({ children }) => {
     const site = useContext(SiteContext);
     const storageKey = 'MediaCMS[' + site.id + '][layout][visible-sidebar]';
 
-    const isMediaPage = useMemo(() => PageStore.get('current-page') === 'media' || window.MediaCMS?.mediaId !== undefined, []);
+    const isMediaPage = useMemo(
+        () => PageStore.get('current-page') === 'media' || window.MediaCMS?.mediaId !== undefined,
+        []
+    );
     const isEmbeddedApp = useMemo(() => inEmbeddedApp(), []);
 
     const enabledSidebar = Boolean(document.getElementById('app-sidebar') || document.querySelector('.page-sidebar'));
@@ -102,7 +105,10 @@ export const LayoutProvider = ({ children }) => {
         });
 
         setVisibleSidebar(
-            !isEmbeddedApp && !isMediaPage && WIDE_SCREEN_MIN_WIDTH <= window.innerWidth && (null === visibleSidebar || visibleSidebar)
+            !isEmbeddedApp &&
+                !isMediaPage &&
+                WIDE_SCREEN_MIN_WIDTH <= window.innerWidth &&
+                (null === visibleSidebar || visibleSidebar)
         );
     }, []);
 

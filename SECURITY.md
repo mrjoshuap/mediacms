@@ -11,11 +11,11 @@ If you discover a security vulnerability in MediaCMS, **please do not open a pub
 
 Instead, report it using one of the following methods:
 
-- **GitHub Security Advisories (preferred)**  
+- **GitHub Security Advisories (preferred)**
   Use the "Report a vulnerability" feature in this repository.
 
-- **Contact Form**  
-  Submit details via the official contact page:  
+- **Contact Form**
+  Submit details via the official contact page:
   https://mediacms.io/contact/
 
 Please include as much of the following information as possible:
