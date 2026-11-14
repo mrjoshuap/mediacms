@@ -1,0 +1,73 @@
+# Documentation locales. Match cms/settings.py LANGUAGES.
+# Set build: true to publish a locale. English is the default.
+languages:
+  - locale: en
+    name: English
+    build: true
+    default: true
+  - locale: ar
+    name: العربية
+    build: false
+    rtl: true
+  - locale: bn
+    name: বাংলা
+    build: false
+  - locale: da
+    name: Dansk
+    build: false
+  - locale: nl
+    name: Nederlands
+    build: false
+  - locale: fr
+    name: Français
+    build: false
+  - locale: de
+    name: Deutsch
+    build: false
+  - locale: hi
+    name: हिन्दी
+    build: false
+  - locale: id
+    name: Bahasa Indonesia
+    build: false
+  - locale: it
+    name: Italiano
+    build: false
+  - locale: ja
+    name: 日本語
+    build: false
+  - locale: ko
+    name: 한국어
+    build: false
+  - locale: pt
+    name: Português
+    build: false
+  - locale: ru
+    name: Русский
+    build: false
+  - locale: zh-hans
+    name: 简体中文
+    build: false
+  - locale: sl
+    name: Slovenščina
+    build: false
+  - locale: zh-hant
+    name: 繁體中文
+    build: false
+  - locale: es
+    name: Español
+    build: false
+  - locale: tr
+    name: Türkçe
+    build: false
+  - locale: el
+    name: Ελληνικά
+    build: false
+  - locale: ur
+    name: اردو
+    build: false
+    rtl: true
+  - locale: he
+    name: עברית
+    build: false
+    rtl: true

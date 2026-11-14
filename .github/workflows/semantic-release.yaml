@@ -1,9 +1,13 @@
 name: Semantic Release
 
+# Stable release line only. Override with repository variable
+# MEDIACMS_STABLE_BRANCH when the production branch is not "main".
+# `on.push.branches` cannot read vars; list both common names.
 on:
   push:
     branches:
       - main
+      - mediacms-next
 
 permissions:
   contents: write
@@ -11,6 +15,7 @@ permissions:
 
 jobs:
   semantic-release:
+    if: github.ref == format('refs/heads/{0}', vars.MEDIACMS_STABLE_BRANCH || 'main')
     runs-on: ubuntu-latest
     environment: dev
     steps:

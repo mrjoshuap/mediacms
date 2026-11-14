@@ -8,6 +8,8 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework.permissions import AllowAny
 
+from cms.documentation import documentation
+
 schema_view = get_schema_view(
     openapi.Info(title="MediaCMS API", default_version='v1', contact=openapi.Contact(url="https://mediacms.io"), x_logo={"url": "../../static/images/logo_dark.svg"}),
     public=True,
@@ -22,6 +24,8 @@ urlpatterns = [
         "robots.txt",
         TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),
     ),
+    # View returns 404 unless SERVE_DOCUMENTATION is True (dev_settings). Before catch-alls.
+    re_path(r"^documentation/(?P<path>.*)$", documentation, name="documentation"),
     re_path(r"^", include("migrationservice.urls")),
     re_path(r"^", include("files.urls")),
     re_path(r"^", include("users.urls")),

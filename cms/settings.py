@@ -141,6 +141,9 @@ ACCOUNT_USERNAME_VALIDATORS = "users.validators.custom_username_validators"
 ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*"]
 ACCOUNT_LOGIN_ON_PASSWORD_RESET = True
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
+# Email a one-time sign-in code. Off until a portal turns it on; the login
+# page shows the link only when this is true (and the process is restarted).
+ACCOUNT_LOGIN_BY_CODE_ENABLED = False
 ALLAUTH_TRUSTED_PROXY_COUNT = 1
 # registration won't be open, might also consider to remove links for register
 USERS_CAN_SELF_REGISTER = True
@@ -314,6 +317,10 @@ INSTALLED_APPS = [
     "uploader.apps.UploaderConfig",
     "djcelery_email",
     "drf_yasg",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.github",
+    "allauth.socialaccount.providers.facebook",
+    "allauth.socialaccount.providers.openid_connect",
     "allauth.socialaccount.providers.saml",
     "saml_auth.apps.SamlAuthConfig",
     "tinymce",
@@ -560,7 +567,7 @@ TINYMCE_DEFAULT_CONFIG = {
 
 SPRITE_NUM_SECS = 10
 # number of seconds for sprite image.
-# If you plan to change this, you must also follow the instructions on admins_docs.md
+# If you plan to change this, follow docs/en/getting-started/deploy.md and the nginx notes there
 # to change the equivalent value in ./frontend/src/static/js/components/media-viewer/VideoViewer/index.js and then re-build frontend
 
 # how many images will be shown on the slideshow
@@ -587,7 +594,78 @@ MIGRATION_API_TIMEOUT = 60
 MIGRATION_DOWNLOAD_TIMEOUT = 60 * 30
 MIGRATION_MAX_RETRIES = 5
 
-JAZZMIN_UI_TWEAKS = {"theme": "flatly"}
+# Enable Jazzmin's navbar language dropdown. Selection posts to Django's
+# /i18n/setlang/ and sets the django_language cookie, which LocaleMiddleware
+# prefers over Accept-Language — so users can override the browser language
+# for both admin and the main site.
+JAZZMIN_SETTINGS = {
+    "language_chooser": True,
+    # Collapse sidebar groups by default (Jazzmin treeview in templates/admin/base.html).
+    "navigation_expanded": False,
+    "order_with_respect_to": [
+        "moderation",
+        "library",
+        "processing",
+        "people",
+        "integrations",
+        "site",
+    ],
+    # Jazzmin lowercases icon keys before lookup (app_label / app_label.object_name).
+    "icons": {
+        "moderation": "fas fa-shield-alt",
+        "library": "fas fa-photo-video",
+        "processing": "fas fa-cogs",
+        "people": "fas fa-users",
+        "site": "fas fa-sliders-h",
+        "integrations": "fas fa-plug",
+        "moderation.moderationoverview": "fas fa-tachometer-alt",
+        "moderation.reportedmedia": "fas fa-flag",
+        "moderation.abovereportlimit": "fas fa-exclamation-triangle",
+        "moderation.needsreview": "fas fa-eye-slash",
+        "moderation.mediaaction": "fas fa-history",
+        "moderation.comment": "fas fa-comments",
+        "library.libraryoverview": "fas fa-tachometer-alt",
+        "library.engagementoverview": "fas fa-heart",
+        "library.media": "fas fa-video",
+        "library.category": "fas fa-folder",
+        "library.tag": "fas fa-tags",
+        "library.playlist": "fas fa-list",
+        "library.channel": "fas fa-broadcast-tower",
+        "processing.processingoverview": "fas fa-tachometer-alt",
+        "processing.encodingqueue": "fas fa-stream",
+        "processing.failedencodings": "fas fa-times-circle",
+        "processing.encoding": "fas fa-film",
+        "processing.subtitle": "fas fa-closed-captioning",
+        "processing.transcriptionrequest": "fas fa-microphone",
+        "processing.videotrimrequest": "fas fa-cut",
+        "people.peopleoverview": "fas fa-tachometer-alt",
+        "people.user": "fas fa-user",
+        "people.waitingforapproval": "fas fa-user-clock",
+        "people.emailaddress": "fas fa-envelope",
+        "people.rbacgroup": "fas fa-user-friends",
+        "people.rbacmembership": "fas fa-id-badge",
+        "site.siteoverview": "fas fa-tachometer-alt",
+        "site.sitehealth": "fas fa-heartbeat",
+        "site.siteconfiguration": "fas fa-cog",
+        "site.sitesystem": "fas fa-server",
+        "site.page": "fas fa-file-alt",
+        "site.license": "fas fa-balance-scale",
+        "site.encodeprofile": "fas fa-sliders-h",
+        "site.language": "fas fa-language",
+        "site.mediapermission": "fas fa-user-lock",
+        "site.site": "fas fa-globe",
+        "integrations.integrationsoverview": "fas fa-tachometer-alt",
+        "integrations.socialapp": "fas fa-key",
+        "integrations.socialaccount": "fas fa-user-circle",
+        "integrations.loginoption": "fas fa-sign-in-alt",
+        "integrations.identityprovideruserlog": "fas fa-clipboard-list",
+        "integrations.samlconfiguration": "fas fa-shield-alt",
+        "integrations.ltiplatform": "fas fa-chalkboard-teacher",
+        "integrations.migrationservice": "fas fa-exchange-alt",
+        "integrations.migrationrecord": "fas fa-database",
+    },
+}
+JAZZMIN_UI_TWEAKS = {"theme": "flatly", "dark_mode_theme": "darkly"}
 
 USE_ROUNDED_CORNERS = True
 
@@ -598,6 +676,12 @@ ALLOW_CUSTOM_MEDIA_URLS = False
 ALLOW_MEDIA_REPLACEMENT = False
 
 ALLOW_ANONYMOUS_USER_LISTING = True
+
+# Whether the populate_fake_media management command may run.
+# None means follow DEBUG after settings are fully loaded (off in production,
+# on when DEBUG is True). Override explicitly via local_settings or the
+# ALLOW_POPULATE_FAKE_MEDIA environment variable.
+ALLOW_POPULATE_FAKE_MEDIA = None
 
 # Who can see the members page
 # valid choices are all, editors, admins
@@ -663,11 +747,21 @@ PYSUBS_COMMAND = "pysubs2"
 # and docker-compose-dev.yaml
 try:
     DEVELOPMENT_MODE = os.environ.get("DEVELOPMENT_MODE")
+    # dev_settings replaces INSTALLED_APPS, which drops apps appended in local_settings.
+    _apps_before_dev = list(INSTALLED_APPS)
     if DEVELOPMENT_MODE:
         # keep a dev_settings.py file for local overrides
         from .dev_settings import *  # noqa
+
+        for _app in _apps_before_dev:
+            if _app not in INSTALLED_APPS:
+                INSTALLED_APPS.append(_app)
 except ImportError:
     pass
+
+# Resolve after local_settings / DEVELOPMENT_MODE may have changed DEBUG.
+if ALLOW_POPULATE_FAKE_MEDIA is None:
+    ALLOW_POPULATE_FAKE_MEDIA = bool(DEBUG)
 
 
 if GLOBAL_LOGIN_REQUIRED:

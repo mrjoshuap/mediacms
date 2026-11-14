@@ -5,17 +5,21 @@ from django.contrib.admin.utils import quote
 from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import Client, RequestFactory, TestCase
+from django.test import Client, RequestFactory, TestCase, override_settings
 from django.urls import reverse
 from rest_framework.authtoken.models import Token, TokenProxy
 
+from actions.models import MediaAction
 from files.models import (
     Category,
     Comment,
     EncodeProfile,
     Encoding,
     Language,
+    License,
+    MediaPermission,
     Page,
+    Playlist,
     Subtitle,
     Tag,
     TinyMCEMedia,
@@ -33,6 +37,7 @@ from lti.models import (
 )
 from migrationservice.models import MigrationRecord, MigrationService
 from rbac.models import RBACGroup
+from users.models import Channel
 
 PASSWORD = "admin-smoke-password"
 
@@ -74,15 +79,20 @@ def build_instances(superuser):
         EncodeProfile: profile,
         Comment: Comment.objects.create(media=media, user=superuser, text="smoke comment"),
         media.__class__: media,
+        MediaAction: MediaAction.objects.create(user=superuser, media=media, action="like"),
         Encoding: Encoding.objects.create(media=media, profile=profile, status="success"),
         Category: category,
+        Playlist: Playlist.objects.create(title="admin smoke playlist", user=superuser),
+        MediaPermission: MediaPermission.objects.create(media=media, user=superuser, owner_user=superuser, permission="owner"),
         Page: Page.objects.create(slug="smoke-page", title="Smoke page", description="<p>hi</p>"),
         Tag: Tag.objects.create(title="smoketag"),
+        License: License.objects.create(title="Smoke license", description="smoke"),
         Subtitle: Subtitle.objects.create(language=language, media=media, user=superuser, subtitle_file=SimpleUploadedFile("smoke.vtt", VTT)),
         Language: language,
         VideoTrimRequest: VideoTrimRequest.objects.create(media=media, video_action="replace", timestamps=[{"startTime": 0, "endTime": 1}]),
         TranscriptionRequest: TranscriptionRequest.objects.create(media=media),
         superuser.__class__: superuser,
+        Channel: Channel.objects.get(user=superuser),
         LTIPlatform: platform,
         LTIResourceLink: resource_link,
         LTIUserMapping: LTIUserMapping.objects.create(platform=platform, lti_user_id="lti-sub", user=superuser),
@@ -182,6 +192,58 @@ class AdminAccessTest(TestCase):
         self.assertEqual(client.get(reverse("admin:index")).status_code, 200)
         self.assertEqual(client.get(admin_url(Category, "changelist")).status_code, 403)
 
+    @override_settings(SECURE_SSL_REDIRECT=False)
+    def test_admin_login_uses_the_site_card(self):
+        response = Client().get(reverse("admin:login"))
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode()
+        self.assertIn("user-action-form-inner", html)
+        self.assertIn("auth-card-language", html)
+        self.assertIn('action="/i18n/setlang/"', html)
+        self.assertIn('value="/admin/login/"', html)
+        self.assertIn("auth-card-theme", html)
+        self.assertIn("MediaCMS[mediacms][theme][mode]", html)
+        self.assertIn("Sign in with a staff account.", html)
+        self.assertNotIn("If you have not created an account yet", html)
+
+    @override_settings(SECURE_SSL_REDIRECT=False)
+    def test_admin_logout_uses_the_site_card(self):
+        client = Client()
+        client.force_login(self.staff)
+        response = client.post(reverse("admin:logout"))
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode()
+        self.assertIn("user-action-form-inner", html)
+        self.assertIn("auth-card-language", html)
+        self.assertIn('action="/i18n/setlang/"', html)
+        self.assertIn('value="/admin/login/"', html)
+        self.assertIn("auth-card-theme", html)
+        self.assertIn("You have signed out.", html)
+        self.assertIn(reverse("admin:login"), html)
+        self.assertNotIn("/accounts/logout/", html)
+
+    @override_settings(SECURE_SSL_REDIRECT=False)
+    def test_public_login_and_logout_use_the_site_card(self):
+        client = Client()
+        login = client.get("/accounts/login/")
+        self.assertEqual(login.status_code, 200)
+        login_html = login.content.decode()
+        self.assertIn("user-action-form-inner", login_html)
+        self.assertIn("auth-card-language", login_html)
+        self.assertIn('value="/accounts/login/"', login_html)
+        self.assertIn("auth-card-theme", login_html)
+        self.assertIn("If you have not created an account yet", login_html)
+
+        client.force_login(self.staff)
+        logout = client.get("/accounts/logout/")
+        self.assertEqual(logout.status_code, 200)
+        logout_html = logout.content.decode()
+        self.assertIn("user-action-form-inner", logout_html)
+        self.assertIn("auth-card-language", logout_html)
+        self.assertIn('value="/accounts/logout/"', logout_html)
+        self.assertIn("auth-card-theme", logout_html)
+        self.assertIn("Are you sure you want to sign out?", logout_html)
+
 
 class AdminAppListTest(TestCase):
     @classmethod
@@ -195,20 +257,39 @@ class AdminAppListTest(TestCase):
 
     def test_internal_apps_are_hidden_when_features_are_off(self):
         labels = [app["app_label"] for app in self.app_list()]
-        for hidden in ("auth", "account", "authtoken", "socialaccount", "rbac", "saml_auth"):
+        for hidden in ("auth", "account", "authtoken", "socialaccount", "rbac", "saml_auth", "lti", "files", "users"):
             self.assertNotIn(hidden, labels)
 
-    def test_files_and_users_come_first(self):
+    def test_workflow_groups_come_first(self):
         labels = [app["app_label"] for app in self.app_list()]
-        self.assertEqual(labels[:2], ["files", "users"])
+        self.assertEqual(labels[:6], ["moderation", "library", "processing", "people", "integrations", "site"])
 
-    def test_email_addresses_are_listed_under_users(self):
-        users_app = next(app for app in self.app_list() if app["app_label"] == "users")
-        self.assertIn("EmailAddress", [model["object_name"] for model in users_app["models"]])
+    def test_email_addresses_are_listed_under_people(self):
+        people_app = next(app for app in self.app_list() if app["app_label"] == "people")
+        self.assertIn("EmailAddress", [model["object_name"] for model in people_app["models"]])
+
+    @override_settings(MEDIA_IS_REVIEWED=False)
+    def test_moderation_and_processing_include_queue_links(self):
+        apps = {app["app_label"]: [model["object_name"] for model in app["models"]] for app in self.app_list()}
+        self.assertIn("ReportedMedia", apps["moderation"])
+        self.assertIn("AboveReportLimit", apps["moderation"])
+        self.assertIn("NeedsReview", apps["moderation"])
+        self.assertIn("EncodingQueue", apps["processing"])
+        self.assertIn("FailedEncodings", apps["processing"])
+        reported = next(model for app in self.app_list() if app["app_label"] == "moderation" for model in app["models"] if model["object_name"] == "ReportedMedia")
+        self.assertEqual(reported["admin_url"], "/admin/files/media/?reported=yes")
 
     def test_single_app_index_still_works(self):
         response = self.client_for_superuser().get(reverse("admin:app_list", args=["files"]))
         self.assertEqual(response.status_code, 200)
+
+    def test_workflow_group_can_be_fetched_by_label(self):
+        request = RequestFactory().get("/admin/")
+        request.user = self.superuser
+        app_list = admin.site.get_app_list(request, app_label="library")
+        self.assertEqual(len(app_list), 1)
+        self.assertEqual(app_list[0]["app_label"], "library")
+        self.assertIn("Media", [model["object_name"] for model in app_list[0]["models"]])
 
     def client_for_superuser(self):
         client = Client()

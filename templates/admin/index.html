@@ -1,0 +1,434 @@
+{% extends "admin/base.html" %}
+{% load i18n static admin_urls jazzmin custom_filters %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+{% block content_title %}
+    {{ "Dashboard"|custom_translate:LANGUAGE_CODE }}
+{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        .dashboard-section-box {
+            height: auto;
+            align-items: stretch;
+        }
+        .dashboard-section-box .info-box-icon {
+            width: 80px;
+            height: auto !important;
+            align-self: stretch;
+            font-size: 1.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dashboard-section-box .info-box-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0.85rem 0.75rem;
+            line-height: 1.35;
+            overflow: visible;
+        }
+        .dashboard-section-box .info-box-text {
+            font-size: 1.05rem;
+            font-weight: 600;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: unset;
+            margin-bottom: 0.35rem;
+        }
+        .dashboard-section-box .dashboard-section-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: unset;
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+        .dashboard-section-box .dashboard-section-meta span {
+            display: block;
+            white-space: normal;
+            word-break: break-word;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% if dashboard_stats %}
+        {% with stats=dashboard_stats %}
+            {% include "admin/dashboard/_section_nav.html" %}
+
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-heartbeat me-2"></i>{{ "Health"|custom_translate:LANGUAGE_CODE }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-4 col-6">
+                                <div class="small-box {% if stats.moderation.reported_above_threshold %}bg-danger{% elif stats.moderation.reported_media %}bg-warning{% else %}bg-secondary{% endif %}">
+                                    <div class="inner">
+                                        <h3>{{ stats.moderation.reported_media }}</h3>
+                                        <p>{{ "Reported media"|custom_translate:LANGUAGE_CODE }}</p>
+                                    </div>
+                                    <div class="icon"><i class="fas fa-flag"></i></div>
+                                    <a href="{% url 'admin:files_media_changelist' %}?reported=yes" class="small-box-footer">
+                                        {{ "Open reported media"|custom_translate:LANGUAGE_CODE }} <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-6">
+                                <div class="small-box {% if stats.moderation.reported_above_threshold %}bg-danger{% else %}bg-secondary{% endif %}">
+                                    <div class="inner">
+                                        <h3>{{ stats.moderation.reported_above_threshold }}</h3>
+                                        <p>{{ "Above report limit"|custom_translate:LANGUAGE_CODE }}</p>
+                                    </div>
+                                    <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                    <a href="{% url 'admin:files_media_changelist' %}?reported=threshold" class="small-box-footer">
+                                        {{ "Open above report limit"|custom_translate:LANGUAGE_CODE }} <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-6">
+                                <div class="small-box {% if stats.moderation.unreviewed %}bg-warning{% else %}bg-secondary{% endif %}">
+                                    <div class="inner">
+                                        <h3>{{ stats.moderation.unreviewed }}</h3>
+                                        <p>{{ "Needs review"|custom_translate:LANGUAGE_CODE }}</p>
+                                    </div>
+                                    <div class="icon"><i class="fas fa-eye-slash"></i></div>
+                                    <a href="{% url 'admin:files_media_changelist' %}?is_reviewed__exact=0" class="small-box-footer">
+                                        {{ "Open media not reviewed"|custom_translate:LANGUAGE_CODE }} <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-6">
+                                <div class="small-box {% if stats.media.failed %}bg-danger{% else %}bg-secondary{% endif %}">
+                                    <div class="inner">
+                                        <h3>{{ stats.media.failed }}</h3>
+                                        <p>{{ "Failed encodings"|custom_translate:LANGUAGE_CODE }}</p>
+                                    </div>
+                                    <div class="icon"><i class="fas fa-times-circle"></i></div>
+                                    <a href="{% url 'admin:files_media_changelist' %}?encoding_queue=fail" class="small-box-footer">
+                                        {{ "Open failed"|custom_translate:LANGUAGE_CODE }} <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-6">
+                                <div class="small-box {% if stats.media.encoding_queue %}bg-info{% else %}bg-secondary{% endif %}">
+                                    <div class="inner">
+                                        <h3>{{ stats.media.encoding_queue }}</h3>
+                                        <p>{{ "Encoding queue"|custom_translate:LANGUAGE_CODE }}</p>
+                                    </div>
+                                    <div class="icon"><i class="fas fa-tasks"></i></div>
+                                    <a href="{% url 'admin:files_media_changelist' %}?encoding_queue=yes" class="small-box-footer">
+                                        {{ "Open encoding queue"|custom_translate:LANGUAGE_CODE }} <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-6">
+                                <div class="small-box {% if stats.system.health_counts.warn %}bg-warning{% elif stats.system.health_counts.fail %}bg-danger{% else %}bg-secondary{% endif %}">
+                                    <div class="inner">
+                                        <h3>{{ stats.system.health_counts.warn }}</h3>
+                                        <p>{{ "Site check warnings"|custom_translate:LANGUAGE_CODE }}</p>
+                                    </div>
+                                    <div class="icon"><i class="fas fa-stethoscope"></i></div>
+                                    <a href="{% url 'admin:dashboard_section' 'health' %}" class="small-box-footer">
+                                        {{ "Health checks"|custom_translate:LANGUAGE_CODE }} <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            {% if stats.users.approval_workflow_enabled %}
+                            <div class="col-lg-4 col-6">
+                                <div class="small-box {% if stats.users.pending_approvals %}bg-warning{% else %}bg-secondary{% endif %}">
+                                    <div class="inner">
+                                        <h3>{{ stats.users.pending_approvals }}</h3>
+                                        <p>{{ "Waiting for approval"|custom_translate:LANGUAGE_CODE }}</p>
+                                    </div>
+                                    <div class="icon"><i class="fas fa-user-clock"></i></div>
+                                    <a href="{% url 'admin:users_user_changelist' %}?is_approved__exact=0" class="small-box-footer">
+                                        {{ "Open users waiting for approval"|custom_translate:LANGUAGE_CODE }} <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-chart-bar me-2"></i>{{ "Overview"|custom_translate:LANGUAGE_CODE }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-3 col-6">
+                                <div class="small-box bg-info">
+                                    <div class="inner">
+                                        <h3>{{ stats.media.total }}</h3>
+                                        <p>{{ "Total media"|custom_translate:LANGUAGE_CODE }}</p>
+                                    </div>
+                                    <div class="icon"><i class="fas fa-video"></i></div>
+                                    <a href="{% url 'admin:dashboard_section' 'library' %}" class="small-box-footer">
+                                        {{ "Library"|custom_translate:LANGUAGE_CODE }} <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-6">
+                                <div class="small-box bg-primary">
+                                    <div class="inner">
+                                        <h3>{{ stats.users.total }}</h3>
+                                        <p>{{ "Total users"|custom_translate:LANGUAGE_CODE }}</p>
+                                    </div>
+                                    <div class="icon"><i class="fas fa-users"></i></div>
+                                    <a href="{% url 'admin:dashboard_section' 'people' %}" class="small-box-footer">
+                                        {{ "People"|custom_translate:LANGUAGE_CODE }} <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-6">
+                                <div class="small-box bg-success">
+                                    <div class="inner">
+                                        <h3>{{ stats.engagement.total_comments }}</h3>
+                                        <p>{{ "Total comments"|custom_translate:LANGUAGE_CODE }}</p>
+                                    </div>
+                                    <div class="icon"><i class="fas fa-comments"></i></div>
+                                    <a href="{% url 'admin:dashboard_section' 'engagement' %}" class="small-box-footer">
+                                        {{ "Engagement"|custom_translate:LANGUAGE_CODE }} <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-6">
+                                <div class="small-box bg-secondary">
+                                    <div class="inner">
+                                        <h3>{{ stats.media.total_views|floatformat:0 }}</h3>
+                                        <p>{{ "Total views"|custom_translate:LANGUAGE_CODE }}</p>
+                                    </div>
+                                    <div class="icon"><i class="fas fa-eye"></i></div>
+                                    <a href="{% url 'admin:dashboard_section' 'engagement' %}" class="small-box-footer">
+                                        {{ "Engagement"|custom_translate:LANGUAGE_CODE }} <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-th-large me-2"></i>{{ "Sections"|custom_translate:LANGUAGE_CODE }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <a href="{% url 'admin:dashboard_section' 'moderation' %}" class="info-box dashboard-section-box mb-0">
+                                    <span class="info-box-icon bg-warning"><i class="fas fa-shield-alt"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">{{ "Moderation"|custom_translate:LANGUAGE_CODE }}</span>
+                                        <div class="dashboard-section-meta">
+                                            <span>{{ "Reported media"|custom_translate:LANGUAGE_CODE }}: {{ stats.moderation.reported_media }}</span>
+                                            <span>{{ "Above report limit"|custom_translate:LANGUAGE_CODE }}: {{ stats.moderation.reported_above_threshold }}</span>
+                                            <span>{{ "Media not reviewed"|custom_translate:LANGUAGE_CODE }}: {{ stats.moderation.unreviewed }}</span>
+                                            <span>{{ "Reports cleared (7 days)"|custom_translate:LANGUAGE_CODE }}: {{ stats.moderation.clears_last_7_days }}</span>
+                                            <span>{{ "Reports confirmed (7 days)"|custom_translate:LANGUAGE_CODE }}: {{ stats.moderation.confirms_last_7_days }}</span>
+                                            <span>{{ "Media approved (7 days)"|custom_translate:LANGUAGE_CODE }}: {{ stats.moderation.approved_last_7_days }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="{% url 'admin:dashboard_section' 'people' %}" class="info-box dashboard-section-box mb-0">
+                                    <span class="info-box-icon bg-primary"><i class="fas fa-users"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">{{ "People"|custom_translate:LANGUAGE_CODE }}</span>
+                                        <div class="dashboard-section-meta">
+                                            <span>{{ "Total users"|custom_translate:LANGUAGE_CODE }}: {{ stats.users.total }}</span>
+                                            <span>{{ "New users (7 days)"|custom_translate:LANGUAGE_CODE }}: {{ stats.users.registered_last_7_days }}</span>
+                                            {% if stats.users.approval_workflow_enabled %}
+                                                <span>{{ "Users waiting for approval"|custom_translate:LANGUAGE_CODE }}: {{ stats.users.pending_approvals }}</span>
+                                                <span>{{ "Approved users"|custom_translate:LANGUAGE_CODE }}: {{ stats.users.approved_users }}</span>
+                                            {% else %}
+                                                <span>{{ "Active users (30 days)"|custom_translate:LANGUAGE_CODE }}: {{ stats.users.active_users }}</span>
+                                            {% endif %}
+                                            <span>{{ "Inactive users"|custom_translate:LANGUAGE_CODE }}: {{ stats.users.inactive_users }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="{% url 'admin:dashboard_section' 'library' %}" class="info-box dashboard-section-box mb-0">
+                                    <span class="info-box-icon {% if stats.media.duplicate_md5 or stats.media.duplicate_names %}bg-warning{% else %}bg-info{% endif %}"><i class="fas fa-photo-video"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">{{ "Library"|custom_translate:LANGUAGE_CODE }}</span>
+                                        <div class="dashboard-section-meta">
+                                            <span>{{ "Total media"|custom_translate:LANGUAGE_CODE }}: {{ stats.media.total }}</span>
+                                            <span>{{ "Categories"|custom_translate:LANGUAGE_CODE }}: {{ stats.system.total_categories }}</span>
+                                            <span>{{ "Tags"|custom_translate:LANGUAGE_CODE }}: {{ stats.system.total_tags }}</span>
+                                            <span>{{ "Playlists"|custom_translate:LANGUAGE_CODE }}: {{ stats.system.total_playlists }}</span>
+                                            <span>{{ "Channels"|custom_translate:LANGUAGE_CODE }}: {{ stats.system.total_channels }}</span>
+                                            <span>{{ "Featured"|custom_translate:LANGUAGE_CODE }}: {{ stats.media.featured }}</span>
+                                            <span>{{ "New media (7 days)"|custom_translate:LANGUAGE_CODE }}: {{ stats.media.added_last_7_days }}</span>
+                                            <span>{{ "Duplicate md5sum"|custom_translate:LANGUAGE_CODE }}: {{ stats.media.duplicate_md5 }}</span>
+                                            <span>{{ "Duplicate names"|custom_translate:LANGUAGE_CODE }}: {{ stats.media.duplicate_names }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="{% url 'admin:dashboard_section' 'processing' %}" class="info-box dashboard-section-box mb-0">
+                                    <span class="info-box-icon {% if stats.media.failed %}bg-danger{% elif stats.media.encoding_queue %}bg-info{% else %}bg-secondary{% endif %}"><i class="fas fa-cogs"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">{{ "Processing"|custom_translate:LANGUAGE_CODE }}</span>
+                                        <div class="dashboard-section-meta">
+                                            <span>{{ "Encoding queue"|custom_translate:LANGUAGE_CODE }}: {{ stats.media.encoding_queue }}</span>
+                                            <span>{{ "Pending"|custom_translate:LANGUAGE_CODE }}: {{ stats.media.by_encoding_status.pending }}</span>
+                                            <span>{{ "Running"|custom_translate:LANGUAGE_CODE }}: {{ stats.media.by_encoding_status.running }}</span>
+                                            <span>{{ "Success"|custom_translate:LANGUAGE_CODE }}: {{ stats.media.by_encoding_status.success }}</span>
+                                            <span>{{ "Failed encodings"|custom_translate:LANGUAGE_CODE }}: {{ stats.media.failed }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="{% url 'admin:dashboard_section' 'engagement' %}" class="info-box dashboard-section-box mb-0">
+                                    <span class="info-box-icon bg-success"><i class="fas fa-heart"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">{{ "Engagement"|custom_translate:LANGUAGE_CODE }}</span>
+                                        <div class="dashboard-section-meta">
+                                            <span>{{ "Total comments"|custom_translate:LANGUAGE_CODE }}: {{ stats.engagement.total_comments }}</span>
+                                            <span>{{ "Total likes"|custom_translate:LANGUAGE_CODE }}: {{ stats.engagement.total_likes|floatformat:0 }}</span>
+                                            <span>{{ "Total dislikes"|custom_translate:LANGUAGE_CODE }}: {{ stats.engagement.total_dislikes|floatformat:0 }}</span>
+                                            <span>{{ "Total views"|custom_translate:LANGUAGE_CODE }}: {{ stats.media.total_views|floatformat:0 }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="{% url 'admin:dashboard_section' 'health' %}" class="info-box dashboard-section-box mb-0">
+                                    <span class="info-box-icon {% if stats.system.health_counts.fail %}bg-danger{% elif stats.system.health_counts.warn %}bg-warning{% else %}bg-success{% endif %}"><i class="fas fa-heartbeat"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">{{ "Health"|custom_translate:LANGUAGE_CODE }}</span>
+                                        <div class="dashboard-section-meta">
+                                            <span>{{ "Passing checks"|custom_translate:LANGUAGE_CODE }}: {{ stats.system.health_counts.ok }}</span>
+                                            <span>{{ "Warnings"|custom_translate:LANGUAGE_CODE }}: {{ stats.system.health_counts.warn }}</span>
+                                            <span>{{ "Failures"|custom_translate:LANGUAGE_CODE }}: {{ stats.system.health_counts.fail }}</span>
+                                            <span>{{ "Info checks"|custom_translate:LANGUAGE_CODE }}: {{ stats.system.health_counts.info }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="{% url 'admin:dashboard_section' 'configuration' %}" class="info-box dashboard-section-box mb-0">
+                                    <span class="info-box-icon {% if stats.system.configuration_counts.fail %}bg-danger{% elif stats.system.configuration_counts.warn %}bg-warning{% else %}bg-success{% endif %}"><i class="fas fa-cog"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">{{ "Configuration"|custom_translate:LANGUAGE_CODE }}</span>
+                                        <div class="dashboard-section-meta">
+                                            <span>{{ "Passing checks"|custom_translate:LANGUAGE_CODE }}: {{ stats.system.configuration_counts.ok }}</span>
+                                            <span>{{ "Warnings"|custom_translate:LANGUAGE_CODE }}: {{ stats.system.configuration_counts.warn }}</span>
+                                            <span>{{ "Failures"|custom_translate:LANGUAGE_CODE }}: {{ stats.system.configuration_counts.fail }}</span>
+                                            <span>{{ "Info checks"|custom_translate:LANGUAGE_CODE }}: {{ stats.system.configuration_counts.info }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="{% url 'admin:dashboard_section' 'system' %}" class="info-box dashboard-section-box mb-0">
+                                    <span class="info-box-icon {% if stats.system.system_counts.fail %}bg-danger{% elif stats.system.system_counts.warn %}bg-warning{% else %}bg-success{% endif %}"><i class="fas fa-server"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">{{ "System"|custom_translate:LANGUAGE_CODE }}</span>
+                                        <div class="dashboard-section-meta">
+                                            <span>{{ "Passing checks"|custom_translate:LANGUAGE_CODE }}: {{ stats.system.system_counts.ok }}</span>
+                                            <span>{{ "Warnings"|custom_translate:LANGUAGE_CODE }}: {{ stats.system.system_counts.warn }}</span>
+                                            <span>{{ "Failures"|custom_translate:LANGUAGE_CODE }}: {{ stats.system.system_counts.fail }}</span>
+                                            <span>{{ "Info checks"|custom_translate:LANGUAGE_CODE }}: {{ stats.system.system_counts.info }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="{% url 'admin:dashboard_section' 'database' %}" class="info-box dashboard-section-box mb-0">
+                                    <span class="info-box-icon {% if stats.database.health_counts.fail %}bg-danger{% elif stats.database.health_counts.warn %}bg-warning{% elif stats.database.available %}bg-success{% else %}bg-secondary{% endif %}"><i class="fas fa-database"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">{{ "Database"|custom_translate:LANGUAGE_CODE }}</span>
+                                        <div class="dashboard-section-meta">
+                                            <span>{{ "Connections used"|custom_translate:LANGUAGE_CODE }}: {{ stats.database.summary.connections_used|custom_translate:LANGUAGE_CODE }}</span>
+                                            <span>{{ "Cache hit ratio"|custom_translate:LANGUAGE_CODE }}: {{ stats.database.summary.cache_hit|custom_translate:LANGUAGE_CODE }}</span>
+                                            <span>{{ "Database size"|custom_translate:LANGUAGE_CODE }}: {{ stats.database.summary.database_size|custom_translate:LANGUAGE_CODE }}</span>
+                                            <span>{{ "Transaction ID age"|custom_translate:LANGUAGE_CODE }}: {{ stats.database.summary.xid_age|custom_translate:LANGUAGE_CODE }}</span>
+                                            <span>{{ "Passing checks"|custom_translate:LANGUAGE_CODE }}: {{ stats.database.health_counts.ok }}</span>
+                                            <span>{{ "Warnings"|custom_translate:LANGUAGE_CODE }}: {{ stats.database.health_counts.warn }}</span>
+                                            <span>{{ "Failures"|custom_translate:LANGUAGE_CODE }}: {{ stats.database.health_counts.fail }}</span>
+                                            <span>{{ "Info checks"|custom_translate:LANGUAGE_CODE }}: {{ stats.database.health_counts.info }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="{% url 'admin:dashboard_section' 'integrations' %}" class="info-box dashboard-section-box mb-0">
+                                    <span class="info-box-icon {% if stats.integrations.health_counts.fail %}bg-danger{% elif stats.integrations.health_counts.warn %}bg-warning{% else %}bg-success{% endif %}"><i class="fas fa-plug"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">{{ "Integrations"|custom_translate:LANGUAGE_CODE }}</span>
+                                        <div class="dashboard-section-meta">
+                                            {% for group in stats.integrations.migration_groups %}
+                                                <span>{{ group.label|custom_translate:LANGUAGE_CODE }}: {{ group.total }}</span>
+                                                {% for item in group.statuses %}
+                                                    <span>{{ group.label|custom_translate:LANGUAGE_CODE }} {{ item.label|custom_translate:LANGUAGE_CODE }}: {{ item.count }}</span>
+                                                {% endfor %}
+                                            {% endfor %}
+                                            {% for item in stats.integrations.identity_objects %}
+                                                <span>{{ item.label|custom_translate:LANGUAGE_CODE }}: {{ item.count }}</span>
+                                            {% endfor %}
+                                            {% for item in stats.integrations.saml_objects %}
+                                                <span>{{ item.label|custom_translate:LANGUAGE_CODE }}: {{ item.count }}</span>
+                                            {% endfor %}
+                                            {% for item in stats.integrations.lti_objects %}
+                                                <span>{{ item.label|custom_translate:LANGUAGE_CODE }}: {{ item.count }}</span>
+                                            {% endfor %}
+                                            <span>{{ "Passing checks"|custom_translate:LANGUAGE_CODE }}: {{ stats.integrations.health_counts.ok }}</span>
+                                            <span>{{ "Warnings"|custom_translate:LANGUAGE_CODE }}: {{ stats.integrations.health_counts.warn }}</span>
+                                            <span>{{ "Failures"|custom_translate:LANGUAGE_CODE }}: {{ stats.integrations.health_counts.fail }}</span>
+                                            <span>{{ "Info checks"|custom_translate:LANGUAGE_CODE }}: {{ stats.integrations.health_counts.info }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endwith %}
+        <script>
+            (function () {
+                function equalizeSectionTiles() {
+                    var tiles = document.querySelectorAll(".dashboard-section-box");
+                    if (!tiles.length) {
+                        return;
+                    }
+                    tiles.forEach(function (tile) {
+                        tile.style.minHeight = "0";
+                    });
+                    var tallest = 0;
+                    tiles.forEach(function (tile) {
+                        tallest = Math.max(tallest, tile.scrollHeight);
+                    });
+                    tiles.forEach(function (tile) {
+                        tile.style.minHeight = tallest + "px";
+                    });
+                }
+                if (document.readyState === "loading") {
+                    document.addEventListener("DOMContentLoaded", equalizeSectionTiles);
+                } else {
+                    equalizeSectionTiles();
+                }
+                window.addEventListener("resize", equalizeSectionTiles);
+            })();
+        </script>
+    {% endif %}
+{% endblock %}

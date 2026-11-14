@@ -21,6 +21,10 @@ describe('utils/settings', () => {
                 sidebar: {
                     navMenu: { items: [] },
                     mainMenuExtra: { items: [] },
+                    libraryItems: [],
+                    personalItems: [],
+                    infoItems: [],
+                    manageItems: [],
                     belowNavMenu: 'X',
                     belowThemeSwitcher: 'Y',
                     footer: 'Z',
@@ -33,6 +37,10 @@ describe('utils/settings', () => {
                 sidebar: {
                     navMenu: { items: [] },
                     mainMenuExtra: { items: [] },
+                    libraryItems: [],
+                    personalItems: [],
+                    infoItems: [],
+                    manageItems: [],
                     belowNavMenu: '',
                     belowThemeSwitcher: '',
                     footer: '',
@@ -45,6 +53,10 @@ describe('utils/settings', () => {
                 sidebar: {
                     navMenu: { items: [] },
                     mainMenuExtra: { items: [] },
+                    libraryItems: [],
+                    personalItems: [],
+                    infoItems: [],
+                    manageItems: [],
                     belowNavMenu: '',
                     belowThemeSwitcher: '',
                     footer: '',

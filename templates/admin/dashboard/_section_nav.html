@@ -1,0 +1,42 @@
+{% load i18n custom_filters %}
+{% get_current_language as LANGUAGE_CODE %}
+<div class="dashboard-switcher mb-3">
+    <div class="btn-group flex-wrap" role="group" aria-label="{{ 'Dashboard'|custom_translate:LANGUAGE_CODE }}">
+        <a href="{% url 'admin:index' %}" class="btn btn-sm {% if not dashboard_section %}btn-primary{% else %}btn-outline-primary{% endif %}"><i class="fas fa-tachometer-alt mr-1" aria-hidden="true"></i>{{ "Dashboard"|custom_translate:LANGUAGE_CODE }}</a>
+        <a href="{% url 'admin:dashboard_section' 'moderation' %}" class="btn btn-sm {% if dashboard_section == 'moderation' %}btn-primary{% else %}btn-outline-primary{% endif %}"><i class="fas fa-shield-alt mr-1" aria-hidden="true"></i>{{ "Moderation"|custom_translate:LANGUAGE_CODE }}</a>
+        <a href="{% url 'admin:dashboard_section' 'library' %}" class="btn btn-sm {% if dashboard_section == 'library' %}btn-primary{% else %}btn-outline-primary{% endif %}"><i class="fas fa-photo-video mr-1" aria-hidden="true"></i>{{ "Library"|custom_translate:LANGUAGE_CODE }}</a>
+        <a href="{% url 'admin:dashboard_section' 'engagement' %}" class="btn btn-sm {% if dashboard_section == 'engagement' %}btn-primary{% else %}btn-outline-primary{% endif %}"><i class="fas fa-heart mr-1" aria-hidden="true"></i>{{ "Engagement"|custom_translate:LANGUAGE_CODE }}</a>
+        <a href="{% url 'admin:dashboard_section' 'processing' %}" class="btn btn-sm {% if dashboard_section == 'processing' %}btn-primary{% else %}btn-outline-primary{% endif %}"><i class="fas fa-cogs mr-1" aria-hidden="true"></i>{{ "Processing"|custom_translate:LANGUAGE_CODE }}</a>
+        <a href="{% url 'admin:dashboard_section' 'people' %}" class="btn btn-sm {% if dashboard_section == 'people' %}btn-primary{% else %}btn-outline-primary{% endif %}"><i class="fas fa-users mr-1" aria-hidden="true"></i>{{ "People"|custom_translate:LANGUAGE_CODE }}</a>
+        <a href="{% url 'admin:dashboard_section' 'integrations' %}" class="btn btn-sm {% if dashboard_section == 'integrations' %}btn-primary{% else %}btn-outline-primary{% endif %}"><i class="fas fa-plug mr-1" aria-hidden="true"></i>{{ "Integrations"|custom_translate:LANGUAGE_CODE }}</a>
+        <a href="{% url 'admin:dashboard_section' 'health' %}" class="btn btn-sm {% if dashboard_section == 'health' %}btn-primary{% else %}btn-outline-primary{% endif %}"><i class="fas fa-heartbeat mr-1" aria-hidden="true"></i>{{ "Health"|custom_translate:LANGUAGE_CODE }}</a>
+        <a href="{% url 'admin:dashboard_section' 'configuration' %}" class="btn btn-sm {% if dashboard_section == 'configuration' %}btn-primary{% else %}btn-outline-primary{% endif %}"><i class="fas fa-cog mr-1" aria-hidden="true"></i>{{ "Configuration"|custom_translate:LANGUAGE_CODE }}</a>
+        <a href="{% url 'admin:dashboard_section' 'system' %}" class="btn btn-sm {% if dashboard_section == 'system' %}btn-primary{% else %}btn-outline-primary{% endif %}"><i class="fas fa-server mr-1" aria-hidden="true"></i>{{ "System"|custom_translate:LANGUAGE_CODE }}</a>
+        <a href="{% url 'admin:dashboard_section' 'database' %}" class="btn btn-sm {% if dashboard_section == 'database' %}btn-primary{% else %}btn-outline-primary{% endif %}"><i class="fas fa-database mr-1" aria-hidden="true"></i>{{ "Database"|custom_translate:LANGUAGE_CODE }}</a>
+    </div>
+    <div class="dashboard-switcher-refresh">
+        {% if dashboard_stats.generated_at %}
+            <span class="dashboard-switcher-updated">{{ "Updated at"|custom_translate:LANGUAGE_CODE }} <time datetime="{{ dashboard_stats.generated_at|date:'c' }}">{{ dashboard_stats.generated_at|date:"M j, Y g:i A" }}</time></span>
+        {% endif %}
+        <a class="btn btn-sm btn-outline-secondary" href="?refresh_stats=1"><i class="fas fa-sync-alt" aria-hidden="true"></i> {{ "Refresh stats"|custom_translate:LANGUAGE_CODE }}</a>
+    </div>
+</div>
+<style>
+    .dashboard-switcher {
+        display: flex;
+        flex-wrap: wrap-reverse;
+        align-items: center;
+        gap: 0.75rem 1rem;
+        width: 100%;
+    }
+    .dashboard-switcher-refresh {
+        margin-inline-start: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .dashboard-switcher-updated {
+        color: var(--secondary);
+        white-space: nowrap;
+    }
+</style>

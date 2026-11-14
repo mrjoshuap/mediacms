@@ -1,5 +1,4 @@
 import base64
-import json
 import uuid
 
 from django.conf import settings
@@ -61,8 +60,8 @@ class ApprovalBackendTest(TestCase):
         self.assertTrue(self.backend.user_can_authenticate(self.pending))
 
     @override_settings(USERS_NEEDS_TO_BE_APPROVED=True)
-    def test_unapproved_user_cannot_authenticate_when_approval_is_required(self):
-        self.assertFalse(self.backend.user_can_authenticate(self.pending))
+    def test_unapproved_user_can_authenticate_when_approval_is_required(self):
+        self.assertTrue(self.backend.user_can_authenticate(self.pending))
 
     @override_settings(USERS_NEEDS_TO_BE_APPROVED=True)
     def test_approved_user_can_authenticate_when_approval_is_required(self):
@@ -79,8 +78,8 @@ class ApprovalBackendTest(TestCase):
         self.assertFalse(self.backend.user_can_authenticate(self.approved))
 
     @override_settings(USERS_NEEDS_TO_BE_APPROVED=True, AUTHENTICATION_BACKENDS=("cms.auth_backends.ApprovalBackend",))
-    def test_authenticate_rejects_unapproved_and_accepts_approved_users(self):
-        self.assertIsNone(authenticate(username=self.pending.username, password=PASSWORD))
+    def test_authenticate_accepts_unapproved_and_approved_users(self):
+        self.assertEqual(authenticate(username=self.pending.username, password=PASSWORD), self.pending)
         self.assertEqual(authenticate(username=self.approved.username, password=PASSWORD), self.approved)
 
     @override_settings(USERS_NEEDS_TO_BE_APPROVED=True, AUTHENTICATION_BACKENDS=("cms.auth_backends.ApprovalBackend",))
@@ -116,15 +115,9 @@ class ApprovalMiddlewareUnitTest(TestCase):
     def test_superuser_passes_through_without_approval(self):
         self.assertEqual(self._call("/", self.admin).content, b"passed")
 
-    def test_unapproved_user_is_redirected_to_approval_page(self):
-        response = self._call("/featured", self.pending)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], "/approval_required/")
-
-    def test_unapproved_user_gets_json_403_on_api(self):
-        response = self._call("/api/v1/media", self.pending)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(json.loads(response.content), {"detail": "User account not approved."})
+    def test_unapproved_user_can_open_public_pages_and_read_the_api(self):
+        self.assertEqual(self._call("/featured", self.pending).content, b"passed")
+        self.assertEqual(self._call("/api/v1/media", self.pending).content, b"passed")
 
     def test_unapproved_user_may_view_approval_page_and_logout(self):
         self.assertEqual(self._call("/approval_required/", self.pending).content, b"passed")
@@ -151,18 +144,18 @@ class ApprovalFlowTest(TestCase):
         response = self.client.post("/accounts/login/", {"login": user.username, "password": PASSWORD})
         self.assertEqual(response.status_code, 302)
 
-    def test_unapproved_user_is_held_at_the_approval_page_after_login(self):
+    def test_unapproved_user_can_read_the_site_after_login(self):
         self._login(self.pending)
-        response = self.client.get("/")
-        self.assertRedirects(response, "/approval_required/")
-        response = self.client.get("/approval_required/")
-        self.assertContains(response, "Account Pending Approval")
+        self.assertEqual(self.client.get("/").status_code, 200)
+        self.assertEqual(self.client.get("/featured").status_code, 200)
+        self.assertEqual(self.client.get("/api/v1/media").status_code, 200)
+        self.assertRedirects(self.client.get("/manage/media"), "/", fetch_redirect_response=False)
 
-    def test_unapproved_user_is_refused_by_the_api_over_the_session(self):
+    def test_unapproved_user_reaches_whoami(self):
         self._login(self.pending)
         response = self.client.get("/api/v1/whoami")
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["detail"], "User account not approved.")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["username"], self.pending.username)
 
     def test_unapproved_user_can_still_log_out(self):
         self._login(self.pending)
@@ -193,7 +186,8 @@ class ApprovalFlowTest(TestCase):
 
         self.client.logout()
         self._login(self.approved)
-        self.assertRedirects(self.client.get("/"), "/approval_required/")
+        self.assertEqual(self.client.get("/").status_code, 200)
+        self.assertEqual(self.client.get("/manage/media").status_code, 302)
 
     def test_manager_can_filter_users_by_approval_state(self):
         self._login(self.manager)
@@ -226,26 +220,25 @@ class ApprovalApiAuthenticationTest(TestCase):
         credentials = base64.b64encode(f"{user.username}:{PASSWORD}".encode()).decode()
         return self.client.get("/api/v1/whoami", HTTP_AUTHORIZATION=f"Basic {credentials}")
 
-    def test_the_login_api_does_not_issue_a_token_to_an_unapproved_user(self):
+    def test_the_login_api_issues_a_token_to_an_unapproved_user(self):
         response = self.login_api(self.pending)
-        self.assertEqual(response.status_code, 400)
-        self.assertIn("User account not approved.", str(response.json()))
-        self.assertFalse(Token.objects.filter(user=self.pending).exists())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["token"], Token.objects.get(user=self.pending).key)
 
     def test_the_login_api_issues_a_token_to_an_approved_user(self):
         response = self.login_api(self.approved)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["token"], Token.objects.get(user=self.approved).key)
 
-    def test_a_token_obtained_before_approval_was_required_is_refused(self):
+    def test_a_token_lets_an_unapproved_user_read_whoami(self):
         response = self.whoami_with_token(self.pending)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["detail"], "User account not approved.")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["username"], self.pending.username)
 
-    def test_basic_auth_is_refused_for_an_unapproved_user(self):
+    def test_basic_auth_lets_an_unapproved_user_read_whoami(self):
         response = self.whoami_with_basic_auth(self.pending)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["detail"], "User account not approved.")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["username"], self.pending.username)
 
     def test_an_unapproved_user_cannot_upload_through_the_api_with_a_token(self):
         token, _ = Token.objects.get_or_create(user=self.pending)
@@ -266,6 +259,33 @@ class ApprovalApiAuthenticationTest(TestCase):
     def test_unapproved_users_are_let_in_when_approval_is_not_required(self):
         self.assertEqual(self.login_api(self.pending).status_code, 200)
         self.assertEqual(self.whoami_with_token(self.pending).json()["username"], self.pending.username)
+        token, _ = Token.objects.get_or_create(user=self.pending)
+        with open(fixture_path("test_image.png"), "rb") as fp:
+            response = self.client.post("/api/v1/media", {"media_file": fp}, HTTP_AUTHORIZATION=f"Token {token.key}")
+        self.assertEqual(response.status_code, 201)
+
+    def test_null_approval_and_an_unapproved_editor_cannot_change_the_library(self):
+        pending = make_user("nullish")
+        pending.is_approved = None
+        pending.save(update_fields=["is_approved"])
+        token, _ = Token.objects.get_or_create(user=pending)
+        self.assertEqual(self.client.get("/api/v1/media", HTTP_AUTHORIZATION=f"Token {token.key}").status_code, 200)
+
+        editor = make_user("editor", is_editor=True)
+        editor.is_approved = False
+        editor.save(update_fields=["is_approved"])
+        self.client.force_login(editor)
+        self.assertEqual(self.client.get("/featured").status_code, 200)
+        self.assertRedirects(self.client.get("/manage/media"), "/", fetch_redirect_response=False)
+        with open(fixture_path("test_image.png"), "rb") as fp:
+            response = self.client.post("/api/v1/media", {"media_file": fp})
+        self.assertEqual(response.status_code, 403)
+
+        self.client.force_login(self.pending)
+        media = create_media(self.pending, title="owned by pending")
+        self.assertEqual(self.client.put(f"/api/v1/media/{media.friendly_token}", {"title": "changed"}).status_code, 403)
+        self.assertEqual(self.client.post("/api/v1/playlists", {"title": "nope"}, content_type="application/json").status_code, 403)
+        self.assertEqual(self.client.get("/api/v1/media").status_code, 200)
 
 
 @override_settings(GLOBAL_LOGIN_REQUIRED=True)

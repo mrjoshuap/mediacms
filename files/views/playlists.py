@@ -16,9 +16,15 @@ from rest_framework.views import APIView
 
 from cms.permissions import IsAuthorizedToAdd, IsUserOrEditor
 
-from ..methods import is_mediacms_editor
+from ..methods import is_mediacms_editor, user_is_pending_approval
 from ..models import Media, Playlist, PlaylistMedia
 from ..serializers import MediaSerializer, PlaylistDetailSerializer, PlaylistSerializer
+
+
+def _pending_library_block(user):
+    if user_is_pending_approval(user):
+        return Response({"detail": "User account not approved."}, status=status.HTTP_403_FORBIDDEN)
+    return None
 
 
 class PlaylistList(APIView):
@@ -124,6 +130,9 @@ class PlaylistDetail(APIView):
         operation_description='Update the title and description of a playlist. Allowed for its owner and MediaCMS editors, managers and admins; the owner stays the same.',
     )
     def post(self, request, friendly_token, format=None):
+        blocked = _pending_library_block(request.user)
+        if blocked:
+            return blocked
         playlist = self.get_playlist(friendly_token)
         if isinstance(playlist, Response):
             return playlist
@@ -140,6 +149,9 @@ class PlaylistDetail(APIView):
         operation_description='type is one of add, remove or ordering, with media_friendly_token set to the media. ordering also needs the new position. Private media can only be added by users who can see them.',
     )
     def put(self, request, friendly_token, format=None):
+        blocked = _pending_library_block(request.user)
+        if blocked:
+            return blocked
         playlist = self.get_playlist(friendly_token)
         if isinstance(playlist, Response):
             return playlist
@@ -202,6 +214,9 @@ class PlaylistDetail(APIView):
         operation_description='Delete a playlist. Allowed for its owner and MediaCMS editors, managers and admins.',
     )
     def delete(self, request, friendly_token, format=None):
+        blocked = _pending_library_block(request.user)
+        if blocked:
+            return blocked
         playlist = self.get_playlist(friendly_token)
         if isinstance(playlist, Response):
             return playlist

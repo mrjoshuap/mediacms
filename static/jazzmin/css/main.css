@@ -68,8 +68,359 @@ div.inline-related {
 }
 
 .table thead th {
-    color: #64748b;
+    color: var(--mc-on-surface);
     border-bottom: 0;
+}
+
+/* Icon-only Media status cells; full label stays in title/aria-label (+ change-form text). */
+.changelist-status-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    line-height: 1;
+    color: var(--secondary);
+}
+
+.changelist-status-icon .fa,
+.changelist-status-icon .fas {
+    font-size: 1rem;
+}
+
+.changelist-status-icon--primary {
+    color: var(--warning);
+}
+
+.changelist-status-icon--success,
+.changelist-status-icon--public,
+.changelist-status-icon--listable {
+    color: var(--success);
+}
+
+.changelist-status-icon--fail,
+.changelist-status-icon--warning {
+    color: var(--danger);
+}
+
+.changelist-status-icon--private,
+.changelist-status-icon--pending,
+.changelist-status-icon--not-listable {
+    color: var(--secondary);
+}
+
+.changelist-status-icon--running,
+.changelist-status-icon--unlisted {
+    color: var(--info);
+}
+
+.changelist-status-icon--video {
+    color: var(--primary);
+}
+
+.changelist-status-icon--audio {
+    color: var(--indigo);
+}
+
+.changelist-status-icon--image {
+    color: var(--warning);
+}
+
+.changelist-status-icon--pdf {
+    color: var(--danger);
+}
+
+#result_list .changelist-status-icon__text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+#result_list .changelist-status-icon--with-count .changelist-status-icon__text {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: nowrap;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+#result_list td.field-display_media_type,
+#result_list td.field-display_state,
+#result_list td.field-display_encoding_status,
+#result_list td.field-display_listable,
+#result_list td.field-display_reported_times,
+#result_list td.field-display_status,
+#result_list td.field-display_chunk,
+#result_list td.field-has_file,
+#result_list th.column-display_media_type,
+#result_list th.column-display_state,
+#result_list th.column-display_encoding_status,
+#result_list th.column-display_listable,
+#result_list th.column-display_reported_times,
+#result_list th.column-display_status,
+#result_list th.column-display_chunk,
+#result_list th.column-has_file {
+    text-align: center;
+    width: 4rem;
+    max-width: 4rem;
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-media.change-list #result_list .changelist-status-icon .fa,
+.model-media.change-list #result_list .changelist-status-icon .fas {
+    font-size: 0.9rem;
+}
+
+.change-form .changelist-status-icon__text {
+    margin: 0;
+}
+
+.change-form .field-display_listable .changelist-status-icon {
+    gap: 0.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.change-form .field-display_listable .changelist-status-icon .fa,
+.change-form .field-display_listable .changelist-status-icon .fas {
+    font-size: 1.35rem;
+}
+
+.change-form .encoding-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: 28rem;
+}
+
+.change-form .encoding-progress .progress {
+    flex: 1 1 auto;
+    height: 1.15rem;
+    margin-bottom: 0;
+    background-color: color-mix(in srgb, var(--secondary) 25%, var(--mc-canvas));
+    border-radius: 0.35rem;
+    overflow: hidden;
+}
+
+.change-form .encoding-progress .progress-bar {
+    background-color: var(--primary);
+}
+
+.change-form .encoding-progress__value {
+    min-width: 3.25rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--mc-on-surface);
+}
+
+/* Keep sort direction + clear-X grouped beside the label (no float-right drift). */
+#result_list thead th .changelist-header-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+#result_list thead th .changelist-header-label__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-width: 0;
+    max-width: 100%;
+}
+
+#result_list thead th .changelist-header-label__text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#result_list thead th {
+    color: var(--mc-on-surface);
+}
+
+#result_list thead th.changelist-icon-header {
+    overflow: visible;
+    text-overflow: clip;
+}
+
+#result_list thead th.changelist-icon-header .changelist-header-label {
+    justify-content: center;
+}
+
+#result_list thead th.changelist-icon-header .changelist-header-label__title,
+#result_list thead th.changelist-icon-header .changelist-header-label__text {
+    flex: 0 0 auto;
+    max-width: none;
+    overflow: visible;
+    text-overflow: unset;
+}
+
+#result_list thead th .changelist-sort-hint {
+    flex: 0 0 auto;
+    opacity: 0.55;
+    font-size: 0.75rem;
+}
+
+#result_list thead th .changelist-sort-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    flex: 0 0 auto;
+    line-height: 1;
+}
+
+#result_list thead th .changelist-sort-controls .fa {
+    margin: 0;
+}
+
+#result_list thead th .changelist-sort-clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    text-decoration: none;
+}
+
+#result_list thead th .changelist-sort-clear:hover {
+    color: var(--danger);
+}
+
+#result_list .open-on-site {
+    color: var(--secondary);
+}
+
+#result_list .open-on-site:hover,
+#result_list .open-on-site:focus {
+    color: var(--primary);
+}
+
+#result_list td.field-open_on_site,
+#result_list th.column-open_on_site,
+#result_list td.field-is_active,
+#result_list th.column-is_active,
+#result_list td.field-is_superuser,
+#result_list th.column-is_superuser,
+#result_list td.field-is_editor,
+#result_list th.column-is_editor,
+#result_list td.field-is_manager,
+#result_list th.column-is_manager,
+#result_list td.field-is_staff,
+#result_list th.column-is_staff,
+#result_list td.field-is_approved,
+#result_list th.column-is_approved,
+#result_list td.field-is_rbac_category,
+#result_list th.column-is_rbac_category,
+#result_list td.field-is_lms_course,
+#result_list th.column-is_lms_course,
+#result_list td.field-display_video_action,
+#result_list th.column-display_video_action,
+#result_list td.field-display_media_trim_style,
+#result_list th.column-display_media_trim_style,
+#result_list td.field-display_translate_to_english,
+#result_list th.column-display_translate_to_english {
+    text-align: center;
+    width: 1%;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+#result_list th.column-open_on_site .changelist-header-label,
+#result_list th.column-display_media_type .changelist-header-label,
+#result_list th.column-display_state .changelist-header-label,
+#result_list th.column-display_encoding_status .changelist-header-label,
+#result_list th.column-display_listable .changelist-header-label,
+#result_list th.column-display_reported_times .changelist-header-label,
+#result_list th.column-display_status .changelist-header-label,
+#result_list th.column-display_chunk .changelist-header-label,
+#result_list th.column-has_file .changelist-header-label,
+#result_list th.column-display_video_action .changelist-header-label,
+#result_list th.column-display_media_trim_style .changelist-header-label,
+#result_list th.column-display_translate_to_english .changelist-header-label,
+#result_list th.column-is_active .changelist-header-label,
+#result_list th.column-is_superuser .changelist-header-label,
+#result_list th.column-is_editor .changelist-header-label,
+#result_list th.column-is_manager .changelist-header-label,
+#result_list th.column-is_staff .changelist-header-label,
+#result_list th.column-is_approved .changelist-header-label,
+#result_list th.column-is_rbac_category .changelist-header-label,
+#result_list th.column-is_lms_course .changelist-header-label,
+#result_list th.column-display_permission .changelist-header-label,
+#result_list th.column-display_source .changelist-header-label,
+#result_list th.column-display_action .changelist-header-label {
+    justify-content: center;
+}
+
+.changelist-text-with-link {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+}
+
+.changelist-text-with-link .changelist-clipped-text,
+.changelist-text-with-link > :not(.open-on-site) {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.changelist-text-with-link .open-on-site {
+    flex: 0 0 auto;
+}
+
+.admin-column-chooser > summary {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+    cursor: pointer;
+    list-style: none;
+}
+
+.admin-column-chooser-hint {
+    flex: 1 1 12rem;
+    min-width: 0;
+}
+
+.admin-column-chooser-reset {
+    margin-inline-start: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.admin-column-chooser-options label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.admin-column-chooser > summary::-webkit-details-marker {
+    display: none;
+}
+
+.admin-column-chooser > summary::before {
+    content: "\f054";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    margin-inline-end: 0.5rem;
+    font-size: 0.75rem;
+}
+
+.admin-column-chooser[open] > summary::before {
+    content: "\f078";
 }
 
 .empty-form {
@@ -77,8 +428,107 @@ div.inline-related {
 }
 
 .inline-related .tabular {
-    background-color: white;
+    background-color: var(--mc-surface);
+    color: var(--mc-on-surface);
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+/*
+ * Jazzmin applies Bootstrap input chrome but drops Django's compact tabular widths,
+ * and .text-nowrap on the inline table inherits into cells so raw-id / ordering
+ * inputs grow huge and clip behind .inline-group overflow.
+ * Use auto layout so short columns shrink-wrap; cap raw-id/number inputs explicitly.
+ */
+.tabular table.text-nowrap {
+    table-layout: auto;
+    width: auto;
+    max-width: 100%;
+    white-space: normal !important;
+}
+
+.tabular .vForeignKeyRawIdAdminField {
+    width: 5rem;
+    max-width: 5rem;
+    flex: 0 0 auto;
+}
+
+.tabular .vIntegerField,
+.tabular input[type="number"].vIntegerField {
+    width: 4rem;
+    max-width: 4rem;
+}
+
+.tabular th.column-ordering,
+.tabular td.field-ordering {
+    width: 5.5rem;
+    white-space: nowrap;
+}
+
+.tabular th.column-action_date,
+.tabular td.field-action_date,
+.tabular th.column-update_date,
+.tabular td.field-update_date,
+.tabular th.column-created_at,
+.tabular td.field-created_at {
+    white-space: nowrap;
+}
+
+/* Shrink-wrap short Encoding / Subtitle columns so leftover space isn't trapped between them */
+.tabular th.column-profile,
+.tabular td.field-profile,
+.tabular th.column-status,
+.tabular td.field-status,
+.tabular th.column-progress,
+.tabular td.field-progress,
+.tabular th.column-chunk,
+.tabular td.field-chunk,
+.tabular th.column-language,
+.tabular td.field-language,
+.tabular th.column-permission,
+.tabular td.field-permission,
+.tabular th.column-source,
+.tabular td.field-source {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.tabular th.column-user,
+.tabular td.field-user,
+.tabular th.column-owner_user,
+.tabular td.field-owner_user {
+    white-space: nowrap;
+}
+
+.tabular th.original,
+.tabular td.original {
+    width: 2rem;
+}
+
+.tabular td.delete,
+.tabular th:last-child {
+    width: 4.5rem;
+    white-space: nowrap;
+}
+
+.tabular td.field-media > div {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.35rem;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.tabular td.field-media > div > strong {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tabular td.field-ordering > div {
+    display: flex;
+    align-items: center;
 }
 
 td.djn-td,
@@ -115,20 +565,101 @@ tr.djn-tr>.original {
 }
 
 .object-tools .historylink {
-    background-color: #3c8dbc;
+    background-color: var(--info);
     width: 100%;
     display: block;
     padding: 5px;
     text-align: center;
-    color: white;
+    color: var(--white);
+}
+
+.object-tools .object-tools-actions {
+    width: 100%;
+    margin-block-start: 0.5rem;
+}
+
+.object-tools .object-tools-actions-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    width: 100%;
+}
+
+.object-tools .object-tools-actions-select {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+}
+
+.object-tools .object-tools-actions-go {
+    flex: 0 0 auto;
+    min-width: 3.5rem;
+    padding: 0.35rem 0.9rem;
+    font-weight: 600;
 }
 
 .jazzmin-avatar {
     font-size: 20px;
 }
 
-.related-widget-wrapper-link {
-    padding: 7px;
+.related-widget-wrapper {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 0.35rem;
+}
+
+.related-widget-wrapper .select2-container {
+    flex: 1 1 auto;
+    width: auto !important;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.related-widget-wrapper__actions {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.1rem;
+    margin-top: 0.35rem;
+}
+
+.related-widget-wrapper-link,
+.license-inspect {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--secondary);
+    font-size: 0.9rem;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.related-widget-wrapper-link:hover,
+.related-widget-wrapper-link:focus,
+.license-inspect:hover,
+.license-inspect:focus {
+    color: var(--primary);
+    background: none;
+    border: 0;
+}
+
+.inlinechangelink,
+.inlineviewlink,
+.change-form td.original a,
+.change-form .inline-related .card-title a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
 }
 
 .related-widget-wrapper select {
@@ -139,9 +670,10 @@ tr.djn-tr>.original {
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
-    background-color: #fff;
+    color: var(--mc-on-surface);
+    background-color: var(--mc-canvas);
     background-clip: padding-box;
-    border: 1px solid #ced4da;
+    border: 1px solid var(--gray);
     border-radius: .25rem;
     box-shadow: inset 0 0 0 transparent;
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
@@ -165,15 +697,28 @@ table.dataTable thead .sorting_desc_disabled::after {
 }
 
 .select2-container .select2-selection--single {
-    border: 1px solid #ced4da !important;
+    border: 1px solid var(--gray) !important;
     min-height: 38px;
     /* Center text inside */
     display: flex !important;
     align-items: center;
 }
 
-.select2-container--default .select2-selection--single {
-    border: 1px solid #ced4da;
+.select2-container--default .select2-selection--single,
+.select2-container--default .select2-selection--multiple {
+    border: 1px solid var(--gray) !important;
+    background-color: var(--mc-canvas) !important;
+    color: var(--mc-on-surface) !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered,
+.select2-container--default .select2-selection--multiple .select2-search__field {
+    color: var(--mc-on-surface);
+    background: transparent;
+}
+
+.select2-container--default .select2-selection--multiple .select2-search__field::placeholder {
+    color: var(--mc-muted);
 }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow {
@@ -181,17 +726,107 @@ table.dataTable thead .sorting_desc_disabled::after {
     top: unset !important;
 }
 
+/*
+ * Select2 4.1 multi chips: AdminLTE styles assume blue chips + white text, but the
+ * stock Select2 stylesheet keeps a light-gray chip and absolute-positions the
+ * remove control, which yields white-on-gray text and an overlapping ×.
+ */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: var(--primary) !important;
+    border: 1px solid var(--primary) !important;
+    color: var(--white) !important;
+    padding: 0 0.55rem 0 1.35rem !important;
+    margin-top: 0.31rem;
+    position: relative;
+    line-height: 1.6rem;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+    color: var(--white) !important;
+    padding: 0;
+    cursor: default;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1.15rem;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.35) !important;
+    border-radius: 0;
+    background: transparent !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 1rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover,
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:focus {
+    background: rgba(0, 0, 0, 0.15) !important;
+    color: var(--white) !important;
+}
+
+.select2-dropdown {
+    background-color: var(--mc-surface);
+    color: var(--mc-on-surface);
+}
+
 .select2-results__option {
-    color: black;
+    color: inherit;
 }
 
 .select2-container--admin-autocomplete .select2-results__option--highlighted[aria-selected] {
-    background-color: #0074f0 !important;
-    color: white !important;
+    background-color: var(--primary) !important;
+    color: var(--white) !important;
 }
 
 .select2-container--default .select2-results__option--selected {
-	background-color: #ddd !important;
+	background-color: var(--light) !important;
+}
+
+html.theme-darkly .select2-container--default .select2-selection--single,
+html.theme-darkly .select2-container--default .select2-selection--multiple {
+    background-color: var(--mc-canvas) !important;
+    border-color: var(--gray) !important;
+}
+
+html.theme-darkly .select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--mc-on-surface);
+}
+
+html.theme-darkly .select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: var(--white) transparent transparent transparent;
+}
+
+html.theme-darkly .select2-dropdown,
+html.theme-darkly .select2-container--default .select2-dropdown {
+    background-color: var(--mc-surface) !important;
+    color: var(--mc-on-surface) !important;
+    border-color: var(--gray);
+}
+
+html.theme-darkly .select2-search--dropdown .select2-search__field {
+    background-color: var(--mc-canvas);
+    color: var(--white);
+    border-color: var(--gray);
+}
+
+html.theme-darkly .select2-container--default .select2-results__option {
+    background-color: transparent;
+    color: var(--mc-on-surface);
+}
+
+html.theme-darkly .select2-container--default .select2-results__option--selected,
+html.theme-darkly .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: var(--primary) !important;
+    color: var(--white) !important;
 }
 
 #changelist-search .form-group {
@@ -240,10 +875,10 @@ input[type="text"]
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
-    color: #495057;
-    background-color: #fff;
+    color: var(--mc-ink);
+    background-color: var(--white);
     background-clip: padding-box;
-    border: 1px solid #ced4da;
+    border: 1px solid var(--gray);
     border-radius: .25rem;
     box-shadow: inset 0 0 0 transparent;
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
@@ -260,16 +895,18 @@ input[type="text"]
     padding: 6px 12px;
     font-size: 14px;
     line-height: 1.42857143;
-    color: #555;
-    background-color: #fff;
-    border: 1px solid #ccc;
+    color: var(--mc-ink);
+    background-color: var(--white);
+    border: 1px solid var(--gray);
 }
 
 .date-icon:before,
 .clock-icon:before {
     display: inline-block;
-    font: normal normal normal 14px/1 FontAwesome !important;
-    font-size: inherit;
+    font-family: "Font Awesome 5 Free" !important;
+    font-weight: 900;
+    font-size: 14px;
+    line-height: 1;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     content: "\f073";
@@ -287,8 +924,9 @@ input[type="text"]
     font-size: 12px;
     width: 19em;
     text-align: center;
-    background: white;
-    border: 1px solid #ddd;
+    background: var(--mc-surface);
+    color: var(--mc-on-surface);
+    border: 1px solid var(--gray);
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
     overflow: hidden;
@@ -308,7 +946,7 @@ input[type="text"]
     margin: 0;
     padding: 0;
     border-collapse: collapse;
-    background: white;
+    background: var(--mc-surface);
     width: 100%;
 }
 
@@ -318,10 +956,10 @@ input[type="text"]
     margin: 0;
     text-align: center;
     border-top: none;
-    background: #f5dd5d;
+    background: var(--warning);
     font-weight: 700;
     font-size: 12px;
-    color: #333;
+    color: var(--dark);
 }
 
 .clockbox h2 {
@@ -331,12 +969,12 @@ input[type="text"]
 
 .calendar th {
     padding: 8px 5px;
-    background: #f8f8f8;
-    border-bottom: 1px solid #ddd;
+    background: var(--mc-canvas);
+    border-bottom: 1px solid var(--gray);
     font-weight: 400;
     font-size: 12px;
     text-align: center;
-    color: #666;
+    color: var(--mc-on-surface);
 }
 
 .calendar td {
@@ -344,17 +982,19 @@ input[type="text"]
     font-size: 12px;
     text-align: center;
     padding: 0;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--gray);
     border-bottom: none;
+    color: var(--mc-on-surface);
 }
 
 .calendar td.selected a {
-    background: #3C8DBC;
-    color: #fff !important;
+    background: var(--info);
+    color: var(--white) !important;
 }
 
 .calendar td.nonday {
-    background: #f8f8f8;
+    background: var(--mc-surface);
+    color: var(--mc-muted);
 }
 
 .calendar td.today a {
@@ -367,27 +1007,27 @@ input[type="text"]
     font-weight: 400;
     padding: 6px;
     text-decoration: none;
-    color: #444;
+    color: var(--mc-on-surface);
 }
 
 .calendar td a:focus,
 .timelist a:focus,
 .calendar td a:hover,
 .timelist a:hover {
-    background: #3C8DBC;
-    color: white;
+    background: var(--info);
+    color: var(--white);
 }
 
 .calendar td a:active,
 .timelist a:active {
-    background: #3C8DBC;
-    color: white;
+    background: var(--info);
+    color: var(--white);
 }
 
 .calendarnav {
     font-size: 10px;
     text-align: center;
-    color: #ccc;
+    color: var(--mc-muted);
     margin: 0;
     padding: 1px 3px;
 }
@@ -396,16 +1036,16 @@ input[type="text"]
 #calendarnav a:visited,
 #calendarnav a:focus,
 #calendarnav a:hover {
-    color: #999;
+    color: var(--mc-on-surface);
 }
 
 .calendar-shortcuts {
-    background: white;
+    background: var(--mc-surface);
     font-size: 11px;
     line-height: 11px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--gray);
     padding: 8px 0;
-    color: #ccc;
+    color: var(--mc-muted);
 }
 
 .calendarbox .calendarnav-previous,
@@ -443,63 +1083,71 @@ input[type="text"]
     margin: 0;
     padding: 4px 0;
     font-size: 12px;
-    background: #eee;
-    border-top: 1px solid #ddd;
-    color: #333;
+    background: var(--mc-canvas);
+    border-top: 1px solid var(--gray);
+    color: var(--mc-on-surface);
 }
 
 .calendar-cancel:focus,
 .calendar-cancel:hover {
-    background: #ddd;
+    background: var(--mc-surface);
 }
 
 .calendar-cancel a {
-    color: black;
+    color: var(--mc-on-surface);
     display: block;
 }
 
-/* Selectors - This needs some work TODO */
+/* Horizontal filter (tags, categories, groups): show the button text with an icon. */
 
 .selector {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.75rem;
     width: 100%;
-    float: left;
+    float: none;
 }
 
 .selector select {
     width: 100%;
     height: 15em;
+    color: var(--mc-on-surface);
+    background-color: var(--mc-canvas);
+    border: 1px solid var(--gray);
 }
 
 .selector-available,
 .selector-chosen {
-    float: left;
-    width: 48%;
+    float: none;
+    width: auto;
+    flex: 1 1 16rem;
     text-align: center;
     margin-bottom: 5px;
 }
 
 .selector-available h2,
 .selector-chosen h2 {
-    border: 1px solid #ccc;
+    border: 1px solid var(--gray);
     font-size: 16px;
     padding: 5px;
 }
 
 .selector-chosen h2 {
-    background: #007bff;
-    color: #fff;
+    background: var(--primary);
+    color: var(--white);
 }
 
 .selector .selector-available h2 {
-    background: #f8f8f8;
-    color: #666;
+    background: var(--mc-canvas);
+    color: var(--mc-on-surface);
 }
 
 .selector .selector-filter {
-    background: white;
-    border: 1px solid #ccc;
+    background: var(--mc-surface);
+    border: 1px solid var(--gray);
     padding: 8px;
-    color: #999;
+    color: var(--mc-on-surface);
     font-size: 10px;
     margin: 0;
     text-align: left;
@@ -510,9 +1158,9 @@ input[type="text"]
     padding: 6px 12px;
     font-size: 14px;
     line-height: 1.42857143;
-    color: #555;
-    background-color: #fff;
-    border: 1px solid #ccc;
+    color: var(--mc-on-surface);
+    background-color: var(--mc-canvas);
+    border: 1px solid var(--gray);
     margin-left: 0 !important;
 }
 
@@ -553,11 +1201,16 @@ select#id_categories_from {
 }
 
 .selector ul.selector-chooser {
-    float: left;
-    width: 4%;
-    background-color: #eee;
-    border-radius: 10px;
-    margin: 10em 0 0;
+    float: none;
+    width: auto;
+    flex: 0 0 9.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: transparent;
+    border-radius: 0;
+    margin: 0;
     padding: 0;
 }
 
@@ -575,94 +1228,71 @@ select#id_categories_from {
 }
 
 .selector-add,
-.selector-remove {
-    height: 16px;
-    display: block;
-    text-indent: -3000px;
-    overflow: hidden;
+.selector-remove,
+.selector-chooseall,
+.selector-clearall {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    width: 100%;
+    height: auto;
+    margin: 0.25rem 0;
+    padding: 0.4rem 0.5rem;
+    overflow: visible;
+    text-indent: 0;
+    white-space: normal;
+    line-height: 1.3;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    color: var(--mc-on-surface);
+    background: var(--mc-canvas);
+    border: 1px solid var(--gray);
+    border-radius: 0.25rem;
     cursor: default;
-    opacity: 0.3;
+    opacity: 0.45;
+}
+
+.selector-add::before,
+.selector-chooseall::before,
+.selector-remove::before,
+.selector-clearall::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    flex: 0 0 auto;
+}
+
+.selector-add::before,
+.selector-chooseall::before {
+    content: "\f061";
+}
+
+.selector-remove::before,
+.selector-clearall::before {
+    content: "\f060";
 }
 
 .active.selector-add,
-.active.selector-remove {
+.active.selector-remove,
+.active.selector-chooseall,
+.active.selector-clearall {
     opacity: 1;
+    cursor: pointer;
 }
 
 .active.selector-add:hover,
-.active.selector-remove:hover {
-    cursor: pointer;
-}
-
-.selector-add {
-    background: url(../img/selector-icons.svg) 0 -96px no-repeat;
-}
-
+.active.selector-remove:hover,
+.active.selector-chooseall:hover,
+.active.selector-clearall:hover,
 .active.selector-add:focus,
-.active.selector-add:hover {
-    background-position: 0 -112px;
-}
-
-.selector-remove {
-    background: url(../img/selector-icons.svg) 0 -64px no-repeat;
-}
-
 .active.selector-remove:focus,
-.active.selector-remove:hover {
-    background-position: 0 -80px;
-}
-
-a.selector-chooseall,
-a.selector-clearall {
-    display: inline-block;
-    height: 16px;
-    text-align: left;
-    margin: 1px auto 3px;
-    overflow: hidden;
-    font-weight: bold;
-    line-height: 16px;
-    color: #666;
-    text-decoration: none;
-    opacity: 0.3;
-}
-
-a.active.selector-chooseall:focus,
-a.active.selector-clearall:focus,
-a.active.selector-chooseall:hover,
-a.active.selector-clearall:hover {
-    color: #447e9b;
-}
-
-a.active.selector-chooseall,
-a.active.selector-clearall {
-    opacity: 1;
-}
-
-a.active.selector-chooseall:hover,
-a.active.selector-clearall:hover {
-    cursor: pointer;
-}
-
-a.selector-chooseall {
-    padding: 0 18px 0 0;
-    background: url(../img/selector-icons.svg) right -160px no-repeat;
-    cursor: default;
-}
-
-a.active.selector-chooseall:focus,
-a.active.selector-chooseall:hover {
-    background-position: 100% -176px;
-}
-
-a.selector-clearall {
-    padding: 0 0 0 18px;
-    background: url(../img/selector-icons.svg) 0 -128px no-repeat;
-    cursor: default;
-}
-
-a.active.selector-clearall:focus,
-a.active.selector-clearall:hover {
-    background-position: 0 -144px;
+.active.selector-chooseall:focus,
+.active.selector-clearall:focus {
+    color: var(--white);
+    background: var(--primary);
+    border-color: var(--primary);
 }
 
 .selector .search-label-icon {
@@ -680,7 +1310,7 @@ a.active.selector-clearall:hover {
 .help-block,
 .timezonewarning {
     font-size: .8em;
-    color: #859099;
+    color: var(--mc-muted);
     font-style: italic;
 }
 
@@ -700,6 +1330,13 @@ a.active.selector-clearall:hover {
 .date-icon::before,
 .clock-icon::before {
     font-family: "Font Awesome 5 Free" !important;
+    font-weight: 900;
+}
+
+.change-form .datetimeshortcuts a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
 }
 
 .timelist li {
@@ -719,7 +1356,7 @@ body.no-sidebar .main-header {
 
 .vCheckboxLabel.inline {
     vertical-align: top;
-    color: red;
+    color: var(--danger);
     margin-bottom: 0;
 }
 
@@ -780,8 +1417,8 @@ body.no-sidebar .main-header {
 }
 
 #jazzy-collapsible .collapsible-header:hover {
-    background: #007bff;
-    color: white;
+    background: var(--primary);
+    color: var(--white);
 }
 
 #jazzy-collapsible .collapsible-header {
@@ -857,10 +1494,10 @@ a.inline-deletelink {
     float: right;
     padding: 3px 5px;
     margin: 10px;
-    background-color: #dc3545;
+    background-color: var(--danger);
     border-radius: .25rem;
-    color: white !important;
-    border: 1px solid #dc3545;
+    color: var(--white) !important;
+    border: 1px solid var(--danger);
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 /* end stacked inlines */
@@ -917,7 +1554,7 @@ body.jazzmin-login-page {
     justify-content: center;
 }
 .callout {
-    color: black;
+    color: inherit;
 }
 
 /* sidebar scrolling */
@@ -944,8 +1581,2218 @@ body.jazzmin-login-page {
 #jazzy-sidebar .nav-sidebar > .nav-item {
     width: 100%;
 }
+
+/* Closed groups point right; open groups rotate down (AdminLTE default is angle-left). */
+#jazzy-sidebar .nav-sidebar .menu-is-opening > .nav-link i.right,
+#jazzy-sidebar .nav-sidebar .menu-open > .nav-link i.right {
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+/* Indent second-level links only. Margin on the list overflows the sidebar. */
+#jazzy-sidebar .sidebar,
+#jazzy-sidebar .nav-sidebar {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+#jazzy-sidebar .nav-sidebar .nav-treeview {
+    margin-left: 0;
+}
+#jazzy-sidebar .nav-sidebar > .nav-item > .nav-link {
+    padding-left: 0.5rem;
+}
+#jazzy-sidebar .nav-sidebar .nav-treeview > .nav-item > .nav-link {
+    padding-left: 1.75rem;
+}
+#jazzy-sidebar .nav-sidebar .nav-treeview .nav-link p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 /* tweeks for django-filer*/
 .navigator-top-nav + #content-main {
     float: left;
     width: 100%;
+}
+
+/* Changelist zones: search, filters, and bulk Actions */
+#changelist-search {
+    margin-block-end: 0.75rem;
+}
+
+#change-list-filters {
+    width: 100%;
+}
+
+.changelist-search-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.changelist-search-row #searchbar {
+    flex: 1 1 16rem;
+    max-width: 36rem;
+}
+
+.changelist-search-row #searchbar::placeholder {
+    color: var(--secondary);
+    opacity: 1;
+}
+
+.changelist-result-count {
+    margin-block: 0.85rem 0;
+    margin-inline: 0.15rem 0;
+    font-size: 1rem;
+    line-height: 1.45;
+}
+
+.changelist-filter-card {
+    width: 100%;
+    margin-block-start: 0.75rem;
+    border: 1px solid var(--gray);
+    border-radius: 0.25rem;
+    background-color: var(--mc-surface);
+    color: var(--mc-on-surface);
+}
+
+.changelist-filter-card > summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    padding: 0.7rem 1rem;
+    cursor: pointer;
+    list-style: none;
+}
+
+.changelist-filter-card > summary::-webkit-details-marker {
+    display: none;
+}
+
+.changelist-filter-card[open] > summary {
+    border-block-end: 1px solid var(--gray);
+}
+
+.changelist-filter-chevron {
+    transition: transform 0.15s ease;
+}
+
+.changelist-filter-card[open] .changelist-filter-chevron {
+    transform: rotate(90deg);
+}
+
+.changelist-filter-summary-label {
+    font-weight: 700;
+}
+
+.changelist-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.1rem 0.55rem;
+    border: 1px solid color-mix(in srgb, var(--info) 45%, var(--gray));
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--info) 16%, var(--mc-surface));
+    color: var(--mc-on-surface);
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.changelist-filter-clear {
+    margin-inline-start: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    text-decoration: none;
+}
+
+.changelist-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 0.85rem 1rem;
+    padding: 1rem;
+}
+
+.changelist-filter-label {
+    display: block;
+    margin-block-end: 0.35rem;
+    font-weight: 600;
+}
+
+.changelist-filter-field.is-active {
+    padding: 0.45rem 0.55rem;
+    border-radius: 0.25rem;
+    background-color: color-mix(in srgb, var(--primary) 10%, var(--mc-surface));
+}
+
+.changelist-filter-field.is-active .changelist-filter-label {
+    color: var(--mc-on-surface);
+}
+
+.changelist-filter-field .form-control,
+.changelist-filter-field .select2-container {
+    width: 100% !important;
+}
+
+.changelist-segmented {
+    display: flex;
+    flex-wrap: wrap;
+    border: 1px solid var(--gray);
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+.changelist-filter-field.is-active .changelist-segmented,
+.changelist-filter-field.is-active select.form-control,
+.changelist-filter-field.is-active .select2-container--default .select2-selection--single {
+    border-color: var(--primary);
+    background-color: color-mix(in srgb, var(--primary) 14%, var(--mc-surface));
+    color: var(--mc-on-surface);
+}
+
+.changelist-segmented label {
+    position: relative;
+    flex: 1 1 auto;
+    margin: 0;
+    padding: 0.4rem 0.55rem;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 400;
+}
+
+.changelist-segmented label + label {
+    border-inline-start: 1px solid var(--gray);
+}
+
+.changelist-segmented input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+}
+
+.changelist-filter-choice {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+.changelist-filter-label .changelist-filter-choice,
+.changelist-filter-check .changelist-filter-choice {
+    justify-content: flex-start;
+}
+
+.changelist-segmented label:has(input:checked) {
+    background-color: color-mix(in srgb, var(--primary) 22%, var(--mc-surface));
+    color: var(--mc-on-surface);
+    font-weight: 600;
+}
+
+html.theme-darkly .changelist-filter-field.is-active {
+    background-color: color-mix(in srgb, var(--white) 8%, var(--mc-surface));
+}
+
+html.theme-darkly .changelist-segmented label:has(input:checked) {
+    background-color: color-mix(in srgb, var(--white) 18%, var(--mc-surface));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 65%, var(--white));
+    color: var(--white);
+}
+
+html.theme-darkly .changelist-filter-chip {
+    background-color: color-mix(in srgb, var(--info) 32%, var(--mc-surface));
+    color: var(--white);
+}
+
+.changelist-segmented label:focus-within {
+    outline: 2px solid var(--info);
+    outline-offset: -2px;
+}
+
+.changelist-filter-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    margin: 0;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.changelist-filter-field.is-active .changelist-filter-check {
+    font-weight: 600;
+}
+
+#changelist .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.5rem;
+    margin-block: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--gray);
+    border-radius: 0.25rem;
+    background-color: var(--mc-surface);
+    color: var(--mc-on-surface);
+}
+
+html.theme-darkly #changelist .actions select,
+html.theme-darkly #changelist .actions .changelist-actions-select select {
+    color: var(--mc-on-surface);
+    background-color: var(--mc-surface);
+    border-color: var(--gray);
+}
+
+#changelist .actions label,
+#changelist .actions .changelist-actions-select {
+    margin: 0;
+    /* Keep the select sized to its content so Go sits next to it */
+    flex: 0 1 auto;
+    min-width: 0;
+}
+
+#changelist .actions select,
+#changelist .actions .select2-container {
+    min-width: 14rem;
+    max-width: 100%;
+    width: auto;
+}
+
+#changelist .actions .changelist-actions-go {
+    flex: 0 0 auto;
+    margin: 0;
+    min-width: 4.5rem;
+    padding: 0.5rem 1.35rem;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+#changelist .actions .changelist-list-editable-save {
+    flex: 0 0 auto;
+    margin: 0;
+    margin-inline-start: auto;
+    min-width: 7rem;
+    padding: 0.55rem 1.75rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+#changelist .actions .changelist-list-editable-save:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+#changelist .actions .action-counter,
+#changelist .actions .all,
+#changelist .actions .question,
+#changelist .actions .clear {
+    margin-inline-start: 0.5rem;
+}
+
+#changelist .change-list-actions-bottom .actions {
+    margin-block-start: 0.75rem;
+}
+
+/*
+ * Change-form tab groups:
+ * - default object tabs keep theme styling
+ * - Related (one-to-many links/counts) uses teal
+ */
+#jazzy-tabs.nav-tabs .nav-item:has(> .related-links-tab) {
+    margin-inline-start: 0.85rem;
+    padding-inline-start: 0.85rem;
+    border-inline-start: 1px solid var(--gray);
+}
+
+#jazzy-tabs.nav-tabs .nav-link.related-links-tab,
+#jazzy-tabs .nav.flex-column .nav-link.related-links-tab {
+    color: var(--info);
+    background-color: color-mix(in srgb, var(--info) 12%, transparent);
+    border-color: color-mix(in srgb, var(--info) 28%, transparent);
+}
+
+#jazzy-tabs.nav-tabs .nav-link.related-links-tab:hover,
+#jazzy-tabs .nav.flex-column .nav-link.related-links-tab:hover {
+    color: var(--info);
+    background-color: color-mix(in srgb, var(--info) 20%, transparent);
+}
+
+#jazzy-tabs.nav-tabs .nav-link.related-links-tab.active,
+#jazzy-tabs .nav.flex-column .nav-link.related-links-tab.active {
+    color: var(--white);
+    background-color: var(--info);
+    border-color: var(--info);
+}
+
+#changelist-filter {
+    border-inline-start: 1px solid #dee2e6;
+    padding-inline-start: 1rem;
+}
+
+#changelist-filter h2,
+#changelist-filter h3 {
+    font-weight: 600;
+}
+
+/* Dashboard card title icon spacing (logical, RTL-safe) */
+.dashboard .card-title > i,
+.card-title > i.me-2 {
+    margin-inline-end: 0.5rem;
+}
+
+/* LTR isolation for IDs, tokens, and usernames in RTL UIs */
+.media-id,
+.media-id-input,
+code.media-id {
+    direction: ltr;
+    unicode-bidi: isolate;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.media-id-input {
+    display: block;
+    width: 100%;
+    max-width: 28rem;
+    margin-block-start: 0.5rem;
+}
+
+.confirm-token-list {
+    margin: 0.5rem 0;
+    padding-inline-start: 1.25rem;
+}
+
+.admin-confirm-page .errornote p {
+    margin-block: 0.35rem;
+}
+
+/* Django marks Date/DateTime cells with .nowrap; Jazzmin omits Django's admin base CSS. */
+#result_list td.nowrap,
+#result_list th.nowrap {
+    white-space: nowrap;
+}
+
+/*
+ * Media changelist: the table stays within the card. Title takes leftover width
+ * and may shrink to almost nothing (max-width: 0 stops the full title from
+ * setting a column minimum). Default icon columns stay icon-sized so their
+ * header labels do not force horizontal scrolling.
+ * list_display_links renders the title as tbody th.field-display_title.
+ */
+.model-media.change-list #result_list {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.model-media.change-list #result_list th,
+.model-media.change-list #result_list td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-media.change-list #result_list th.action-checkbox-column,
+.model-media.change-list #result_list td.action-checkbox {
+    width: 3.25rem;
+}
+
+.model-media.change-list .card-body.table-responsive {
+    container-type: inline-size;
+}
+
+.model-media.change-list #result_list th.column-add_date,
+.model-media.change-list #result_list td.field-add_date {
+    width: 12.25rem;
+}
+
+@container (max-width: 40rem) {
+    .model-media.change-list #result_list th.column-add_date,
+    .model-media.change-list #result_list td.field-add_date {
+        width: 7rem;
+    }
+}
+
+.model-media.change-list #result_list th.column-get_comments_count,
+.model-media.change-list #result_list td.field-get_comments_count,
+.model-media.change-list #result_list th.column-get_encodings_count,
+.model-media.change-list #result_list td.field-get_encodings_count {
+    width: 5.5rem;
+}
+
+.model-media.change-list #result_list th.column-display_media_type,
+.model-media.change-list #result_list td.field-display_media_type,
+.model-media.change-list #result_list th.column-display_state,
+.model-media.change-list #result_list td.field-display_state,
+.model-media.change-list #result_list th.column-display_encoding_status,
+.model-media.change-list #result_list td.field-display_encoding_status,
+.model-media.change-list #result_list th.column-display_listable,
+.model-media.change-list #result_list td.field-display_listable,
+.model-media.change-list #result_list th.column-display_reported_times,
+.model-media.change-list #result_list td.field-display_reported_times,
+.model-media.change-list #result_list th.column-display_duration,
+.model-media.change-list #result_list td.field-display_duration,
+.model-media.change-list #result_list th.column-is_reviewed,
+.model-media.change-list #result_list td.field-is_reviewed,
+.model-media.change-list #result_list th.column-featured,
+.model-media.change-list #result_list td.field-featured,
+.model-media.change-list #result_list th.column-allow_download,
+.model-media.change-list #result_list td.field-allow_download,
+.model-media.change-list #result_list th.column-enable_comments,
+.model-media.change-list #result_list td.field-enable_comments,
+.model-media.change-list #result_list th.column-open_on_site,
+.model-media.change-list #result_list td.field-open_on_site {
+    width: 4rem;
+}
+
+.model-media.change-list #result_list th.column-display_title,
+.model-media.change-list #result_list th.field-display_title,
+.model-media.change-list #result_list td.field-display_title {
+    width: 100%;
+    min-width: 0;
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-media.change-list #result_list th.column-link_user,
+.model-media.change-list #result_list td.field-link_user {
+    width: 8rem;
+    max-width: 8rem;
+    text-align: start;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.model-media.change-list #result_list th.field-display_title a,
+.model-media.change-list #result_list td.field-display_title a,
+.model-media.change-list #result_list td.field-link_user a {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*
+ * Trim and caption requests: media title takes leftover width, like the media changelist.
+ * The id is the row link and carries a search icon. Status columns stay icon-sized.
+ */
+.model-videotrimrequest.change-list #result_list,
+.model-transcriptionrequest.change-list #result_list {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.model-videotrimrequest.change-list .card-body.table-responsive,
+.model-transcriptionrequest.change-list .card-body.table-responsive {
+    container-type: inline-size;
+}
+
+.model-videotrimrequest.change-list #result_list th,
+.model-videotrimrequest.change-list #result_list td,
+.model-transcriptionrequest.change-list #result_list th,
+.model-transcriptionrequest.change-list #result_list td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-videotrimrequest.change-list #result_list th.action-checkbox-column,
+.model-videotrimrequest.change-list #result_list td.action-checkbox,
+.model-transcriptionrequest.change-list #result_list th.action-checkbox-column,
+.model-transcriptionrequest.change-list #result_list td.action-checkbox {
+    width: 3.25rem;
+}
+
+.model-videotrimrequest.change-list #result_list th.column-add_date,
+.model-videotrimrequest.change-list #result_list td.field-add_date,
+.model-transcriptionrequest.change-list #result_list th.column-add_date,
+.model-transcriptionrequest.change-list #result_list td.field-add_date {
+    width: 12.25rem;
+}
+
+@container (max-width: 40rem) {
+    .model-videotrimrequest.change-list #result_list th.column-add_date,
+    .model-videotrimrequest.change-list #result_list td.field-add_date,
+    .model-transcriptionrequest.change-list #result_list th.column-add_date,
+    .model-transcriptionrequest.change-list #result_list td.field-add_date {
+        width: 7rem;
+    }
+}
+
+.model-videotrimrequest.change-list #result_list th.column-display_id,
+.model-videotrimrequest.change-list #result_list th.field-display_id,
+.model-videotrimrequest.change-list #result_list td.field-display_id,
+.model-transcriptionrequest.change-list #result_list th.column-display_id,
+.model-transcriptionrequest.change-list #result_list th.field-display_id,
+.model-transcriptionrequest.change-list #result_list td.field-display_id {
+    width: 5.5rem;
+}
+
+.model-videotrimrequest.change-list #result_list th.column-display_status,
+.model-videotrimrequest.change-list #result_list td.field-display_status,
+.model-videotrimrequest.change-list #result_list th.column-display_video_action,
+.model-videotrimrequest.change-list #result_list td.field-display_video_action,
+.model-videotrimrequest.change-list #result_list th.column-display_media_trim_style,
+.model-videotrimrequest.change-list #result_list td.field-display_media_trim_style,
+.model-videotrimrequest.change-list #result_list th.column-open_on_site,
+.model-videotrimrequest.change-list #result_list td.field-open_on_site,
+.model-transcriptionrequest.change-list #result_list th.column-display_status,
+.model-transcriptionrequest.change-list #result_list td.field-display_status,
+.model-transcriptionrequest.change-list #result_list th.column-display_translate_to_english,
+.model-transcriptionrequest.change-list #result_list td.field-display_translate_to_english,
+.model-transcriptionrequest.change-list #result_list th.column-open_on_site,
+.model-transcriptionrequest.change-list #result_list td.field-open_on_site {
+    width: 4rem;
+    text-align: center;
+}
+
+.model-videotrimrequest.change-list #result_list th.column-link_media,
+.model-videotrimrequest.change-list #result_list td.field-link_media,
+.model-transcriptionrequest.change-list #result_list th.column-link_media,
+.model-transcriptionrequest.change-list #result_list td.field-link_media {
+    width: 100%;
+    min-width: 0;
+    max-width: 0;
+}
+
+.model-videotrimrequest.change-list #result_list td.field-link_media a,
+.model-transcriptionrequest.change-list #result_list td.field-link_media a {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.changelist-id-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+}
+
+.changelist-id-link .fa-search {
+    font-size: 0.8rem;
+}
+
+/*
+ * Categories changelist: keep add_date compact; title takes leftover width.
+ * list_display_links renders title as tbody th.field-title.
+ */
+.model-category.change-list #result_list {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.model-category.change-list #result_list th:first-child,
+.model-category.change-list #result_list td.action-checkbox {
+    width: 2.75rem;
+}
+
+.model-category.change-list #result_list th.column-add_date,
+.model-category.change-list #result_list td.field-add_date {
+    width: 9.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.model-category.change-list #result_list th.column-title,
+.model-category.change-list #result_list th.field-title,
+.model-category.change-list #result_list td.field-title {
+    width: 100%;
+    min-width: 0;
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-category.change-list #result_list th.column-user,
+.model-category.change-list #result_list td.field-user {
+    width: 8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-category.change-list #result_list th.column-uid,
+.model-category.change-list #result_list td.field-uid,
+.model-category.change-list #result_list th.column-related_media_count,
+.model-category.change-list #result_list td.field-related_media_count,
+.model-category.change-list #result_list th.column-identity_provider,
+.model-category.change-list #result_list td.field-identity_provider {
+    width: 6.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-category.change-list #result_list th.column-is_rbac_category,
+.model-category.change-list #result_list td.field-is_rbac_category,
+.model-category.change-list #result_list th.column-is_lms_course,
+.model-category.change-list #result_list td.field-is_lms_course,
+.model-category.change-list #result_list th.column-open_on_site,
+.model-category.change-list #result_list td.field-open_on_site {
+    width: 4rem;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-category.change-list #result_list th.field-title a,
+.model-category.change-list #result_list td.field-title a {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*
+ * Users changelist: username keeps a stable width. Date added, full name, and
+ * email take the leftover space and shrink first.
+ */
+.model-user.change-list #result_list {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.model-user.change-list .card-body.table-responsive {
+    container-type: inline-size;
+}
+
+.model-user.change-list #result_list th,
+.model-user.change-list #result_list td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-user.change-list #result_list th.action-checkbox-column,
+.model-user.change-list #result_list td.action-checkbox {
+    width: 3.25rem;
+}
+
+.model-user.change-list #result_list th.column-username,
+.model-user.change-list #result_list th.field-username,
+.model-user.change-list #result_list td.field-username {
+    width: 12rem;
+}
+
+.model-user.change-list #result_list th.column-is_active,
+.model-user.change-list #result_list td.field-is_active,
+.model-user.change-list #result_list th.column-is_superuser,
+.model-user.change-list #result_list td.field-is_superuser,
+.model-user.change-list #result_list th.column-is_editor,
+.model-user.change-list #result_list td.field-is_editor,
+.model-user.change-list #result_list th.column-is_manager,
+.model-user.change-list #result_list td.field-is_manager,
+.model-user.change-list #result_list th.column-open_on_site,
+.model-user.change-list #result_list td.field-open_on_site {
+    width: 4rem;
+    text-align: center;
+}
+
+.model-user.change-list #result_list th.column-media_count,
+.model-user.change-list #result_list td.field-media_count {
+    width: 5.5rem;
+}
+
+.model-user.change-list #result_list th.column-date_added,
+.model-user.change-list #result_list td.field-date_added,
+.model-user.change-list #result_list th.column-name,
+.model-user.change-list #result_list td.field-name,
+.model-user.change-list #result_list th.column-email,
+.model-user.change-list #result_list td.field-email {
+    width: 100%;
+    min-width: 0;
+    max-width: 0;
+}
+
+.model-user.change-list #result_list th.field-username a,
+.model-user.change-list #result_list td.field-username a {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*
+ * Email addresses: the address takes leftover width and ellipsizes. The user
+ * stays a short username. Primary and verified are status icons.
+ */
+.model-emailaddress.change-list #result_list {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.model-emailaddress.change-list .card-body.table-responsive {
+    container-type: inline-size;
+}
+
+.model-emailaddress.change-list #result_list th,
+.model-emailaddress.change-list #result_list td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-emailaddress.change-list #result_list th.action-checkbox-column,
+.model-emailaddress.change-list #result_list td.action-checkbox {
+    width: 3.25rem;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+.model-emailaddress.change-list #result_list th.column-email,
+.model-emailaddress.change-list #result_list th.field-email,
+.model-emailaddress.change-list #result_list td.field-email {
+    width: 100%;
+    min-width: 0;
+    max-width: 0;
+}
+
+.model-emailaddress.change-list #result_list th.column-link_user,
+.model-emailaddress.change-list #result_list td.field-link_user {
+    width: 10rem;
+}
+
+.model-emailaddress.change-list #result_list th.column-display_primary,
+.model-emailaddress.change-list #result_list th.column-display_verified,
+.model-emailaddress.change-list #result_list td.field-display_primary,
+.model-emailaddress.change-list #result_list td.field-display_verified {
+    width: 5.5rem;
+    text-align: center;
+    text-overflow: clip;
+}
+
+.model-emailaddress.change-list #result_list th.column-display_primary .changelist-header-label,
+.model-emailaddress.change-list #result_list th.column-display_verified .changelist-header-label {
+    justify-content: center;
+}
+
+.model-emailaddress.change-list #result_list th.field-email a,
+.model-emailaddress.change-list #result_list td.field-link_user a {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@container (max-width: 40rem) {
+    .model-emailaddress.change-list #result_list th.column-link_user,
+    .model-emailaddress.change-list #result_list td.field-link_user {
+        width: 6.5rem;
+    }
+}
+
+/*
+ * Media permissions: the media title takes leftover width. Created at and the
+ * two user columns shrink first. Permission and source stay icon-sized.
+ */
+.model-mediapermission.change-list #result_list {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.model-mediapermission.change-list .card-body.table-responsive {
+    container-type: inline-size;
+}
+
+.model-mediapermission.change-list #result_list th,
+.model-mediapermission.change-list #result_list td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-mediapermission.change-list #result_list th.action-checkbox-column,
+.model-mediapermission.change-list #result_list td.action-checkbox {
+    width: 3.25rem;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+.model-mediapermission.change-list #result_list th.column-created_at,
+.model-mediapermission.change-list #result_list td.field-created_at {
+    width: 12.25rem;
+}
+
+.model-mediapermission.change-list #result_list th.column-display_id,
+.model-mediapermission.change-list #result_list th.field-display_id,
+.model-mediapermission.change-list #result_list td.field-display_id {
+    width: 5.5rem;
+}
+
+.model-mediapermission.change-list #result_list th.column-link_user,
+.model-mediapermission.change-list #result_list td.field-link_user,
+.model-mediapermission.change-list #result_list th.column-link_owner,
+.model-mediapermission.change-list #result_list td.field-link_owner {
+    width: 8rem;
+}
+
+.model-mediapermission.change-list #result_list th.column-display_permission,
+.model-mediapermission.change-list #result_list td.field-display_permission,
+.model-mediapermission.change-list #result_list th.column-display_source,
+.model-mediapermission.change-list #result_list td.field-display_source,
+.model-mediapermission.change-list #result_list th.column-open_on_site,
+.model-mediapermission.change-list #result_list td.field-open_on_site {
+    width: 4rem;
+    text-align: center;
+    text-overflow: clip;
+}
+
+@container (min-width: 64rem) {
+    .model-mediapermission.change-list #result_list th.column-display_permission,
+    .model-mediapermission.change-list #result_list td.field-display_permission {
+        width: 7.5rem;
+    }
+
+    .model-mediapermission.change-list #result_list th.column-display_source,
+    .model-mediapermission.change-list #result_list td.field-display_source {
+        width: 6rem;
+    }
+}
+
+.model-mediapermission.change-list #result_list th.column-link_media,
+.model-mediapermission.change-list #result_list td.field-link_media {
+    width: 100%;
+    min-width: 0;
+    max-width: 0;
+}
+
+@container (max-width: 52rem) {
+    .model-mediapermission.change-list #result_list th.column-created_at,
+    .model-mediapermission.change-list #result_list td.field-created_at {
+        width: 8rem;
+    }
+
+    .model-mediapermission.change-list #result_list th.column-link_user,
+    .model-mediapermission.change-list #result_list td.field-link_user,
+    .model-mediapermission.change-list #result_list th.column-link_owner,
+    .model-mediapermission.change-list #result_list td.field-link_owner {
+        width: 6rem;
+    }
+}
+
+@container (max-width: 40rem) {
+    .model-mediapermission.change-list #result_list th.column-created_at,
+    .model-mediapermission.change-list #result_list td.field-created_at {
+        width: 6.5rem;
+    }
+
+    .model-mediapermission.change-list #result_list th.column-link_user,
+    .model-mediapermission.change-list #result_list td.field-link_user,
+    .model-mediapermission.change-list #result_list th.column-link_owner,
+    .model-mediapermission.change-list #result_list td.field-link_owner {
+        width: 4.5rem;
+    }
+}
+
+.model-mediapermission.change-list #result_list td.field-link_media a,
+.model-mediapermission.change-list #result_list td.field-link_user a,
+.model-mediapermission.change-list #result_list td.field-link_owner a {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*
+ * Playlists changelist: keep add_date compact; title takes leftover width.
+ * list_display_links renders title as tbody th.field-title.
+ */
+.model-playlist.change-list #result_list {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.model-playlist.change-list #result_list th:first-child,
+.model-playlist.change-list #result_list td.action-checkbox {
+    width: 2.75rem;
+}
+
+.model-playlist.change-list #result_list th.column-add_date,
+.model-playlist.change-list #result_list td.field-add_date {
+    width: 9.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.model-playlist.change-list #result_list th.column-title,
+.model-playlist.change-list #result_list th.field-title,
+.model-playlist.change-list #result_list td.field-title {
+    width: 100%;
+    min-width: 0;
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-playlist.change-list #result_list th.column-link_user,
+.model-playlist.change-list #result_list td.field-link_user {
+    width: 8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-playlist.change-list #result_list th.column-friendly_token,
+.model-playlist.change-list #result_list td.field-friendly_token,
+.model-playlist.change-list #result_list th.column-related_media_count,
+.model-playlist.change-list #result_list td.field-related_media_count {
+    width: 6.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-playlist.change-list #result_list th.column-open_on_site,
+.model-playlist.change-list #result_list td.field-open_on_site {
+    width: 4rem;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-playlist.change-list #result_list th.field-title a,
+.model-playlist.change-list #result_list td.field-title a,
+.model-playlist.change-list #result_list td.field-link_user a {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*
+ * Channels changelist: keep add_date compact; title takes leftover width.
+ * list_display_links renders title as tbody th.field-title.
+ */
+.model-channel.change-list #result_list {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.model-channel.change-list #result_list th:first-child,
+.model-channel.change-list #result_list td.action-checkbox {
+    width: 2.75rem;
+}
+
+.model-channel.change-list #result_list th.column-add_date,
+.model-channel.change-list #result_list td.field-add_date {
+    width: 9.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.model-channel.change-list #result_list th.column-title,
+.model-channel.change-list #result_list th.field-title,
+.model-channel.change-list #result_list td.field-title {
+    width: 100%;
+    min-width: 0;
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-channel.change-list #result_list th.column-link_user,
+.model-channel.change-list #result_list td.field-link_user {
+    width: 8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-channel.change-list #result_list th.column-friendly_token,
+.model-channel.change-list #result_list td.field-friendly_token,
+.model-channel.change-list #result_list th.column-related_media_count,
+.model-channel.change-list #result_list td.field-related_media_count {
+    width: 6.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-channel.change-list #result_list th.column-open_on_site,
+.model-channel.change-list #result_list td.field-open_on_site {
+    width: 4rem;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-channel.change-list #result_list th.field-title a,
+.model-channel.change-list #result_list td.field-title a,
+.model-channel.change-list #result_list td.field-link_user a {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*
+ * Tags changelist: two separate tables side by side. Each title fills its own table.
+ */
+.tag-changelist-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    align-items: start;
+    padding: 0.75rem;
+}
+
+.tag-changelist-columns .tag-result-table {
+    table-layout: auto;
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.model-tag.change-list .tag-result-table th:not(.column-title):not(.field-title),
+.model-tag.change-list .tag-result-table td:not(.field-title) {
+    width: 1%;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-tag.change-list .tag-result-table th.column-title,
+.model-tag.change-list .tag-result-table th.field-title,
+.model-tag.change-list .tag-result-table td.field-title {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+@media (max-width: 900px) {
+    .tag-changelist-columns {
+        grid-template-columns: 1fr;
+    }
+}
+
+/*
+ * Comments changelist: date, media, and user shrink to content. Comment text takes the rest.
+ * list_display_links renders text as tbody th. Full values stay on clipped-text hover tooltips.
+ */
+.model-comment.change-list #result_list {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.model-comment.change-list #result_list th:first-child,
+.model-comment.change-list #result_list td.action-checkbox {
+    width: 2.75rem;
+}
+
+.model-comment.change-list #result_list th.column-add_date,
+.model-comment.change-list #result_list td.field-add_date {
+    width: 9.75rem;
+    white-space: nowrap;
+}
+
+.model-comment.change-list #result_list th.column-link_media,
+.model-comment.change-list #result_list td.field-link_media,
+.model-comment.change-list #result_list th.column-link_user,
+.model-comment.change-list #result_list td.field-link_user {
+    width: 1%;
+    max-width: 12rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-comment.change-list #result_list th.column-display_text,
+.model-comment.change-list #result_list th.field-display_text,
+.model-comment.change-list #result_list td.field-display_text {
+    width: 100%;
+    min-width: 0;
+    max-width: 0;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+.model-comment.change-list #result_list td.field-link_media a,
+.model-comment.change-list #result_list td.field-link_user a,
+.model-comment.change-list #result_list th.field-display_text > a,
+.model-comment.change-list #result_list td.field-display_text .changelist-text-with-link > a:not(.open-on-site) {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.model-comment.change-list #result_list td.field-display_text .changelist-text-with-link,
+.model-comment.change-list #result_list th.field-display_text .changelist-text-with-link {
+    flex-wrap: nowrap;
+    max-width: 100%;
+}
+
+.model-comment.change-list #result_list td.field-display_text .open-on-site,
+.model-comment.change-list #result_list th.field-display_text .open-on-site {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+}
+
+/*
+ * Media actions: media title takes leftover width and ellipsizes.
+ * Date and user shrink first. The action stays an icon with its label in the tooltip.
+ */
+.model-mediaaction.change-list #result_list {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.model-mediaaction.change-list .card-body.table-responsive {
+    container-type: inline-size;
+}
+
+.model-mediaaction.change-list #result_list th,
+.model-mediaaction.change-list #result_list td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.model-mediaaction.change-list #result_list th.action-checkbox-column,
+.model-mediaaction.change-list #result_list td.action-checkbox {
+    width: 3.25rem;
+}
+
+.model-mediaaction.change-list #result_list th.column-action_date,
+.model-mediaaction.change-list #result_list td.field-action_date {
+    width: 12.25rem;
+}
+
+.model-mediaaction.change-list #result_list th.column-display_action,
+.model-mediaaction.change-list #result_list th.field-display_action,
+.model-mediaaction.change-list #result_list td.field-display_action {
+    width: 5.5rem;
+    text-align: center;
+    text-overflow: clip;
+}
+
+.model-mediaaction.change-list #result_list th.column-link_user,
+.model-mediaaction.change-list #result_list td.field-link_user {
+    width: 8rem;
+}
+
+.model-mediaaction.change-list #result_list th.column-display_remote_ip,
+.model-mediaaction.change-list #result_list td.field-display_remote_ip {
+    width: 8rem;
+}
+
+.model-mediaaction.change-list #result_list th.column-display_extra_info,
+.model-mediaaction.change-list #result_list th.field-display_extra_info,
+.model-mediaaction.change-list #result_list td.field-display_extra_info {
+    width: 10rem;
+}
+
+.model-mediaaction.change-list #result_list th.column-open_on_site,
+.model-mediaaction.change-list #result_list td.field-open_on_site {
+    width: 4rem;
+    text-align: center;
+}
+
+.model-mediaaction.change-list #result_list th.column-link_media,
+.model-mediaaction.change-list #result_list td.field-link_media {
+    width: 100%;
+    min-width: 0;
+    max-width: 0;
+}
+
+@container (max-width: 52rem) {
+    .model-mediaaction.change-list #result_list th.column-action_date,
+    .model-mediaaction.change-list #result_list td.field-action_date {
+        width: 8rem;
+    }
+
+    .model-mediaaction.change-list #result_list th.column-link_user,
+    .model-mediaaction.change-list #result_list td.field-link_user {
+        width: 6rem;
+    }
+}
+
+@container (max-width: 40rem) {
+    .model-mediaaction.change-list #result_list th.column-action_date,
+    .model-mediaaction.change-list #result_list td.field-action_date {
+        width: 6.5rem;
+    }
+
+    .model-mediaaction.change-list #result_list th.column-link_user,
+    .model-mediaaction.change-list #result_list td.field-link_user {
+        width: 4.5rem;
+    }
+}
+
+.model-mediaaction.change-list #result_list td.field-link_media a,
+.model-mediaaction.change-list #result_list td.field-link_user a {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* One-line admin text with the full value in a hover tooltip; size to the cell. */
+.changelist-clipped-text {
+    display: block;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.changelist-clipped-text__preview {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.changelist-clipped-text__full {
+    display: none;
+    z-index: 2000;
+    box-sizing: border-box;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid var(--gray);
+    border-radius: 0.25rem;
+    background: var(--mc-surface);
+    color: var(--mc-on-surface);
+    font-weight: 400;
+    line-height: 1.4;
+    text-align: start;
+    text-decoration: none;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.changelist-clipped-text__full.is-open {
+    display: block;
+}
+
+a .changelist-clipped-text__full {
+    color: var(--mc-on-surface);
+    text-decoration: none;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.admin-column-chooser-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.admin-column-chooser-options {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+}
+
+.admin-column-chooser-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.changelist-icon-legend {
+    width: 100%;
+    margin-block: 0.75rem 0;
+    border: 1px solid var(--gray);
+    border-radius: 0.25rem;
+    background-color: var(--mc-surface);
+    color: var(--mc-on-surface);
+}
+
+.changelist-icon-legend > summary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1rem;
+    cursor: pointer;
+    list-style: none;
+}
+
+.changelist-icon-legend > summary::-webkit-details-marker {
+    display: none;
+}
+
+.changelist-icon-legend[open] > summary {
+    border-block-end: 1px solid var(--gray);
+}
+
+.changelist-icon-legend[open] .changelist-filter-chevron {
+    transform: rotate(90deg);
+}
+
+.changelist-icon-legend-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin: 0;
+    padding: 0.85rem 1rem 1rem;
+    list-style: none;
+}
+
+.changelist-icon-legend-list li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* Flatly tokens by default. Darkly redefines :root; theme-darkly covers AdminLTE surfaces Bootswatch does not. */
+:root {
+    --mc-canvas: var(--white);
+    --mc-surface: var(--white);
+    --mc-ink: var(--dark);
+    --mc-on-surface: var(--gray-dark);
+    --mc-muted: #6c757d;
+}
+
+html.theme-darkly {
+    --mc-canvas: #222;
+    --mc-surface: var(--dark);
+    --mc-ink: var(--secondary);
+    --mc-on-surface: var(--white);
+    --mc-muted: #c5ced6;
+}
+
+.content-wrapper,
+.main-footer {
+    background-color: var(--mc-canvas);
+}
+
+html.theme-darkly .content-wrapper,
+html.theme-darkly .main-footer {
+    color: var(--white);
+}
+
+html.theme-darkly .main-header.navbar.navbar-white {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--white);
+}
+
+html.theme-darkly .main-header.navbar .nav-link,
+html.theme-darkly .main-header.navbar .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.object-tools .object-tools-actions-select {
+    color: var(--mc-on-surface);
+    background-color: var(--mc-canvas);
+    border-color: var(--gray);
+}
+
+[class*="sidebar-dark-"] .nav-sidebar > .nav-item > .nav-link.active {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+/* Darkly's striped row is #303030, the same color as the card, so changelist rows look flat. */
+html.theme-darkly .table-striped tbody tr:nth-of-type(odd) {
+    background-color: var(--mc-canvas);
+}
+
+/* Accent-primary forces #007bff. That blue is fine on Flatly and too dim on Darkly surfaces. */
+html.theme-darkly .accent-primary a:not(.dropdown-item):not(.btn-app):not(.nav-link):not(.brand-link):not(.page-link):not(.btn):not(.info-box):not(.small-box-footer):not(.changelist-status-icon):not(.related-widget-wrapper-link):not(.inlinechangelink):not(.inlineviewlink) {
+    color: #66b3ff;
+}
+
+html.theme-darkly .accent-primary a:not(.dropdown-item):not(.btn-app):not(.nav-link):not(.brand-link):not(.page-link):not(.btn):not(.info-box):not(.small-box-footer):not(.changelist-status-icon):not(.related-widget-wrapper-link):not(.inlinechangelink):not(.inlineviewlink):hover {
+    color: #99ccff;
+}
+
+html.theme-darkly .btn-outline-primary {
+    color: #66b3ff;
+    border-color: #66b3ff;
+}
+
+html.theme-darkly .btn-outline-primary:hover,
+html.theme-darkly .btn-outline-primary:focus {
+    color: var(--white);
+    background-color: var(--primary);
+    border-color: #66b3ff;
+}
+
+html.theme-darkly .dashboard-switcher .btn-primary,
+html.theme-darkly .dashboard-switcher .btn-primary:hover,
+html.theme-darkly .dashboard-switcher .btn-primary:focus,
+html.theme-darkly .dashboard-switcher .btn-primary:active,
+html.theme-darkly .dashboard-switcher .btn-primary.active {
+    border-color: #66b3ff;
+}
+
+html.theme-darkly .info-box {
+    background-color: var(--mc-surface);
+}
+
+html.theme-darkly .accent-primary a.info-box:not(.dropdown-item):not(.btn-app):not(.nav-link):not(.brand-link):not(.page-link):not(.btn),
+html.theme-darkly .accent-primary a.info-box:not(.dropdown-item):not(.btn-app):not(.nav-link):not(.brand-link):not(.page-link):not(.btn):hover,
+html.theme-darkly .accent-primary a.info-box:not(.dropdown-item):not(.btn-app):not(.nav-link):not(.brand-link):not(.page-link):not(.btn):focus {
+    background-color: var(--mc-surface);
+    color: var(--mc-on-surface);
+}
+
+html.theme-darkly .dashboard-section-box .dashboard-section-meta {
+    color: var(--light);
+}
+
+/* Change forms: inputs, tabs, and labels follow the active light/dark tokens. */
+.change-form input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]):not([type="image"]),
+.change-form textarea:not(.select2-search__field),
+.change-form select:not(.select2-hidden-accessible) {
+    color: var(--mc-on-surface);
+    background-color: var(--mc-canvas);
+    border: 1px solid var(--gray);
+    border-radius: 0.25rem;
+}
+
+.change-form input[type="file"] {
+    color: var(--mc-on-surface);
+}
+
+.change-form input::placeholder,
+.change-form textarea::placeholder {
+    color: var(--mc-muted);
+}
+
+.change-form .form-group label,
+.change-form .readonly,
+.change-form .card,
+.change-form .card-header,
+.change-form .card-title {
+    color: var(--mc-on-surface);
+}
+
+.change-form .card {
+    background-color: var(--mc-surface);
+    border-color: var(--gray);
+}
+
+.change-form #jazzy-tabs.nav-tabs {
+    border-bottom-color: var(--gray);
+}
+
+.change-form #jazzy-tabs.nav-tabs .nav-link {
+    margin-bottom: -1px;
+    border: 1px solid var(--gray);
+    background-color: color-mix(in srgb, var(--gray) 16%, var(--mc-surface));
+    color: var(--mc-on-surface);
+}
+
+.change-form #jazzy-tabs.nav-tabs .nav-link:not(.related-links-tab):not(.active) {
+    color: var(--primary);
+}
+
+.change-form #jazzy-tabs.nav-tabs .nav-link:not(.active):hover,
+.change-form #jazzy-tabs.nav-tabs .nav-link:not(.active):focus {
+    border-color: var(--primary);
+    background-color: color-mix(in srgb, var(--primary) 12%, var(--mc-surface));
+    color: var(--primary);
+}
+
+.change-form #jazzy-tabs.nav-tabs .nav-link.active:not(.related-links-tab) {
+    color: var(--mc-on-surface);
+    background-color: var(--mc-canvas);
+    border-color: var(--primary) var(--gray) var(--mc-canvas);
+    border-top-width: 3px;
+    padding-top: calc(0.5rem - 2px);
+}
+
+.change-form #jazzy-tabs.nav-tabs .nav-link.related-links-tab {
+    color: var(--info);
+    background-color: color-mix(in srgb, var(--info) 12%, var(--mc-surface));
+    border: 1px solid var(--gray);
+}
+
+.change-form #jazzy-tabs.nav-tabs .nav-link.related-links-tab:not(.active):hover,
+.change-form #jazzy-tabs.nav-tabs .nav-link.related-links-tab:not(.active):focus {
+    color: var(--info);
+    border-color: var(--info);
+    background-color: color-mix(in srgb, var(--info) 22%, var(--mc-surface));
+}
+
+.change-form #jazzy-tabs.nav-tabs .nav-link.related-links-tab.active {
+    color: var(--white);
+    background-color: var(--info);
+    border-color: var(--info) var(--info) var(--mc-canvas);
+}
+
+html.theme-darkly .change-form #jazzy-tabs.nav-tabs .nav-link:not(.active):not(.related-links-tab) {
+    color: #66b3ff;
+}
+
+html.theme-darkly .change-form #jazzy-tabs.nav-tabs .nav-link:not(.active):not(.related-links-tab):hover,
+html.theme-darkly .change-form #jazzy-tabs.nav-tabs .nav-link:not(.active):not(.related-links-tab):focus {
+    color: #66b3ff;
+    border-color: #66b3ff;
+    background-color: color-mix(in srgb, #66b3ff 16%, var(--mc-surface));
+}
+
+html.theme-darkly .change-form .card-success,
+html.theme-darkly .change-form .card-secondary,
+html.theme-darkly .change-form .card-outline {
+    background-color: var(--mc-surface);
+    color: var(--mc-on-surface);
+}
+
+.change-form .form-group.field-reported_times .row {
+    align-items: baseline;
+}
+
+.change-form .form-group.field-reported_times .readonly,
+.change-form .form-group.field-reported_times .help-block {
+    display: inline;
+}
+
+.change-form .form-group.field-reported_times .help-block {
+    margin-inline-start: 0.75rem;
+}
+
+.change-form .media-image-preview,
+.change-form .image-dropzone__preview {
+    display: block;
+    max-width: 20rem;
+    height: auto;
+    border: 1px solid var(--gray);
+    border-radius: 0.25rem;
+    background-color: var(--mc-canvas);
+}
+
+.change-form .image-dropzone {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 20rem;
+}
+
+.change-form .image-dropzone__target {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 4.5rem;
+    margin: 0;
+    padding: 0.75rem;
+    border: 1px dashed var(--gray);
+    border-radius: 0.25rem;
+    background-color: var(--mc-canvas);
+    color: var(--mc-on-surface);
+    cursor: pointer;
+    text-align: center;
+}
+
+.change-form .image-dropzone.is-dragover .image-dropzone__target {
+    border-color: var(--primary);
+    background-color: color-mix(in srgb, var(--primary) 12%, var(--mc-canvas));
+}
+
+.change-form .image-dropzone__target input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.change-form .image-dropzone__clear {
+    color: var(--mc-muted);
+    font-size: 0.85rem;
+}
+
+.change-form .admin-relation-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.change-form .admin-relation-link__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.45rem;
+    border: 1px solid var(--gray);
+    border-radius: 0.25rem;
+    background-color: var(--mc-canvas);
+    color: var(--mc-on-surface);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.change-form .related-object-list {
+    margin: 0;
+    padding-inline-start: 1.25rem;
+}
+
+.change-form .report-actions-table .changelist-status-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.change-form .report-actions-table .changelist-status-icon__text {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: nowrap;
+}
+
+.change-form .report-actions-table {
+    width: 100%;
+}
+
+.change-form .report-actions-table th:first-child,
+.change-form .report-actions-table td:first-child {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.change-form .report-actions-table th:nth-child(2),
+.change-form .report-actions-table td:nth-child(2) {
+    width: 100%;
+}
+
+.change-form .report-actions-table th.report-actions-table__inspect,
+.change-form .report-actions-table td.report-actions-table__inspect {
+    position: sticky;
+    inset-inline-end: 0;
+    z-index: 1;
+    width: 2.75rem;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    background-color: var(--mc-surface);
+}
+
+.change-form .report-actions-table.table-striped tbody tr:nth-of-type(odd) td.report-actions-table__inspect {
+    background-color: color-mix(in srgb, var(--gray) 8%, var(--mc-surface));
+}
+
+.change-form .report-actions-table a.report-actions-table__inspect {
+    color: var(--secondary);
+}
+
+.change-form .report-actions-table a.report-actions-table__inspect:hover,
+.change-form .report-actions-table a.report-actions-table__inspect:focus {
+    color: var(--primary);
+}
+
+.change-form .media-glance {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.change-form .media-glance__card,
+.change-form .media-image-card {
+    border: 1px solid var(--gray);
+    border-radius: 0.35rem;
+    background-color: var(--mc-canvas);
+    color: var(--mc-on-surface);
+    padding: 0.7rem 0.8rem;
+}
+
+.change-form .media-glance__label,
+.change-form .media-image-card__title {
+    margin: 0 0 0.35rem;
+    color: var(--mc-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.change-form .media-glance__value {
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.change-form .media-glance__value .changelist-status-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
+}
+
+.change-form .media-glance__help {
+    margin-top: 0.35rem;
+    color: var(--mc-muted);
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.3;
+}
+
+.change-form .media-glance__value .admin-relation-link {
+    font-weight: 600;
+}
+
+.change-form .media-file-card {
+    margin-top: 1.25rem;
+    border: 1px solid var(--gray);
+    border-radius: 0.35rem;
+    background-color: var(--mc-canvas);
+    color: var(--mc-on-surface);
+    padding: 0.7rem 0.8rem;
+}
+
+.change-form .media-file-card__field + .media-file-card__field {
+    margin-top: 0.75rem;
+}
+
+.change-form .media-file-card__field label {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--mc-muted);
+    font-size: 0.85rem;
+}
+
+.change-form .media-file-card .image-dropzone {
+    max-width: none;
+}
+
+.change-form .file-dropzone__current {
+    display: inline-block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-size: 0.9rem;
+}
+
+.change-form .file-dropzone__chosen {
+    display: block;
+    margin-top: 0.25rem;
+    font-weight: 600;
+}
+
+.change-form .media-image-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+@media (max-width: 720px) {
+    .change-form .media-image-cards {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.change-form .media-image-card .media-image-preview,
+.change-form .media-image-card .image-dropzone__preview {
+    max-width: 100%;
+}
+
+.change-form .channel-banner-card,
+.change-form .tag-listings-card {
+    margin-top: 1.25rem;
+}
+
+.change-form .tag-listings-card {
+    max-width: 22rem;
+}
+
+.change-form .category-images {
+    margin-top: 1.25rem;
+}
+
+.change-form .category-images__notice {
+    width: 100%;
+    margin: 0 0 0.6rem;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid var(--gray);
+    border-left: 3px solid var(--primary);
+    border-radius: 0.25rem;
+    background-color: color-mix(in srgb, var(--primary) 8%, var(--mc-canvas));
+    color: var(--mc-on-surface);
+    font-size: 0.85rem;
+    line-height: 1.35;
+}
+
+.change-form .category-images__lead {
+    margin: 0 0 0.4rem;
+    font-weight: 600;
+}
+
+.change-form .category-images__priority {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.15rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: category-image-priority;
+}
+
+.change-form .category-images__priority li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    counter-increment: category-image-priority;
+}
+
+.change-form .category-images__priority li::before {
+    content: counter(category-image-priority);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 1.15rem;
+    height: 1.15rem;
+    border-radius: 999px;
+    background-color: var(--primary);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.change-form .category-images__priority li:not(:last-child)::after {
+    content: "\203a";
+    margin-left: 0.15rem;
+    color: var(--mc-muted);
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.change-form .category-image-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 0.75rem;
+    align-items: stretch;
+}
+
+.change-form .category-image-cards > .media-image-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+}
+
+.change-form .category-image-cards .media-image-card__field {
+    flex: 1 1 auto;
+}
+
+.change-form .category-image-cards .image-dropzone,
+.change-form .category-image-cards .listings-thumbnail-url {
+    max-width: none;
+    width: 100%;
+}
+
+.change-form .category-images__card-note {
+    margin: auto 0 0;
+    padding-top: 0.65rem;
+    color: var(--mc-muted);
+    font-size: 0.8rem;
+    line-height: 1.35;
+}
+
+.change-form .listings-thumbnail-url {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.change-form .listings-thumbnail-url input[type="text"] {
+    width: 100%;
+}
+
+.change-form .channel-banner-card .image-dropzone {
+    max-width: none;
+}
+
+.change-form .channel-banner-card .image-dropzone__preview {
+    width: 100%;
+    max-width: 100%;
+}
+
+.change-form .media-image-card__time {
+    margin-top: 0.75rem;
+}
+
+.change-form .media-image-card__time label {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--mc-muted);
+    font-size: 0.85rem;
+}
+
+.change-form .thumbnail-time {
+    display: flex;
+    align-items: stretch;
+    max-width: 12rem;
+    gap: 0.25rem;
+}
+
+.change-form .thumbnail-time input {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.change-form .thumbnail-time__spin {
+    display: flex;
+    flex-direction: column;
+}
+
+.change-form .thumbnail-time__step {
+    display: flex;
+    flex: 1 1 50%;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    padding: 0;
+    border: 1px solid var(--gray);
+    background: var(--mc-canvas);
+    color: var(--secondary);
+    line-height: 1;
+}
+
+.change-form .thumbnail-time__step + .thumbnail-time__step {
+    border-top: 0;
+}
+
+.change-form .thumbnail-time__step:hover,
+.change-form .thumbnail-time__step:focus {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.change-form .media-metric {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.change-form a.media-metric__inspect {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--secondary);
+    text-decoration: none;
+}
+
+.change-form a.media-metric__inspect:hover,
+.change-form a.media-metric__inspect:focus {
+    border: 0;
+    background: none;
+    color: var(--primary);
+}
+
+.change-form .admin-copy-value {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    max-width: 100%;
+}
+
+.change-form .admin-copy-value__text {
+    overflow-wrap: anywhere;
+}
+
+.change-form .admin-copy-value__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    margin-top: 0.15rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--secondary);
+    line-height: 1;
+    cursor: pointer;
+}
+
+.change-form .admin-copy-value__button:hover,
+.change-form .admin-copy-value__button:focus {
+    border: 0;
+    background: none;
+    color: var(--primary);
+}
+
+/*
+ * AdminLTE places the sidebar with physical left offsets. dir=rtl moves an
+ * absolutely positioned sidebar to the right, but the header and content keep
+ * margin-left, so the sidebar covers the language switcher. These rules keep
+ * the sidebar on the right and mirror its arrows and indents.
+ */
+html[dir="rtl"] .main-sidebar,
+html[dir="rtl"] .main-sidebar::before {
+    left: auto;
+    right: 0;
+}
+
+@media (min-width: 768px) {
+    html[dir="rtl"] body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .content-wrapper,
+    html[dir="rtl"] body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-footer,
+    html[dir="rtl"] body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-header {
+        margin-left: 0;
+        margin-right: 250px;
+    }
+
+    html[dir="rtl"] .sidebar-mini.sidebar-collapse .content-wrapper,
+    html[dir="rtl"] .sidebar-mini.sidebar-collapse .main-footer,
+    html[dir="rtl"] .sidebar-mini.sidebar-collapse .main-header,
+    html[dir="rtl"] .sidebar-mini-md.sidebar-collapse .content-wrapper,
+    html[dir="rtl"] .sidebar-mini-md.sidebar-collapse .main-footer,
+    html[dir="rtl"] .sidebar-mini-md.sidebar-collapse .main-header,
+    html[dir="rtl"] .sidebar-mini-xs.sidebar-collapse .content-wrapper,
+    html[dir="rtl"] .sidebar-mini-xs.sidebar-collapse .main-footer,
+    html[dir="rtl"] .sidebar-mini-xs.sidebar-collapse .main-header {
+        margin-left: 0 !important;
+        margin-right: 4.6rem !important;
+    }
+}
+
+html[dir="rtl"] .sidebar-collapse .main-sidebar,
+html[dir="rtl"] .sidebar-collapse .main-sidebar::before {
+    margin-left: 0;
+    margin-right: -250px;
+}
+
+html[dir="rtl"] .sidebar-mini.sidebar-collapse .main-sidebar,
+html[dir="rtl"] .sidebar-mini.sidebar-collapse .main-sidebar::before,
+html[dir="rtl"] .sidebar-mini-md.sidebar-collapse .main-sidebar,
+html[dir="rtl"] .sidebar-mini-md.sidebar-collapse .main-sidebar::before,
+html[dir="rtl"] .sidebar-mini-xs.sidebar-collapse .main-sidebar,
+html[dir="rtl"] .sidebar-mini-xs.sidebar-collapse .main-sidebar::before {
+    margin-right: 0;
+}
+
+@media (max-width: 767.98px) {
+    html[dir="rtl"] .main-sidebar,
+    html[dir="rtl"] .main-sidebar::before {
+        margin-left: 0;
+        margin-right: -250px;
+    }
+
+    html[dir="rtl"] .sidebar-open .main-sidebar,
+    html[dir="rtl"] .sidebar-open .main-sidebar::before {
+        margin-right: 0;
+    }
+
+    html[dir="rtl"] .content-wrapper,
+    html[dir="rtl"] .main-footer,
+    html[dir="rtl"] .main-header {
+        margin-right: 0;
+    }
+}
+
+html[dir="rtl"] .main-header .navbar-nav.ml-auto {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+}
+
+html[dir="rtl"] .brand-link .brand-image {
+    float: right;
+    margin-left: 0.5rem;
+    margin-right: 0.8rem;
+}
+
+html[dir="rtl"] #jazzy-sidebar .nav-sidebar,
+html[dir="rtl"] #jazzy-sidebar .nav-sidebar .nav-treeview {
+    padding-inline-start: 0;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+html[dir="rtl"] #jazzy-sidebar .nav-sidebar .nav-link {
+    width: auto;
+    max-width: 100%;
+    text-align: right;
+}
+
+html[dir="rtl"] .nav-sidebar .nav-link > p > .right,
+html[dir="rtl"] #jazzy-sidebar .nav-sidebar .nav-link i.right {
+    right: auto;
+    left: 1rem;
+    transform: scaleX(-1);
+}
+
+html[dir="rtl"] #jazzy-sidebar .nav-sidebar .menu-is-opening > .nav-link i.right,
+html[dir="rtl"] #jazzy-sidebar .nav-sidebar .menu-open > .nav-link i.right {
+    transform: scaleX(-1) rotate(90deg);
+}
+
+html[dir="rtl"] #jazzy-sidebar .nav-sidebar > .nav-item > .nav-link {
+    padding-left: 1.75rem;
+    padding-right: 0.5rem;
+}
+
+html[dir="rtl"] #jazzy-sidebar .nav-sidebar .nav-treeview > .nav-item > .nav-link {
+    padding-left: 0.5rem;
+    padding-right: 1.75rem;
+}
+
+html[dir="rtl"] .content-wrapper > .content.border-bottom h1.border-right {
+    border-right: 0 !important;
+    border-left: 1px solid #dee2e6 !important;
+    margin-right: 0 !important;
+    margin-left: 1rem !important;
+    padding-right: 0 !important;
+    padding-left: 1rem !important;
 }

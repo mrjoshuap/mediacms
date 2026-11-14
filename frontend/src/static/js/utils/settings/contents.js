@@ -19,6 +19,26 @@ function headerContents(contents) {
   return ret;
 }
 
+function menuItems(items) {
+  const ret = [];
+  if (!items) {
+    return ret;
+  }
+  let i = 0;
+  while (i < items.length) {
+    if ('string' === typeof items[i].text && 'string' === typeof items[i].link && 'string' === typeof items[i].icon) {
+      ret.push({
+        text: items[i].text,
+        link: items[i].link,
+        icon: items[i].icon,
+        className: items[i].className,
+      });
+    }
+    i += 1;
+  }
+  return ret;
+}
+
 function sidebarContents(contents) {
   const ret = {
     navMenu: {
@@ -27,31 +47,21 @@ function sidebarContents(contents) {
     mainMenuExtra: {
       items: [],
     },
+    libraryItems: [],
+    personalItems: [],
+    infoItems: [],
+    manageItems: [],
     belowNavMenu: '',
     belowThemeSwitcher: '',
     footer: '',
   };
 
   if (undefined !== contents) {
-    if (undefined !== contents.mainMenuExtraItems) {
-      let i = 0;
-      while (i < contents.mainMenuExtraItems.length) {
-        if (
-          'string' === typeof contents.mainMenuExtraItems[i].text &&
-          'string' === typeof contents.mainMenuExtraItems[i].link &&
-          'string' === typeof contents.mainMenuExtraItems[i].icon
-        ) {
-          ret.mainMenuExtra.items.push({
-            text: contents.mainMenuExtraItems[i].text,
-            link: contents.mainMenuExtraItems[i].link,
-            icon: contents.mainMenuExtraItems[i].icon,
-            className: contents.mainMenuExtraItems[i].className,
-          });
-        }
-
-        i += 1;
-      }
-    }
+    ret.mainMenuExtra.items = menuItems(contents.browseItems || contents.mainMenuExtraItems);
+    ret.libraryItems = menuItems(contents.libraryItems);
+    ret.personalItems = menuItems(contents.personalItems);
+    ret.infoItems = menuItems(contents.infoItems);
+    ret.manageItems = menuItems(contents.manageItems);
 
     if (undefined !== contents.navMenuItems) {
       let i = 0;

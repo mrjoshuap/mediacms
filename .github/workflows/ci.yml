@@ -1,10 +1,15 @@
 ---
 name: "CI"
+# Branch roles (repository variables; defaults match a beta fork):
+#   MEDIACMS_STABLE_BRANCH — production line (default: main)
+#   MEDIACMS_BETA_BRANCH   — beta / next line (default: mediacms-next)
+# `on.push.branches` cannot read vars; keep this list aligned with those names.
 on:
   pull_request:
   push:
     branches:
       - main
+      - mediacms-next
     paths-ignore:
       - '**/README.md'
 jobs:
@@ -19,4 +24,8 @@ jobs:
     uses: ./.github/workflows/docker-build-push.yml
     secrets: inherit # pass all secrets
     needs: [test, frontend]
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    # Image publish stays on the stable line (and tags via the called workflow).
+    if: >
+      github.event_name != 'pull_request' &&
+      github.ref == format('refs/heads/{0}', vars.MEDIACMS_STABLE_BRANCH || 'main')
+

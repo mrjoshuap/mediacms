@@ -34,6 +34,17 @@ class StaticPagesTest(TestCase):
         self.assertContains(response, "<h1>About our portal</h1>")
         self.assertContains(response, "<p>We host lectures</p>")
 
+    def test_admin_written_terms_page_replaces_the_default(self):
+        Page.objects.create(slug="tos", title="Terms", description="<p>Demo terms apply</p>")
+        response = self.client.get("/tos")
+        self.assertTemplateUsed(response, "cms/page.html")
+        self.assertContains(response, "<h1>Terms</h1>")
+        self.assertContains(response, "<p>Demo terms apply</p>")
+        self.assertContains(response, "<title>Terms - MediaCMS</title>")
+        # Terms stays on the dedicated sidebar link. It is not duplicated as a CMS extra.
+        extras = response.content.decode().split("mainMenuExtraItems:", 1)[1].split("belowNavMenu", 1)[0]
+        self.assertNotIn('link: "/tos"', extras)
+
     def test_custom_page_is_served_by_its_slug(self):
         page = Page.objects.create(slug="faq", title="Frequent questions", description="Ask away")
         response = self.client.get(page.get_absolute_url())
@@ -41,9 +52,58 @@ class StaticPagesTest(TestCase):
         self.assertTemplateUsed(response, "cms/page.html")
         self.assertEqual(response.context["page"], page)
         self.assertContains(response, "Ask away")
+        self.assertContains(response, "<title>Frequent questions - MediaCMS</title>")
+        self.assertContains(response, 'mainMenuExtraItems:')
+        extras = response.content.decode().split("mainMenuExtraItems:", 1)[1].split("belowNavMenu", 1)[0]
+        self.assertNotIn('link: "/faq"', extras)
+        self.assertNotIn('link: "/about"', extras)
+
+    def test_sidebar_placement_visibility_and_protected_slugs(self):
+        from django.core.exceptions import ValidationError
+
+        for slug in ("sidebar-browse--api", "accounts", "login", "sidebar-info--tos"):
+            with self.subTest(slug=slug):
+                with self.assertRaises(ValidationError):
+                    Page.objects.create(slug=slug, title="Reserved")
+
+        Page.objects.create(slug="sidebar-browse--handbook", title="Handbook", description="<p>read me</p>")
+        Page.objects.create(slug="sidebar-library--drafts", title="Drafts", description="drafts")
+        Page.objects.create(slug="sidebar-personal--notes", title="Notes", description="notes")
+        Page.objects.create(slug="sidebar-info--guide", title="Guide", description="guide")
+        Page.objects.create(slug="sidebar-manage--policy", title="Policy", description="policy")
+        Page.objects.create(slug="sidebar-below--note", title="Note", description="<p>under the menu</p>")
+        Page.objects.create(slug="inject-css", title="Theme", description="body{color:red}")
+
+        anon = self.client.get("/")
+        self.assertContains(anon, 'link: "/handbook"')
+        self.assertContains(anon, 'link: "/guide"')
+        self.assertNotContains(anon, 'link: "/drafts"')
+        self.assertNotContains(anon, 'link: "/notes"')
+        self.assertNotContains(anon, 'link: "/policy"')
+        self.assertContains(anon, "under the menu")
+        self.assertContains(anon, "body{color:red}")
+        page = self.client.get("/handbook")
+        self.assertContains(page, "<p>read me</p>")
+        self.assertEqual(self.client.get("/sidebar-below--note").status_code, 404)
+        self.assertEqual(self.client.get("/inject-css").status_code, 404)
+
+        member = create_account()
+        self.client.force_login(member)
+        signed_in = self.client.get("/")
+        self.assertContains(signed_in, 'link: "/drafts"')
+        self.assertContains(signed_in, 'link: "/notes"')
+        self.assertNotContains(signed_in, 'link: "/policy"')
+
+        editor = create_account(is_editor=True)
+        self.client.force_login(editor)
+        self.assertContains(self.client.get("/"), 'link: "/policy"')
+
+        Page.objects.bulk_create([Page(slug="accounts", title="Stolen", description="nope")])
+        self.assertEqual(self.client.get("/accounts").status_code, 404)
 
     def test_unknown_slug_renders_the_not_found_template(self):
         response = self.client.get("/no-such-page")
+        self.assertEqual(response.status_code, 404)
         self.assertTemplateUsed(response, "404.html")
         self.assertNotIn("page", response.context)
 

@@ -1,0 +1,39 @@
+{% load jazzmin i18n custom_filters %}
+{% get_current_language as LANGUAGE_CODE %}
+{% if card %}
+<div class="card {{ fieldset.classes|cut:"collapse" }}">
+    {% if card_header and fieldset.name %}
+        <div class="card-header">
+            <div class="card-title">
+                <strong>{{ fieldset.name|custom_translate:LANGUAGE_CODE }}</strong>{% if fieldset.description %} - <i>{{ fieldset.description|custom_translate:LANGUAGE_CODE }}</i>{% endif %}
+            </div>
+        </div>
+    {%elif fieldset.description %}
+    <div class="card-header">
+        <div class="card-title">
+            {{ fieldset.description|custom_translate:LANGUAGE_CODE }}
+        </div>
+    </div>
+    {%endif%}
+
+    <div class="p-5{% if fieldset.name %} card-body{% endif %}">
+{% endif %}
+
+    {% if "media-content" in fieldset.classes %}
+        {% include "admin/includes/media_content_fields.html" %}
+    {% elif "channel-fields" in fieldset.classes %}
+        {% include "admin/includes/channel_fields.html" %}
+    {% elif "tag-fields" in fieldset.classes %}
+        {% include "admin/includes/tag_fields.html" %}
+    {% elif "category-fields" in fieldset.classes %}
+        {% include "admin/includes/category_fields.html" %}
+    {% else %}
+        {% for line in fieldset %}
+            {% include "admin/includes/fieldset_line.html" %}
+        {% endfor %}
+    {% endif %}
+
+{% if card %}
+    </div>
+</div>
+{% endif %}

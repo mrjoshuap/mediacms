@@ -1,0 +1,629 @@
+{% extends "admin/base.html" %}
+{% load i18n static admin_urls jazzmin custom_filters %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        .media-breakdown-card .card-title {
+            font-size: 1.1rem;
+        }
+        .media-breakdown {
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+        .media-breakdown td {
+            padding: 0.45rem 0.75rem;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        .media-breakdown td:last-child {
+            width: 1%;
+            text-align: right;
+            font-size: 1.2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .media-breakdown .fas {
+            width: 1.1rem;
+            margin-right: 0.4rem;
+            text-align: center;
+        }
+        .site-open-table th:last-child,
+        .site-open-table td:last-child {
+            width: 2.5rem;
+            padding-left: 0.35rem;
+            text-align: center;
+            white-space: nowrap;
+            overflow: visible;
+        }
+        .engagement-rank th:nth-child(2),
+        .engagement-rank td:nth-child(2) {
+            width: 5.5rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .engagement-rank td:nth-child(2) .badge,
+        .people-rank td:nth-child(2) .badge {
+            font-size: 0.95rem;
+            padding: 0.35em 0.55em;
+        }
+        .people-rank th:nth-child(2),
+        .people-rank td:nth-child(2) {
+            width: 7.25rem;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        .people-when th:nth-child(2),
+        .people-when td:nth-child(2) {
+            width: 8rem;
+            text-align: right;
+        }
+        .people-when.site-open-table th:last-child,
+        .people-when.site-open-table td:last-child {
+            width: 2.5rem;
+            padding-left: 0.35rem;
+            text-align: center;
+            overflow: visible;
+        }
+        .site-open-table .open-on-site {
+            position: relative;
+            color: var(--secondary);
+        }
+        .site-open-table .open-on-site:hover,
+        .site-open-table .open-on-site:focus {
+            color: var(--primary);
+        }
+        .site-open-table .open-on-site:hover::after,
+        .site-open-table .open-on-site:focus::after {
+            content: attr(title);
+            position: absolute;
+            right: 0;
+            bottom: calc(100% + 0.3rem);
+            z-index: 5;
+            padding: 0.2rem 0.45rem;
+            border-radius: 0.2rem;
+            background: var(--dark);
+            color: var(--white);
+            font-size: 0.75rem;
+            line-height: 1.2;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        .card-body:has(.when-table) {
+            container-name: whentable;
+            container-type: inline-size;
+        }
+        .when-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        .when-table td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .when-table th {
+            white-space: normal;
+        }
+        .card-body.p-0 .when-table > thead > tr > th:last-child,
+        .card-body.p-0 .when-table > tbody > tr > td:last-child {
+            padding-right: 0.75rem;
+        }
+        .when-table th:last-child,
+        .when-table td:last-child {
+            width: 8rem;
+            text-align: right;
+        }
+        .library-uploads th:nth-child(3),
+        .library-uploads td:nth-child(3) {
+            width: 4.75rem;
+            padding-left: 0.2rem;
+            padding-right: 0.25rem;
+            text-align: right;
+            white-space: nowrap;
+        }
+        .library-uploads th:nth-child(2),
+        .library-uploads td:nth-child(2) {
+            padding-right: 0.2rem;
+        }
+        .library-uploads th:nth-child(2),
+        .library-uploads td:nth-child(2),
+        .moderation-person th:nth-child(2),
+        .moderation-person td:nth-child(2) {
+            width: 9.5rem;
+            padding-left: 1.25rem;
+            text-align: right;
+        }
+        @container whentable (max-width: 32rem) {
+            .when-table th:last-child,
+            .when-table td:last-child {
+                width: 7.5rem;
+            }
+            .library-uploads th:nth-child(2),
+            .library-uploads td:nth-child(2),
+            .moderation-person th:nth-child(2),
+            .moderation-person td:nth-child(2) {
+                width: 8rem;
+            }
+        }
+        @container whentable (max-width: 22rem) {
+            .when-table th:last-child,
+            .when-table td:last-child {
+                width: 6.25rem;
+            }
+            .library-uploads th:nth-child(2),
+            .library-uploads td:nth-child(2),
+            .moderation-person th:nth-child(2),
+            .moderation-person td:nth-child(2) {
+                width: 7rem;
+            }
+        }
+        .when-fit {
+            container-name: when;
+            container-type: inline-size;
+            display: block;
+            width: 100%;
+            text-align: right;
+        }
+        .library-uploads .when-fit {
+            display: inline;
+            width: auto;
+            text-align: right;
+        }
+        .moderation-audit .when-fit {
+            text-align: left;
+        }
+        .moderation-audit th {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .moderation-audit th:nth-child(2),
+        .moderation-audit td:nth-child(2) {
+            width: 8.5rem;
+            padding-left: 1.25rem;
+            text-align: right;
+        }
+        .moderation-audit a.changelist-status-icon,
+        .moderation-audit a.changelist-status-icon:hover,
+        .moderation-audit a.changelist-status-icon:focus {
+            text-decoration: none;
+        }
+        .moderation-audit a.changelist-status-icon--success,
+        .moderation-audit a.changelist-status-icon--success:hover,
+        .moderation-audit a.changelist-status-icon--success:focus {
+            color: var(--success) !important;
+        }
+        .moderation-audit a.changelist-status-icon--fail,
+        .moderation-audit a.changelist-status-icon--fail:hover,
+        .moderation-audit a.changelist-status-icon--fail:focus {
+            color: var(--danger) !important;
+        }
+        .moderation-audit a.changelist-status-icon--not-listable,
+        .moderation-audit a.changelist-status-icon--not-listable:hover,
+        .moderation-audit a.changelist-status-icon--not-listable:focus,
+        .moderation-audit a.changelist-status-icon--pending,
+        .moderation-audit a.changelist-status-icon--pending:hover,
+        .moderation-audit a.changelist-status-icon--pending:focus {
+            color: var(--secondary) !important;
+        }
+        .moderation-audit th:nth-child(3),
+        .moderation-audit td:nth-child(3) {
+            width: 4.5rem;
+            padding-left: 0.35rem;
+            padding-right: 0.35rem;
+            text-align: center;
+        }
+        .moderation-audit th:nth-child(4),
+        .moderation-audit td:nth-child(4) {
+            width: 7.75rem;
+            padding-left: 0.35rem;
+            text-align: left;
+        }
+        @container whentable (max-width: 32rem) {
+            .moderation-audit th:nth-child(2),
+            .moderation-audit td:nth-child(2) {
+                width: 5.75rem;
+            }
+            .moderation-audit th:nth-child(3),
+            .moderation-audit td:nth-child(3) {
+                width: 4.5rem;
+            }
+            .moderation-audit th:nth-child(4),
+            .moderation-audit td:nth-child(4) {
+                width: 5rem;
+            }
+        }
+        @container whentable (max-width: 22rem) {
+            .moderation-audit th:nth-child(2),
+            .moderation-audit td:nth-child(2) {
+                width: 4.25rem;
+                padding-left: 0.25rem;
+            }
+            .moderation-audit th:nth-child(3),
+            .moderation-audit td:nth-child(3) {
+                width: 4.25rem;
+            }
+            .moderation-audit th:nth-child(4),
+            .moderation-audit td:nth-child(4) {
+                width: 4.25rem;
+            }
+        }
+        .when-fit .when-mid,
+        .when-fit .when-short {
+            display: none;
+        }
+        @container when (max-width: 6.2rem) {
+            .when-fit .when-full { display: none; }
+            .when-fit .when-mid { display: inline; }
+        }
+        @container when (max-width: 3.4rem) {
+            .when-fit .when-mid { display: none; }
+            .when-fit .when-short { display: inline; }
+        }
+        .library-uploads.site-open-table th:last-child,
+        .library-uploads.site-open-table td:last-child {
+            width: 1.75rem;
+            padding-left: 0.15rem;
+            padding-right: 0.65rem;
+            text-align: center;
+            overflow: visible;
+        }
+        .moderation-reports.when-table {
+            table-layout: auto;
+        }
+        .moderation-reports th:first-child,
+        .moderation-reports td:first-child {
+            width: 100%;
+            max-width: 0;
+        }
+        .moderation-reports th:nth-child(2),
+        .moderation-reports td:nth-child(2),
+        .moderation-reports th:nth-child(3),
+        .moderation-reports td:nth-child(3) {
+            width: 1%;
+            padding-left: 0.35rem;
+            white-space: nowrap;
+        }
+        .moderation-reports th:nth-child(3),
+        .moderation-reports td:nth-child(3) {
+            padding-right: 0.35rem;
+            text-align: right;
+        }
+        .moderation-reports th:nth-child(4),
+        .moderation-reports td:nth-child(4),
+        .moderation-reports th:nth-child(5),
+        .moderation-reports td:nth-child(5) {
+            width: 2.15rem;
+            padding-left: 0.1rem;
+            padding-right: 0.35rem;
+            text-align: center;
+            white-space: nowrap;
+            overflow: visible;
+        }
+        .moderation-reports .when-fit {
+            display: inline;
+            width: auto;
+        }
+        .moderation-reports .when-fit .when-full,
+        .moderation-reports .when-fit .when-short {
+            display: none;
+        }
+        .moderation-reports .when-fit .when-mid {
+            display: inline;
+        }
+        .card-outline > .card-header {
+            overflow: hidden;
+        }
+        .moderation-open.when-table {
+            table-layout: auto;
+        }
+        .moderation-open th:first-child,
+        .moderation-open td:first-child {
+            width: 100%;
+            max-width: 0;
+        }
+        .moderation-open th:nth-child(2),
+        .moderation-open td:nth-child(2),
+        .moderation-open th:nth-child(3),
+        .moderation-open td:nth-child(3) {
+            width: 1%;
+            padding-left: 0.35rem;
+            white-space: nowrap;
+        }
+        .moderation-audit.site-open-table th:last-child,
+        .moderation-audit.site-open-table td:last-child,
+        .moderation-open.site-open-table th:last-child,
+        .moderation-open.site-open-table td:last-child {
+            width: 2.15rem;
+            padding-left: 0.1rem;
+            padding-right: 0.65rem;
+            text-align: center;
+            white-space: nowrap;
+            overflow: visible;
+        }
+        .moderation-open .when-fit {
+            display: inline;
+            width: auto;
+        }
+        .library-uploads .when-fit .when-full,
+        .library-uploads .when-fit .when-short {
+            display: none;
+        }
+        .library-uploads .when-fit .when-mid {
+            display: inline;
+        }
+        .library-uploads.when-table {
+            table-layout: auto;
+            width: 100%;
+        }
+        .dashboard-section-content .table thead th {
+            color: var(--mc-on-surface);
+            background-color: transparent;
+            border-bottom-color: var(--gray);
+        }
+        .dashboard-section-content .table tbody tr:nth-of-type(odd) {
+            background-color: var(--light);
+        }
+        .dashboard-section-content .table tbody tr:nth-of-type(even) {
+            background-color: transparent;
+        }
+        html.theme-darkly .dashboard-section-content .table tbody tr:nth-of-type(odd) {
+            background-color: var(--mc-canvas);
+        }
+        .library-uploads th:first-child,
+        .library-uploads td:first-child {
+            width: 100%;
+            max-width: 0;
+        }
+        .library-uploads th:nth-child(2),
+        .library-uploads td:nth-child(2),
+        .library-uploads th:nth-child(3),
+        .library-uploads td:nth-child(3) {
+            width: 1%;
+        }
+        .dashboard-copy-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            float: none;
+            margin-left: auto;
+        }
+        html.theme-darkly .dashboard-section-content .btn.dashboard-copy-btn {
+            color: #d6e8ff;
+            border-color: #8ebfff;
+            background-color: transparent;
+        }
+        html.theme-darkly .dashboard-section-content .btn.dashboard-copy-btn:hover,
+        html.theme-darkly .dashboard-section-content .btn.dashboard-copy-btn:focus {
+            color: var(--white);
+            background-color: var(--primary);
+            border-color: #8ebfff;
+        }
+        .dashboard-section-content .card-header:has(.dashboard-copy-tools) {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .dashboard-section-content .card-header:has(.dashboard-copy-tools) .card-title {
+            margin-bottom: 0;
+        }
+        .installation-placard h3 {
+            font-size: 1.25rem;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+        .installation-placard {
+            min-height: 6.5rem;
+        }
+        .runtime-value {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .database-metrics th,
+        .database-metrics td {
+            white-space: nowrap;
+            text-align: start;
+            vertical-align: middle;
+        }
+        .database-metrics th:nth-child(1),
+        .database-metrics td:nth-child(1),
+        .database-metrics th:nth-child(2),
+        .database-metrics td:nth-child(2) {
+            width: 1%;
+        }
+        details.dashboard-collapse > summary {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            list-style: none;
+        }
+        details.dashboard-collapse > summary::-webkit-details-marker {
+            display: none;
+        }
+        details.dashboard-collapse > summary .card-title {
+            margin-bottom: 0;
+        }
+        details.dashboard-collapse > summary .dashboard-collapse-tools {
+            margin-inline-start: auto;
+        }
+        details.dashboard-collapse > summary .card-tools {
+            float: none;
+            margin-right: 0;
+        }
+        details.dashboard-collapse > summary .collapse-closed,
+        details.dashboard-collapse > summary .collapse-open {
+            margin-inline-start: auto;
+        }
+        details.dashboard-collapse > summary .dashboard-collapse-tools ~ .collapse-closed,
+        details.dashboard-collapse > summary .dashboard-collapse-tools ~ .collapse-open {
+            margin-inline-start: 0.75rem;
+        }
+        details.dashboard-collapse .collapse-open,
+        details.dashboard-collapse[open] .collapse-closed {
+            display: none;
+        }
+        details.dashboard-collapse[open] .collapse-open {
+            display: inline-block;
+        }
+        .support-example {
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 16rem;
+            overflow: auto;
+        }
+        .dashboard-subsection + .dashboard-subsection {
+            margin-top: 1.75rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--gray, #dee2e6);
+        }
+        .dashboard-subsection-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin: 0 0 1rem;
+        }
+        .dashboard-subsection-title .fas {
+            margin-inline-end: 0.5rem;
+        }
+    </style>
+{% endblock %}
+
+{% block content_title %}
+    {{ title|custom_translate:LANGUAGE_CODE }}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{{ "Dashboard"|custom_translate:LANGUAGE_CODE }}</a></li>
+        <li class="breadcrumb-item active">{{ title|custom_translate:LANGUAGE_CODE }}</li>
+    </ol>
+{% endblock %}
+
+{% block content %}
+    {% include "admin/dashboard/_section_nav.html" %}
+
+    {% if dashboard_stats %}
+        {% with stats=dashboard_stats %}
+            <div class="col-12 dashboard-section-content" data-copied-label="{{ 'Copied'|custom_translate:LANGUAGE_CODE }}">
+                {% block dashboard_section_content %}{% endblock %}
+            </div>
+        {% endwith %}
+        <script>
+            (function () {
+                var root = document.querySelector(".dashboard-section-content");
+                if (!root) {
+                    return;
+                }
+                var copiedLabel = root.getAttribute("data-copied-label") || "Copied";
+
+                function cellsFrom(table) {
+                    var rows = [];
+                    table.querySelectorAll("tr").forEach(function (tr) {
+                        var cells = [];
+                        tr.querySelectorAll("th, td").forEach(function (cell) {
+                            cells.push((cell.innerText || "").replace(/\s+/g, " ").trim());
+                        });
+                        if (cells.length) {
+                            rows.push(cells);
+                        }
+                    });
+                    return rows;
+                }
+
+                function asText(rows) {
+                    return rows.map(function (row) { return row.join("\t"); }).join("\n");
+                }
+
+                function csvCell(value) {
+                    if (/[",\n\r]/.test(value)) {
+                        return '"' + value.replace(/"/g, '""') + '"';
+                    }
+                    return value;
+                }
+
+                function asCsv(rows) {
+                    return rows.map(function (row) {
+                        return row.map(csvCell).join(",");
+                    }).join("\n");
+                }
+
+                function mdCell(value) {
+                    return value.replace(/\|/g, "\\|").replace(/\r?\n/g, " ");
+                }
+
+                function asMarkdown(rows) {
+                    if (!rows.length) {
+                        return "";
+                    }
+                    var header = "| " + rows[0].map(mdCell).join(" | ") + " |";
+                    var separator = "| " + rows[0].map(function () { return "---"; }).join(" | ") + " |";
+                    var body = rows.slice(1).map(function (row) {
+                        return "| " + row.map(mdCell).join(" | ") + " |";
+                    });
+                    return [header, separator].concat(body).join("\n");
+                }
+
+                function flash(button) {
+                    var original = button.textContent;
+                    button.textContent = copiedLabel;
+                    window.setTimeout(function () {
+                        button.textContent = original;
+                    }, 1200);
+                }
+
+                function copyText(text, button) {
+                    var done = function () { flash(button); };
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(text).then(done, function () {
+                            fallbackCopy(text);
+                            done();
+                        });
+                        return;
+                    }
+                    fallbackCopy(text);
+                    done();
+                }
+
+                function fallbackCopy(text) {
+                    var area = document.createElement("textarea");
+                    area.value = text;
+                    area.setAttribute("readonly", "");
+                    area.style.position = "fixed";
+                    area.style.left = "-9999px";
+                    document.body.appendChild(area);
+                    area.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(area);
+                }
+
+                root.querySelectorAll(".js-copy-table").forEach(function (button) {
+                    button.addEventListener("click", function (event) {
+                        event.stopPropagation();
+                        var card = button.closest(".card");
+                        var table = card ? card.querySelector("table") : null;
+                        if (!table) {
+                            return;
+                        }
+                        var rows = cellsFrom(table);
+                        var format = button.getAttribute("data-format");
+                        var text = format === "csv" ? asCsv(rows) : format === "markdown" ? asMarkdown(rows) : asText(rows);
+                        copyText(text, button);
+                    });
+                });
+
+                root.querySelectorAll(".js-copy-block").forEach(function (button) {
+                    button.addEventListener("click", function () {
+                        var target = document.querySelector(button.getAttribute("data-copy-target"));
+                        if (!target) {
+                            return;
+                        }
+                        copyText((target.textContent || "").replace(/\n$/, ""), button);
+                    });
+                });
+            })();
+        </script>
+    {% endif %}
+{% endblock %}

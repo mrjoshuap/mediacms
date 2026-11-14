@@ -1,0 +1,11 @@
+{% extends "admin/change_list.html" %}
+{% load i18n custom_filters %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{# Must sit outside #changelist-form — nested forms are ignored by browsers. #}
+{% block search %}
+{{ block.super }}
+{% if user_optional_columns %}
+{% include "admin/includes/column_chooser.html" with chooser_class="user-column-chooser" columns=user_optional_columns set_param="set_user_columns" reset_param="reset_user_columns" col_param="user_col" preserved=user_column_chooser_preserved_qsl %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,54 @@
+{% load i18n static jazzmin custom_filters %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% if result_hidden_fields %}
+<div class="hiddenfields">
+    {% for item in result_hidden_fields %}{{ item }}{% endfor %}
+</div>
+{% endif %}
+
+{% if results %}
+    <div class="card">
+        <div class="card-body table-responsive p-0">
+            {% if cl.opts.model_name == "tag" %}
+            <div id="result_list" class="tag-changelist-columns">
+                {% for column in results|tag_columns %}
+                <table class="table table-striped tag-result-table">
+                    <thead>
+                        <tr>
+                            {% for header in result_headers %}
+                            {% include "admin/includes/changelist_header_cell.html" with header=header suppress_toggle=forloop.parentloop.counter0 %}
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in column %}
+                        <tr role="row" class="{% cycle 'even' 'odd' %}">
+                            {% for item in result %}{{ item }}{% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endfor %}
+            </div>
+            {% else %}
+            <table id="result_list" class="table table-striped">
+                <thead>
+                    <tr>
+                        {% for header in result_headers %}
+                        {% include "admin/includes/changelist_header_cell.html" with header=header suppress_toggle=False %}
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    <tr role="row" class="{% cycle 'even' 'odd' %}">
+                        {% for item in result %}{{ item }}{% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

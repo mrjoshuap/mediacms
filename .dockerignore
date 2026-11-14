@@ -60,6 +60,18 @@ static_collected/**
 **/.github
 **/CHANGELOG.md
 
+# MkDocs build / prepare artifacts (not needed in the app image)
+site/
+mkdocs.local.yml
+docs/en/languages.md
+docs/en/reference/api.md
+docs/en/reference/changelog.md
+docs/en/reference/openapi.yaml
+docs/en/reference/this-version.md
+docs/en/reference/whats-new.md
+# Locale copies under docs/*/assets and docs/*/stylesheets are tiny; source of
+# truth docs/_shared/ must stay in context if docs are ever baked into an image.
+
 # Test files and directories
 **/tests
 **/test_*.py

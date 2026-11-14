@@ -43,6 +43,7 @@ services:
     command: "python manage.py runserver 0.0.0.0:80"
     environment:
       DEVELOPMENT_MODE: True
+      ALLOW_POPULATE_FAKE_MEDIA: 'True'
     ports:
       - "80:80"
     volumes:
@@ -85,3 +86,26 @@ services:
       ENABLE_MIGRATIONS: 'no'
     depends_on:
       - web
+  # Optional MkDocs watcher. Start with:
+  #   docker compose -f docker-compose-dev.yaml --profile docs up docs
+  # or: make docs-up
+  # Browse at http://localhost/documentation/
+  docs:
+    profiles: ["docs"]
+    image: python:3.11-slim
+    working_dir: /home/mediacms.io/mediacms
+    volumes:
+      - ./:/home/mediacms.io/mediacms/
+    environment:
+      DOCS_CHANNEL: local
+      # Leave empty for relative links (works on localhost and reverse-proxied hosts).
+      # Optional: DOCS_SITE_URL=https://your-host/documentation/
+      DOCS_SITE_URL: ${DOCS_SITE_URL:-}
+    command:
+      - bash
+      - -lc
+      - |
+        set -euo pipefail
+        pip install -q -r requirements-docs.txt
+        python scripts/docs_dev_watch.py
+    restart: unless-stopped

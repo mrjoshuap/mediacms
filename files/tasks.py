@@ -17,7 +17,7 @@ from django.core.files import File
 from django.db import DatabaseError
 from django.db.models import Q
 
-from actions.models import USER_MEDIA_ACTIONS, MediaAction
+from actions.models import PUBLIC_USER_MEDIA_ACTIONS, MediaAction
 from users.models import User
 
 from .backends import FFmpegBackend
@@ -58,7 +58,7 @@ from .models.utils import PREVIEW_PROFILE_NAME
 
 logger = get_task_logger(__name__)
 
-VALID_USER_ACTIONS = [action for action, name in USER_MEDIA_ACTIONS]
+VALID_USER_ACTIONS = [action for action, name in PUBLIC_USER_MEDIA_ACTIONS]
 
 ERRORS_LIST = [
     "Output file is empty, nothing was encoded",
@@ -708,6 +708,28 @@ def media_init(friendly_token):
         return False
     media.media_init()
 
+    return True
+
+
+@task(name="refresh_media_metadata", queue="long_tasks")
+def refresh_media_metadata(friendly_token, user_id=None):
+    """Fill missing media/encoding metadata and record integrity audits."""
+    from files.metadata_integrity import refresh_and_check_media
+
+    try:
+        media = Media.objects.get(friendly_token=friendly_token)
+    except Media.DoesNotExist:
+        logger.info("failed to get media with friendly_token %s" % friendly_token)
+        return False
+
+    user = None
+    if user_id:
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            user = None
+
+    refresh_and_check_media(media, user=user)
     return True
 
 

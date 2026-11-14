@@ -115,7 +115,7 @@ export function SidebarNavigationMenu() {
       });
     }
 
-    const extraItems = PageStore.get('config-contents').sidebar.mainMenuExtra.items;
+    const extraItems = PageStore.get('config-contents').sidebar.mainMenuExtra.items || [];
 
     extraItems.forEach((navitem) => {
       items.push({
@@ -159,6 +159,10 @@ export function SidebarNavigationMenu() {
           className: 'nav-item-my-playlists',
         });
       }
+
+      (PageStore.get('config-contents').sidebar.libraryItems || []).forEach((navitem) => {
+        items.push(navitem);
+      });
     }
 
     return items.length ? <NavigationMenuList key="main-second" items={formatItems(items)} /> : null;
@@ -186,6 +190,12 @@ export function SidebarNavigationMenu() {
         icon: 'thumb_up',
         text: translateString("Liked media"),
         className: 'nav-item-liked',
+      });
+    }
+
+    if (!isAnonymous) {
+      (PageStore.get('config-contents').sidebar.personalItems || []).forEach((navitem) => {
+        items.push(navitem);
       });
     }
 
@@ -223,6 +233,10 @@ export function SidebarNavigationMenu() {
       className: 'nav-item-language',
     });
 
+    (PageStore.get('config-contents').sidebar.infoItems || []).forEach((navitem) => {
+      items.push(navitem);
+    });
+
     return items.length ? <NavigationMenuList key="custom" items={formatItems(items)} /> : null;
   }
 
@@ -253,6 +267,12 @@ export function SidebarNavigationMenu() {
         icon: 'miscellaneous_services',
         text: translateString("Manage comments"),
         className: 'nav-item-manage-comments',
+      });
+    }
+
+    if (userCan.manageMedia || userCan.manageUsers || userCan.manageComments) {
+      (PageStore.get('config-contents').sidebar.manageItems || []).forEach((navitem) => {
+        items.push(navitem);
       });
     }
 

@@ -16,8 +16,69 @@ MediaCMS.contents = {
                 icon: 'alternate_email',
             }
         ],
-        belowNavMenu: null,
-        footer: {% if SIDEBAR_FOOTER_TEXT %}'{{ SIDEBAR_FOOTER_TEXT|escapejs }}'{% else %}'Powered by <a href="//mediacms.io" title="mediacms.io" target="_blank">mediacms.io</a>'{% endif %},
+        mainMenuExtraItems: [
+            {% for page in SIDEBAR_BROWSE %}
+            {
+                text: "{{ page.title|escapejs }}",
+                link: "{{ page.get_absolute_url|escapejs }}",
+                icon: 'article',
+                className: 'nav-item-cms-page nav-item-cms-page-{{ page.slug|escapejs }}',
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        browseItems: [
+            {% for page in SIDEBAR_BROWSE %}
+            {
+                text: "{{ page.title|escapejs }}",
+                link: "{{ page.get_absolute_url|escapejs }}",
+                icon: 'article',
+                className: 'nav-item-cms-page nav-item-cms-page-{{ page.slug|escapejs }}',
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        libraryItems: [
+            {% for page in SIDEBAR_LIBRARY %}
+            {
+                text: "{{ page.title|escapejs }}",
+                link: "{{ page.get_absolute_url|escapejs }}",
+                icon: 'article',
+                className: 'nav-item-cms-page nav-item-cms-page-{{ page.slug|escapejs }}',
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        personalItems: [
+            {% for page in SIDEBAR_PERSONAL %}
+            {
+                text: "{{ page.title|escapejs }}",
+                link: "{{ page.get_absolute_url|escapejs }}",
+                icon: 'article',
+                className: 'nav-item-cms-page nav-item-cms-page-{{ page.slug|escapejs }}',
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        infoItems: [
+            {% for page in SIDEBAR_INFO %}
+            {
+                text: "{{ page.title|escapejs }}",
+                link: "{{ page.get_absolute_url|escapejs }}",
+                icon: 'article',
+                className: 'nav-item-cms-page nav-item-cms-page-{{ page.slug|escapejs }}',
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        manageItems: [
+            {% for page in SIDEBAR_MANAGE %}
+            {
+                text: "{{ page.title|escapejs }}",
+                link: "{{ page.get_absolute_url|escapejs }}",
+                icon: 'article',
+                className: 'nav-item-cms-page nav-item-cms-page-{{ page.slug|escapejs }}',
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        belowNavMenu: '{{ SIDEBAR_BELOW|escapejs }}',
+        belowThemeSwitcher: '{{ SIDEBAR_AFTER_THEME|escapejs }}',
+        footer: '{% if SIDEBAR_FOOTER_TEXT %}{{ SIDEBAR_FOOTER_TEXT|escapejs }}{% else %}Powered by <a href="//mediacms.io" title="mediacms.io" target="_blank">mediacms.io</a>{% endif %}{{ SIDEBAR_FOOTER_HTML|escapejs }}',
     },
     uploader: {
         belowUploadArea: "{{PRE_UPLOAD_MEDIA_MESSAGE}}",

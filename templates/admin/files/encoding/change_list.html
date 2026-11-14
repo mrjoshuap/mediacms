@@ -1,0 +1,11 @@
+{% extends "admin/change_list.html" %}
+{% load i18n custom_filters %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{# Must sit outside #changelist-form — nested forms are ignored by browsers. #}
+{% block search %}
+{{ block.super }}
+{% if encoding_optional_columns %}
+{% include "admin/includes/column_chooser.html" with chooser_class="encoding-column-chooser" columns=encoding_optional_columns set_param="set_encoding_columns" reset_param="reset_encoding_columns" col_param="encoding_col" preserved=encoding_column_chooser_preserved_qsl %}
+{% endif %}
+{% endblock %}

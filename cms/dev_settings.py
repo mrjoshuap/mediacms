@@ -33,6 +33,10 @@ INSTALLED_APPS = [
     "uploader.apps.UploaderConfig",
     "djcelery_email",
     "drf_yasg",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.github",
+    "allauth.socialaccount.providers.facebook",
+    "allauth.socialaccount.providers.openid_connect",
     "allauth.socialaccount.providers.saml",
     "saml_auth.apps.SamlAuthConfig",
     "corsheaders",
@@ -57,3 +61,9 @@ DEBUG = True
 CORS_ORIGIN_ALLOW_ALL = True
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_collected')
+
+# Serve MkDocs output from site/ at /documentation/ (optional docs Compose profile).
+SERVE_DOCUMENTATION = True
+DOCUMENTATION_ROOT = os.path.join(BASE_DIR, "site")
+DOCUMENTATION_URL = "/documentation/"
+

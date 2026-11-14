@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from functools import wraps
 
 from django.conf import settings
 from django.contrib import messages
@@ -12,7 +13,7 @@ from django.utils.html import strip_tags
 from django.views.decorators.csrf import csrf_exempt
 
 from cms.version import VERSION
-from files.methods import user_allowed_to_upload
+from files.methods import user_allowed_to_upload, user_is_pending_approval
 from users.models import User
 
 from .. import helpers
@@ -41,17 +42,32 @@ from ..models import Category, Media, Page, Playlist, Subtitle, Tag, VideoTrimRe
 from ..tasks import save_user_action, video_trim_task
 
 
+def refuse_pending(view):
+    """Signed-in users who are not approved may browse, not change the library."""
+
+    @wraps(view)
+    def wrapped(request, *args, **kwargs):
+        if user_is_pending_approval(request.user):
+            return HttpResponseRedirect("/")
+        return view(request, *args, **kwargs)
+
+    return wrapped
+
+
 def get_page(request, slug):
+    from files.page_slugs import resolve_public_page
+
     context = {}
-    page = Page.objects.filter(slug=slug).first()
+    page = resolve_public_page(slug)
     if page:
         context["page"] = page
     else:
-        return render(request, "404.html", context)
+        return render(request, "404.html", context, status=404)
     return render(request, "cms/page.html", context)
 
 
 @login_required
+@refuse_pending
 def record_screen(request):
     """Record screen view"""
 
@@ -89,6 +105,7 @@ def setlanguage(request):
 
 
 @login_required
+@refuse_pending
 def add_subtitle(request):
     """Add subtitle view"""
 
@@ -142,6 +159,7 @@ def add_subtitle(request):
 
 
 @login_required
+@refuse_pending
 def edit_subtitle(request):
     subtitle_id = request.GET.get("id", "").strip()
     action = request.GET.get("action", "").strip()
@@ -195,6 +213,7 @@ def categories(request):
     return render(request, "cms/categories.html", context)
 
 
+@refuse_pending
 def edit_category(request, uid):
     """Edit one category's title, description and thumbnail.
 
@@ -300,6 +319,7 @@ def _timestamp_to_seconds(value):
 
 @csrf_exempt
 @login_required
+@refuse_pending
 def video_chapters(request, friendly_token):
     if not request.method == "POST":
         return HttpResponseRedirect("/")
@@ -359,6 +379,7 @@ def video_chapters(request, friendly_token):
 
 
 @login_required
+@refuse_pending
 def edit_media(request):
     """Edit a media view"""
 
@@ -405,6 +426,7 @@ def edit_media(request):
 
 
 @login_required
+@refuse_pending
 def publish_media(request):
     """Publish media"""
 
@@ -440,6 +462,7 @@ def publish_media(request):
 
 
 @login_required
+@refuse_pending
 def replace_media(request):
     """Replace media file"""
 
@@ -510,6 +533,7 @@ def replace_media(request):
 
 
 @login_required
+@refuse_pending
 def edit_chapters(request):
     """Edit chapters"""
     friendly_token = request.GET.get("m", "").strip()
@@ -539,6 +563,7 @@ def edit_chapters(request):
 
 @csrf_exempt
 @login_required
+@refuse_pending
 def trim_video(request, friendly_token):
     if not settings.ALLOW_VIDEO_TRIMMER:
         return JsonResponse({"success": False, "error": "Video trimming is not allowed"}, status=400)
@@ -571,6 +596,7 @@ def trim_video(request, friendly_token):
 
 
 @login_required
+@refuse_pending
 def edit_video(request):
     """Edit video"""
 
@@ -664,6 +690,7 @@ def liked_media(request):
 
 
 @login_required
+@refuse_pending
 def manage_users(request):
     """List users management view"""
 
@@ -675,6 +702,7 @@ def manage_users(request):
 
 
 @login_required
+@refuse_pending
 def manage_media(request):
     """List media management view"""
     if not is_mediacms_editor(request.user):
@@ -686,6 +714,7 @@ def manage_media(request):
 
 
 @login_required
+@refuse_pending
 def manage_comments(request):
     """List comments management view"""
     if not is_mediacms_editor(request.user):
@@ -742,13 +771,21 @@ def tags(request):
 
 
 def tos(request):
-    """Terms of service view"""
+    """Terms of service view.
 
-    context = {}
-    return render(request, "cms/tos.html", context)
+    A Page with slug ``tos`` replaces the placeholder template, the same way a
+    Page with slug ``about`` replaces the default About page.
+    """
+
+    page = Page.objects.filter(slug="tos").first()
+    if page:
+        return render(request, "cms/page.html", {"page": page})
+
+    return render(request, "cms/tos.html", {})
 
 
 @login_required
+@refuse_pending
 def upload_media(request):
     """Upload media view"""
 
