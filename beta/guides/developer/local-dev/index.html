@@ -2094,6 +2094,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Change Python code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#logging-in-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      Logging in development
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3253,6 +3268,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Change Python code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#logging-in-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      Logging in development
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3476,6 +3506,13 @@
 </code></pre></div>
 <p>The development stack has no <code>celery_beat</code> service. Restart <code>celery_beat</code> only on a stack that has it.</p>
 </div>
+<h3 id="logging-in-development">Logging in development<a class="headerlink" href="#logging-in-development" title="Permanent link">&para;</a></h3>
+<p>The development stack usually runs with <code>DEBUG=True</code>, so logs go to the file handler and the console at <code>DEBUG</code>.</p>
+<ul>
+<li>Set <code>LOGLEVEL</code> in the environment or in <code>deploy/docker/local_settings.py</code> when you need a different level with <code>DEBUG=False</code>.</li>
+<li>Leave <code>ENABLE_SQL_DEBUG_LOGGING</code> off unless you are debugging SQL. SQL logging needs both <code>DEBUG=True</code> and <code>ENABLE_SQL_DEBUG_LOGGING=True</code>.</li>
+<li>Leave reverse-proxy settings commented out in Compose. Set <code>TRUSTED_PROXIES</code> only when you put a proxy in front of the stack.</li>
+</ul>
 <h2 id="change-frontend-code">Change frontend code<a class="headerlink" href="#change-frontend-code" title="Permanent link">&para;</a></h2>
 <p>React is a library that Django templates load. It is not a separate single-page application. Django owns the routes, the pages, the data, and the login.</p>
 <p>The code is in two places:</p>

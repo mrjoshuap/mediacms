@@ -3245,17 +3245,24 @@
 <li><strong>ci:</strong> mike versioned docs deploy on GitHub Pages (<code>dev</code> / <code>beta</code> / <code>latest</code>)</li>
 <li><strong>release:</strong> GHCR date-stamped <code>:beta</code> and <code>:stable</code> images from <code>version/FORK_VERSION</code></li>
 <li><strong>settings:</strong> <code>ACCOUNT_LOGIN_BY_CODE_ENABLED</code> and <code>ALLOW_POPULATE_FAKE_MEDIA</code></li>
+<li><strong>logging:</strong> structured app logging with <code>LOGLEVEL</code>, optional SQL debug via <code>ENABLE_SQL_DEBUG_LOGGING</code>, and per-app loggers</li>
+<li><strong>logging:</strong> failed-login warnings with client IP for django-allauth and API token login</li>
+<li><strong>logging:</strong> operational logs for admin database backup/restore, support bundle, object actions, and related management commands</li>
+<li><strong>proxy:</strong> <code>TRUSTED_PROXIES</code> with <code>ProxyAwareMiddleware</code> and <code>get_client_ip</code> (off when the list is empty)</li>
 </ul>
 <h2 id="bug-fixes">Bug Fixes<a class="headerlink" href="#bug-fixes" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>docs:</strong> publish mike docs through the GitHub Pages Actions deploy path</li>
 <li><strong>i18n:</strong> German translation additions and corrections (#1622)</li>
+<li><strong>templates:</strong> default context keys for permissions, media, and current site to avoid AttributeError log floods</li>
+<li><strong>logging:</strong> skip model log handlers on fixture/raw loads so admin database restore is not interrupted</li>
 </ul>
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>admin:</strong> admin portal guides for site, moderation, processing, people, integrations, and site upgrade</li>
 <li><strong>ops:</strong> Docker upgrade checklist and maintenance backup notes (#1562, #1564)</li>
 <li><strong>meta:</strong> AI disclosure attestation on pull request and issue templates (#1640)</li>
+<li><strong>settings:</strong> catalog and deploy notes for logging and trusted reverse-proxy settings</li>
 </ul>
 <h2 id="refactors">Refactors<a class="headerlink" href="#refactors" title="Permanent link">&para;</a></h2>
 <ul>

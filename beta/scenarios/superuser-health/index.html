@@ -3191,7 +3191,7 @@
 <h2 id="if-this-fails">If this fails<a class="headerlink" href="#if-this-fails" title="Permanent link">&para;</a></h2>
 <ul>
 <li>If the number does not change, the page uses a cache for 60 seconds. Select <strong>Refresh stats</strong> again.</li>
-<li>If a reverse-proxy check shows a warning, check <code>FRONTEND_HOST</code>, <code>ALLOWED_HOSTS</code>, and the proxy settings. Local and <code>DEBUG</code> installs show these gaps as <strong>Info</strong>.</li>
+<li>If a reverse-proxy check shows a warning, check <code>FRONTEND_HOST</code>, <code>ALLOWED_HOSTS</code>, and the proxy settings (<code>USE_X_FORWARDED_HOST</code>, <code>SECURE_PROXY_SSL_HEADER</code>, and <code>TRUSTED_PROXIES</code> when a proxy sits in front). Local and <code>DEBUG</code> installs show these gaps as <strong>Info</strong>.</li>
 <li>If a storage check fails, the portal cannot write in the directory. Check the owner and the permissions of the directory.</li>
 <li>Settings changes need a restart. See the <a href="../../guides/admin/settings/">Settings catalog</a>.</li>
 </ul>

@@ -1916,6 +1916,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Logging
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#database-cache-and-celery" class="md-nav__link">
     <span class="md-ellipsis">
       Database, cache, and Celery
@@ -3286,6 +3295,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Logging
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#database-cache-and-celery" class="md-nav__link">
     <span class="md-ellipsis">
       Database, cache, and Celery
@@ -3987,12 +4005,52 @@
 <td>Set them behind an HTTPS reverse proxy. The <strong>Health</strong> page checks them</td>
 </tr>
 <tr>
+<td><code>TRUSTED_PROXIES</code></td>
+<td><code>[]</code></td>
+<td>IP addresses or CIDR networks that may set <code>X-Forwarded-For</code> / <code>X-Real-IP</code>. Empty means proxy headers are not trusted</td>
+</tr>
+<tr>
+<td><code>PROXY_AWARE_MIDDLEWARE_ENABLED</code></td>
+<td><code>bool(TRUSTED_PROXIES)</code></td>
+<td>When <code>True</code>, <code>ProxyAwareMiddleware</code> sets <code>request.client_ip</code>. Override in <code>local_settings.py</code> if needed</td>
+</tr>
+<tr>
+<td><code>SET_REAL_IP_IN_META</code></td>
+<td><code>False</code></td>
+<td>When <code>True</code>, also writes the client IP into <code>request.META['REMOTE_ADDR']</code>. Keep <code>False</code> unless you need that</td>
+</tr>
+<tr>
 <td><code>ALLAUTH_TRUSTED_PROXY_COUNT</code></td>
 <td><code>1</code></td>
-<td>Number of proxies in front of the app</td>
+<td>Number of proxies in front of the app for django-allauth</td>
 </tr>
 </tbody>
 </table>
+<h2 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">&para;</a></h2>
+<p>Logging is built <strong>after</strong> <code>local_settings.py</code> is read, so <code>DEBUG</code> and other overrides apply. A change needs a restart of web, celery_worker, and celery_beat.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LOGLEVEL</code></td>
+<td><code>ERROR</code> (or <code>LOGLEVEL</code> env)</td>
+<td>File log level when <code>DEBUG</code> is <code>False</code></td>
+</tr>
+<tr>
+<td><code>ENABLE_SQL_DEBUG_LOGGING</code></td>
+<td><code>False</code> (or env)</td>
+<td>When <code>DEBUG</code> is <code>True</code> and this is <code>True</code>, SQL queries are logged. Otherwise SQL stays quiet</td>
+</tr>
+</tbody>
+</table>
+<p>App loggers (from <code>MEDIACMS_APP_LOGGERS</code> in <code>cms/settings.py</code>) write to the same file: <code>files</code>, <code>users</code>, <code>uploader</code>, <code>saml_auth</code>, <code>rbac</code>, <code>identity_providers</code>, <code>actions</code>, <code>cms</code>, <code>admin_customizations</code> (admin portal), <code>lti</code>, and <code>migrationservice</code>. Child modules such as <code>admin_customizations.views</code> and <code>files.tasks</code> use those parents. Celery (<code>celery</code>, <code>celery.task</code>) always uses the file handler; the console handler is added when <code>DEBUG</code> is <code>True</code>.</p>
+<p>When <code>DEBUG</code> is <code>True</code>, the effective file and console log level is <code>DEBUG</code>, and a console handler is added.</p>
 <h2 id="database-cache-and-celery">Database, cache, and Celery<a class="headerlink" href="#database-cache-and-celery" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -4058,6 +4116,14 @@
 <tr>
 <td><code>ALLOW_POPULATE_FAKE_MEDIA = None</code></td>
 <td>Follows <code>DEBUG</code></td>
+</tr>
+<tr>
+<td><code>TRUSTED_PROXIES</code> non-empty (and you do not override the flag)</td>
+<td><code>PROXY_AWARE_MIDDLEWARE_ENABLED</code> defaults to <code>True</code> before <code>local_settings.py</code>. Set the flag in <code>local_settings.py</code> when you set <code>TRUSTED_PROXIES</code> there</td>
+</tr>
+<tr>
+<td><code>DEBUG = True</code></td>
+<td>Effective log level becomes <code>DEBUG</code> and a console handler is added</td>
 </tr>
 </tbody>
 </table>

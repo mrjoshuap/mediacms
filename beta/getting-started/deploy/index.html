@@ -3291,9 +3291,13 @@
 <ol>
 <li>Open <code>deploy/docker/local_settings.py</code>.</li>
 <li>Set <code>FRONTEND_HOST</code> to the public address, for example <code>https://mediacms.io</code>.</li>
+<li>Set <code>TRUSTED_PROXIES</code> to the proxy IP or CIDR list, and set <code>PROXY_AWARE_MIDDLEWARE_ENABLED = True</code> so auth and failed-login logs use the real client IP.</li>
+<li>When the proxy ends HTTPS, set <code>USE_X_FORWARDED_HOST = True</code> and <code>SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')</code>.</li>
 <li>Start the proxy Compose file that matches the address scheme.</li>
 <li>Check that DNS or your hosts file points the name to the proxy.</li>
+<li>Restart web, celery_worker, and celery_beat after the settings change.</li>
 </ol>
+<p>See the <a href="../../guides/admin/settings/">Settings catalog</a> for the full proxy and logging table. Leave <code>TRUSTED_PROXIES</code> empty when nothing sits in front of the app.</p>
 <p>If you use your own proxy, send the media authorization requests to Django. See <strong>Use your own nginx configuration</strong> in <a href="../install/">Install with Docker</a>.</p>
 <h2 id="scale-the-deployment">Scale the deployment<a class="headerlink" href="#scale-the-deployment" title="Permanent link">&para;</a></h2>
 <p>For a large portal, run these parts separately:</p>
