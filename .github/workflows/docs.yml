@@ -5,6 +5,11 @@ name: Documentation
 #   MEDIACMS_BETA_BRANCH    — beta / next line (default: mediacms-next)
 # Triggers list both names so forks work before variables exist.
 # `on:` cannot read vars, so keep the branch list in sync with those defaults.
+#
+# GitHub Pages is configured as "GitHub Actions" (not "Deploy from a branch").
+# mike still pushes versioned docs to the gh-pages branch; this workflow then
+# uploads that tree with actions/deploy-pages so https://<user>.github.io/<repo>/
+# is published.
 
 on:
   push:
@@ -17,10 +22,11 @@ on:
 permissions:
   contents: write
   pages: write
+  id-token: write
 
 concurrency:
-  group: docs-${{ github.ref }}
-  cancel-in-progress: true
+  group: docs-pages
+  cancel-in-progress: false
 
 env:
   STABLE_BRANCH: ${{ vars.MEDIACMS_STABLE_BRANCH || 'main' }}
@@ -119,6 +125,9 @@ jobs:
     if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -190,24 +199,55 @@ jobs:
       - name: Check scenarios
         run: python scripts/check_doc_scenarios.py
 
-      - name: Deploy with mike
+      - name: Deploy versions with mike
         env:
           DOCS_CHANNEL: ${{ steps.channel.outputs.channel }}
         run: |
+          set -euo pipefail
           if [[ -n "${{ steps.channel.outputs.doc_version }}" ]]; then
             VERSION="${{ steps.channel.outputs.doc_version }}"
           else
             VERSION=$(python -c "import json; print(json.load(open('package.json'))['version'])")
           fi
-          REF="${{ github.ref }}"
           CHANNEL="${{ steps.channel.outputs.channel }}"
+          echo "mike deploy channel=$CHANNEL version=$VERSION"
+
           if [[ "$CHANNEL" == "latest" ]]; then
             mike deploy --push --update-aliases "$VERSION" latest
             mike set-default --push latest
           elif [[ "$CHANNEL" == "beta" ]]; then
             mike deploy --push --update-aliases beta
+            # Until a stable/latest docs set exists, make / serve beta.
+            mike set-default --push beta
           elif [[ "$CHANNEL" == "dev" ]]; then
             mike deploy --push --update-aliases dev
+            # Prefer latest if present; otherwise leave existing default.
+            if mike list | grep -qE '(^| )latest( |$)'; then
+              mike set-default --push latest
+            else
+              mike set-default --push dev
+            fi
           else
             mike deploy --push --update-aliases "$VERSION"
           fi
+
+      - name: Prepare Pages artifact from gh-pages
+        run: |
+          set -euo pipefail
+          rm -rf _pages
+          git fetch origin gh-pages
+          git worktree add _pages origin/gh-pages
+          # GitHub Pages artifact must not include .git
+          rm -rf _pages/.git
+          ls -la _pages
+          test -f _pages/versions.json
+          test -d _pages/beta -o -d _pages/latest -o -d _pages/dev
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _pages
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
