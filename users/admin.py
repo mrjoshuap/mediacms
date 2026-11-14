@@ -534,5 +534,6 @@ class EmailAddressAdmin(AllauthEmailAddressAdmin):
         return admin_status_icon("fas fa-times-circle", admin_text(None, "No"), modifier="fail")
 
 
-admin.site.unregister(EmailAddress)
+if admin.site.is_registered(EmailAddress):
+    admin.site.unregister(EmailAddress)
 admin.site.register(EmailAddress, EmailAddressAdmin)

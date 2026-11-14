@@ -16,7 +16,7 @@ def make_user(username, **kwargs):
     return create_account(username=username, email=f"{username}@example.com", password=PASSWORD, **kwargs)
 
 
-@override_settings(SECURE_SSL_REDIRECT=False)
+@override_settings(SECURE_SSL_REDIRECT=False, DEBUG=False)
 class ObjectActionsChangeFormTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -41,9 +41,10 @@ class ObjectActionsChangeFormTest(TestCase):
         self.assertNotContains(response, f'<form method="post" action="{action_url}"')
         self.assertContains(response, 'id="id_object_action"')
         self.assertContains(response, "object-tools-actions-go")
-        self.assertContains(response, "fa-pencil-alt")
+        # Jazzmin submit/history chrome + media glance Inspect links use Font Awesome.
         self.assertContains(response, "fa-save")
         self.assertContains(response, "fa-history")
+        self.assertContains(response, "fa-search")
         self.assertNotContains(response, "icon-changelink.svg")
         self.assertNotContains(response, "icon-addlink.svg")
         choice_values = [value for value, _label, _disabled in response.context["object_action_choices"]]

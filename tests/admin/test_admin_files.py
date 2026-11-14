@@ -488,13 +488,14 @@ class MediaAdminTest(AdminRequestMixin, TestCase):
         self.assertNotIn("sprites", fieldsets["Content"]["fields"])
         self.assertEqual(fieldsets["Publishing"]["fields"][0], "display_listable")
         self.assertIn("display_listable", model_admin.readonly_fields)
-        listable = str(model_admin.display_listable(self.public))
-        self.assertIn("fa-eye-slash", listable)
-        self.assertIn(">No<", listable)
-        self.public.listable = True
+        # create_media images that are public + reviewed + encoding success are listable.
         listed = str(model_admin.display_listable(self.public))
         self.assertIn("fa-eye\"", listed)
         self.assertIn(">Yes<", listed)
+        self.public.listable = False
+        unlistable = str(model_admin.display_listable(self.public))
+        self.assertIn("fa-eye-slash", unlistable)
+        self.assertIn(">No<", unlistable)
         self.assertIn("state", fieldsets["Publishing"]["fields"])
         self.assertEqual(
             fieldsets["Sharing"]["fields"],
@@ -2524,7 +2525,8 @@ class MediaRelationshipNavigationTest(TestCase):
         self.assertContains(response, "View 1 comment(s)")
         self.assertContains(response, reverse("admin:files_comment_changelist"))
         self.assertContains(response, f"media__id__exact={self.media.pk}")
-        self.assertContains(response, "nav playlist")
+        self.assertContains(response, "View 1 playlist(s)")
+        self.assertContains(response, reverse("admin:files_playlist_changelist"))
         self.assertNotContains(response, "visible on media change")
         self.assertNotContains(response, "related-objects-tab")
 
