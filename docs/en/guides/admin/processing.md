@@ -38,6 +38,12 @@ The final `Encoding` (`chunk=False`, `status=success`) is the file that the port
 
 All workers must use the same file system as the web server. This can be one host, NFS, or EFS.
 
+### HLS packaging
+
+The `create_hls` task uses a Redis cache lock so two workers do not write the same media HLS tree at once. When a worker receives an `encoding_id`, it updates that resolution variant in place (incremental). When `encoding_id` is omitted, it rebuilds the HLS tree from every successful encoding.
+
+Set `MP4HLS_COMMAND` to a working Bento4 `mp4hls` binary. On some aarch64 hosts the packaged binary can fail; use a native build or run encoding workers on an architecture that Bento4 supports.
+
 The beat task `cleanup_encoding_chunks` removes stuck chunk `Encoding` rows and unreferenced source `.mkv` segments older than `ENCODING_CHUNKS_RETENTION_HOURS` (default 24).
 
 ### Encode profiles

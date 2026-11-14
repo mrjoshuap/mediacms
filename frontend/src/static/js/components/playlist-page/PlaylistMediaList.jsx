@@ -71,10 +71,10 @@ export class PlaylistMediaList extends React.PureComponent {
             handle: '.item-order-number',
             draggable: '.item',
             animation: 150,
-            onStart: function (evt) {
+            onStart: function () {
                 container.classList.add('on-dragging');
             },
-            onEnd: function (evt) {
+            onEnd: function () {
                 const newMediaOrder = [];
                 const reorderRequests = [];
 

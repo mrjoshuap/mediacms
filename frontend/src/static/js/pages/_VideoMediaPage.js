@@ -87,7 +87,7 @@ export class _VideoMediaPage extends Page {
         this.setState({ theaterMode: VideoViewerStore.get('in-theater-mode') });
     }
 
-    onMediaLoadError(a) {
+    onMediaLoadError() {
         this.setState({ mediaLoadFailed: true, passwordRequired: false });
     }
 

@@ -15,7 +15,11 @@ from django.utils.html import strip_tags
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
 from cms.version import VERSION
-from files.methods import get_interactive_email_connection, user_allowed_to_upload, user_is_pending_approval
+from files.methods import (
+    get_interactive_email_connection,
+    user_allowed_to_upload,
+    user_is_pending_approval,
+)
 from users.models import User
 
 from .. import helpers

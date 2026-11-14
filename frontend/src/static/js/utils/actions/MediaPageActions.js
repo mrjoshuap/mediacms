@@ -7,17 +7,17 @@ export function loadMediaData() {
 }
 
 export function loadMediaDataById(mediaId) {
-  Dispatcher.dispatch({
-    type: 'LOAD_MEDIA_DATA_BY_ID',
-    mediaId,
-  });
+    Dispatcher.dispatch({
+        type: 'LOAD_MEDIA_DATA_BY_ID',
+        mediaId,
+    });
 }
 
 export function unlockMediaPassword(password) {
-  Dispatcher.dispatch({
-    type: 'UNLOCK_MEDIA_PASSWORD',
-    password: password || '',
-  });
+    Dispatcher.dispatch({
+        type: 'UNLOCK_MEDIA_PASSWORD',
+        password: password || '',
+    });
 }
 
 export function likeMedia() {

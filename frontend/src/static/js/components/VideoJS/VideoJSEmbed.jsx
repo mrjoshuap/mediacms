@@ -24,7 +24,7 @@ const VideoJSEmbed = ({
     version,
     isPlayList,
     playerVolume,
-    playerSoundMuted,
+    playerSoundMuted: _playerSoundMuted,
     videoQuality,
     videoPlaybackSpeed,
     inTheaterMode,
@@ -66,7 +66,7 @@ const VideoJSEmbed = ({
     useEffect(() => {
         // Update the ref whenever inEmbed changes
         inEmbedRef.current = inEmbed;
-        
+
         // Set the global MEDIA_DATA that the video js expects.
         // Merge onto any existing payload so soft next/autoplay transitions keep player helpers.
         if (typeof window !== 'undefined') {
@@ -166,10 +166,10 @@ const VideoJSEmbed = ({
             const timer = setTimeout(() => {
                 // Try to trigger the VideoJS mount by dispatching a custom event
                 const event = new CustomEvent('triggerVideoJSMount', {
-                    detail: { targetId: 'video-js-root-embed' }
+                    detail: { targetId: 'video-js-root-embed' },
                 });
                 document.dispatchEvent(event);
-                
+
                 // Also try to trigger by calling the global function if it exists
                 if (typeof window !== 'undefined' && window.triggerVideoJSMount) {
                     window.triggerVideoJSMount();
@@ -189,18 +189,18 @@ const VideoJSEmbed = ({
 
                 // Try to get the player from multiple sources
                 let player = null;
-                
+
                 // First try: from our stored instance
                 if (playerInstanceRef.current && playerInstanceRef.current.player) {
                     player = playerInstanceRef.current.player;
                 }
-                
+
                 // Second try: from global window.videojsPlayers
                 if (!player && typeof window !== 'undefined' && window.videojsPlayers) {
                     const videoId = inEmbedRef.current ? 'video-embed' : 'video-main';
                     player = window.videojsPlayers[videoId];
                 }
-                
+
                 // Third try: from the global videojs function looking for existing players
                 if (!player && typeof window !== 'undefined' && window.videojs) {
                     const videoElement = document.querySelector(inEmbedRef.current ? '#video-embed' : '#video-main');
@@ -208,7 +208,7 @@ const VideoJSEmbed = ({
                         player = videoElement.player;
                     }
                 }
-                
+
                 // If we found a player, seek to the timestamp
                 if (player) {
                     if (timestamp >= 0 && timestamp < player.duration()) {
@@ -216,19 +216,19 @@ const VideoJSEmbed = ({
                     } else if (timestamp >= 0) {
                         player.play();
                     }
-                    
+
                     // Scroll to the video player with smooth behavior
                     const videoElement = document.querySelector(inEmbedRef.current ? '#video-embed' : '#video-main');
                     if (videoElement) {
                         const urlScroll = getUrlParameter('scroll');
                         const isIframe = window.parent !== window;
-                        
+
                         // Only scroll if not in an iframe, OR if explicitly requested via scroll=1 parameter
                         if (!isIframe || urlScroll === '1' || urlScroll === 'true') {
-                            videoElement.scrollIntoView({ 
-                                behavior: 'smooth', 
+                            videoElement.scrollIntoView({
+                                behavior: 'smooth',
                                 block: 'center',
-                                inline: 'nearest'
+                                inline: 'nearest',
                             });
                         }
                     }
@@ -275,10 +275,7 @@ const VideoJSEmbed = ({
     return (
         <div className="video-js-wrapper" ref={containerRef}>
             {inEmbed ? (
-                <div 
-                    id="video-js-root-embed" 
-                    className="video-js-root-embed"
-                />
+                <div id="video-js-root-embed" className="video-js-root-embed" />
             ) : (
                 <div id="video-js-root-main" className="video-js-root-main" />
             )}

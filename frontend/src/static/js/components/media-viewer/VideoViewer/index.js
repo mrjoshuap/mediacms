@@ -20,7 +20,7 @@ function extractMediaIdFromUrl(url) {
     try {
         const parsed = new URL(url, window.location.origin);
         return parsed.searchParams.get('m');
-    } catch (e) {
+    } catch (_e) {
         const match = String(url).match(/[?&]m=([^&]+)/);
         return match ? decodeURIComponent(match[1]) : null;
     }
@@ -158,7 +158,7 @@ export default class VideoViewer extends React.PureComponent {
                     if (supportedFormats.support[k]) {
                         srcUrl = this.props.data.encodings_info[defaultVideoResolution][k].url;
 
-                        if (!!srcUrl) {
+                        if (srcUrl) {
                             srcUrl = formatInnerLink(srcUrl, this.props.siteUrl);
 
                             this.videoSources.push({
@@ -294,7 +294,6 @@ export default class VideoViewer extends React.PureComponent {
         MediaPageStore.on('loaded_media_error', this.onSoftNavMediaError);
 
         if (this.videoSources.length) {
-
             this.upNextLoaderView =
                 !this.props.inEmbed && this.props.data.related_media.length
                     ? new UpNextLoaderView(this.props.data.related_media[0])
@@ -309,7 +308,8 @@ export default class VideoViewer extends React.PureComponent {
                 topLeftHtml = document.createElement('div');
                 topLeftHtml.setAttribute('class', 'media-links-top-left');
 
-                const linkTarget = inEmbeddedApp() || window.location.href.indexOf('lms_embed_mode') > -1 ? '_self' : '_blank';
+                const linkTarget =
+                    inEmbeddedApp() || window.location.href.indexOf('lms_embed_mode') > -1 ? '_self' : '_blank';
 
                 if (titleLink) {
                     titleLink.setAttribute('class', 'title-link');
@@ -372,7 +372,7 @@ export default class VideoViewer extends React.PureComponent {
                         const shareWrap = document.querySelector('.share-options-wrapper');
                         const shareInner = document.querySelector('.share-options-inner');
                         if (shareBtn) {
-                            shareBtn.addEventListener('click', function (ev) {
+                            shareBtn.addEventListener('click', function () {
                                 addClassname(
                                     document.querySelector('.video-js.vjs-mediacms'),
                                     'vjs-visible-share-options'
@@ -452,7 +452,7 @@ export default class VideoViewer extends React.PureComponent {
 
         try {
             window.history.pushState({ mediacmsSoftNav: true, mediaId }, '', url);
-        } catch (e) {
+        } catch (_e) {
             this.hardNavigate(url);
             return;
         }
@@ -617,7 +617,7 @@ export default class VideoViewer extends React.PureComponent {
 
         const mediaData = MediaPageStore.get('media-data') || this.props.data;
 
-        const previewSprite = !!mediaData.sprites_url
+        const previewSprite = mediaData.sprites_url
             ? {
                   url: this.props.siteUrl + '/' + mediaData.sprites_url.replace(/^\//g, ''),
                   frame: { width: 160, height: 90, seconds: 10 },
@@ -637,56 +637,55 @@ export default class VideoViewer extends React.PureComponent {
                     className={'player-container' + (this.videoSources.length ? '' : ' player-container-error')}
                     style={this.props.containerStyles}
                 >
-                    <div
-                        className="player-container-inner"
-                        style={this.props.containerStyles}
-                    >
-                        {/* this.state.displayPlayer && */ null == MediaPageStore.get('media-load-error-type') ? (
-                            <div className="video-player" key="videoJSPlayerWrapper">
-                                <SiteConsumer>
-                                    {(site) => {
-                                        return React.createElement(VideoJSEmbed, {
-                                            data: mediaData,
-                                            useRoundedCorners: site.useRoundedCorners,
-                                            version: site.version,
-                                            isPlayList: !!MediaPageStore.get('playlist-id'),
-                                            playerVolume: this.browserCache.get('player-volume'),
-                                            playerSoundMuted: this.browserCache.get('player-sound-muted'),
-                                            videoQuality: this.browserCache.get('video-quality'),
-                                            videoPlaybackSpeed: parseInt(
-                                                this.browserCache.get('video-playback-speed'),
-                                                10
-                                            ),
-                                            inTheaterMode: this.browserCache.get('in-theater-mode'),
-                                            siteId: site.id,
-                                            siteUrl: site.url,
-                                            info: this.videoInfo,
-                                            cornerLayers: this.cornerLayers,
-                                            sources: this.videoSources,
-                                            poster: this.videoPoster,
-                                            previewSprite: previewSprite,
-                                            subtitlesInfo: mediaData.subtitles_info,
-                                            inEmbed: this.props.inEmbed,
-                                            parentMediaBase: this.props.parentMediaBase || null,
-                                            showTitle: this.props.showTitle,
-                                            showRelated: this.props.showRelated,
-                                            showUserAvatar: this.props.showUserAvatar,
-                                            linkTitle: this.props.linkTitle,
-                                            urlTimestamp: this.props.timestamp,
-                                            hasTheaterMode: !this.props.inEmbed,
-                                            hasNextLink: !!nextLink,
-                                            nextLink: nextLink,
-                                            hasPreviousLink: !!previousLink,
-                                            errorMessage: MediaPageStore.get('media-load-error-message'),
-                                            onClickNextCallback: this.onClickNext,
-                                            onClickPreviousCallback: this.onClickPrevious,
-                                            onStateUpdateCallback: this.onStateUpdate,
-                                            onPlayerInitCallback: this.onPlayerInit,
-                                        });
-                                    }}
-                                </SiteConsumer>
-                            </div>
-                        ) : null}
+                    <div className="player-container-inner" style={this.props.containerStyles}>
+                        {
+                            /* this.state.displayPlayer && */ null == MediaPageStore.get('media-load-error-type') ? (
+                                <div className="video-player" key="videoJSPlayerWrapper">
+                                    <SiteConsumer>
+                                        {(site) => {
+                                            return React.createElement(VideoJSEmbed, {
+                                                data: mediaData,
+                                                useRoundedCorners: site.useRoundedCorners,
+                                                version: site.version,
+                                                isPlayList: !!MediaPageStore.get('playlist-id'),
+                                                playerVolume: this.browserCache.get('player-volume'),
+                                                playerSoundMuted: this.browserCache.get('player-sound-muted'),
+                                                videoQuality: this.browserCache.get('video-quality'),
+                                                videoPlaybackSpeed: parseInt(
+                                                    this.browserCache.get('video-playback-speed'),
+                                                    10
+                                                ),
+                                                inTheaterMode: this.browserCache.get('in-theater-mode'),
+                                                siteId: site.id,
+                                                siteUrl: site.url,
+                                                info: this.videoInfo,
+                                                cornerLayers: this.cornerLayers,
+                                                sources: this.videoSources,
+                                                poster: this.videoPoster,
+                                                previewSprite: previewSprite,
+                                                subtitlesInfo: mediaData.subtitles_info,
+                                                inEmbed: this.props.inEmbed,
+                                                parentMediaBase: this.props.parentMediaBase || null,
+                                                showTitle: this.props.showTitle,
+                                                showRelated: this.props.showRelated,
+                                                showUserAvatar: this.props.showUserAvatar,
+                                                linkTitle: this.props.linkTitle,
+                                                urlTimestamp: this.props.timestamp,
+                                                hasTheaterMode: !this.props.inEmbed,
+                                                hasNextLink: !!nextLink,
+                                                nextLink: nextLink,
+                                                hasPreviousLink: !!previousLink,
+                                                errorMessage: MediaPageStore.get('media-load-error-message'),
+                                                onClickNextCallback: this.onClickNext,
+                                                onClickPreviousCallback: this.onClickPrevious,
+                                                onStateUpdateCallback: this.onStateUpdate,
+                                                onPlayerInitCallback: this.onPlayerInit,
+                                            });
+                                        }}
+                                    </SiteConsumer>
+                                </div>
+                            ) : null
+                        }
                     </div>
                 </div>
             </>

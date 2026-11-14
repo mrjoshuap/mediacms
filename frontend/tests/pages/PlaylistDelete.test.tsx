@@ -34,7 +34,9 @@ describe('pages/PlaylistPage', () => {
             const { container, unmount } = renderIntoContainer(<PlaylistDelete />);
             const button = container.querySelector('.delete-playlist > button');
             expect(button?.textContent).toContain('DELETE');
-            expect(container.querySelector('.delete-playlist .material-icons')?.getAttribute('data-icon')).toBe('delete');
+            expect(container.querySelector('.delete-playlist .material-icons')?.getAttribute('data-icon')).toBe(
+                'delete'
+            );
             unmount();
         });
 

@@ -29,7 +29,9 @@ describe('components', () => {
         }
 
         function panelTitles(container: HTMLElement, index: number) {
-            return Array.from(container.querySelectorAll('.tag-panel')[index].querySelectorAll('.tag-item span')).map((s) => s.textContent);
+            return Array.from(container.querySelectorAll('.tag-panel')[index].querySelectorAll('.tag-item span')).map(
+                (s) => s.textContent
+            );
         }
 
         function loadTags(existing: string[], all: string[]) {
@@ -40,7 +42,14 @@ describe('components', () => {
 
         test('Renders nothing and does not fetch when closed', () => {
             const view = renderIntoContainer(
-                <BulkActionTagModal isOpen={false} selectedMediaIds={ids} csrfToken="t" onCancel={jest.fn()} onSuccess={jest.fn()} onError={jest.fn()} />
+                <BulkActionTagModal
+                    isOpen={false}
+                    selectedMediaIds={ids}
+                    csrfToken="t"
+                    onCancel={jest.fn()}
+                    onSuccess={jest.fn()}
+                    onError={jest.fn()}
+                />
             );
             expect(view.container.innerHTML).toBe('');
             expect(fetchMock).not.toHaveBeenCalled();
@@ -106,12 +115,25 @@ describe('components', () => {
             const { container, onSuccess, onCancel, unmount } = await setup();
             click(findByText(container, '.tag-item.clickable', 'music+'));
             // After sort the right panel is [music, news]; mark news (index 1) for removal.
-            click(container.querySelectorAll('.tag-panel')[1].querySelectorAll('.tag-item')[1].querySelector('.remove-btn'));
+            click(
+                container
+                    .querySelectorAll('.tag-panel')[1]
+                    .querySelectorAll('.tag-item')[1]
+                    .querySelector('.remove-btn')
+            );
             fetchMock.mockReturnValueOnce(jsonResponse({})).mockReturnValueOnce(jsonResponse({}));
             click(container.querySelector('.tag-btn-proceed'));
             await flush();
-            expect(JSON.parse(fetchMock.mock.calls[2][1].body)).toEqual({ action: 'add_tags', media_ids: ids, tag_titles: ['music'] });
-            expect(JSON.parse(fetchMock.mock.calls[3][1].body)).toEqual({ action: 'remove_tags', media_ids: ids, tag_titles: ['news'] });
+            expect(JSON.parse(fetchMock.mock.calls[2][1].body)).toEqual({
+                action: 'add_tags',
+                media_ids: ids,
+                tag_titles: ['music'],
+            });
+            expect(JSON.parse(fetchMock.mock.calls[3][1].body)).toEqual({
+                action: 'remove_tags',
+                media_ids: ids,
+                tag_titles: ['news'],
+            });
             expect(fetchMock.mock.calls[3][1].headers['X-CSRFToken']).toBe('tok');
             expect(onSuccess).toHaveBeenCalledWith('Successfully updated tags');
             expect(onCancel).toHaveBeenCalled();

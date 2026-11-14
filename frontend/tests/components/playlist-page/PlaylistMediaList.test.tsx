@@ -108,7 +108,10 @@ describe('components/playlist-page', () => {
             act(() => {
                 jest.advanceTimersByTime(100);
             });
-            expect((PageActions as any).addNotification).toHaveBeenCalledWith('Playlist order saved', 'playlistReorder');
+            expect((PageActions as any).addNotification).toHaveBeenCalledWith(
+                'Playlist order saved',
+                'playlistReorder'
+            );
             unmount();
         });
 
@@ -126,7 +129,10 @@ describe('components/playlist-page', () => {
             act(() => {
                 jest.advanceTimersByTime(100);
             });
-            expect((PageActions as any).addNotification).toHaveBeenCalledWith('Playlist reorder failed', 'playlistReorderFail');
+            expect((PageActions as any).addNotification).toHaveBeenCalledWith(
+                'Playlist reorder failed',
+                'playlistReorderFail'
+            );
             unmount();
         });
     });

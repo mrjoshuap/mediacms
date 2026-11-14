@@ -767,8 +767,7 @@ function VideoJSPlayer({
 
     // Function to navigate to next video (prefer live MEDIA_DATA after soft transitions)
     const goToNextVideo = () => {
-        const liveMediaData =
-            typeof window !== 'undefined' && window.MEDIA_DATA ? window.MEDIA_DATA : mediaData;
+        const liveMediaData = typeof window !== 'undefined' && window.MEDIA_DATA ? window.MEDIA_DATA : mediaData;
         if (liveMediaData.onClickNextCallback && typeof liveMediaData.onClickNextCallback === 'function') {
             liveMediaData.onClickNextCallback();
         }

@@ -354,11 +354,11 @@ class CustomChaptersOverlay extends Component {
             if (this.chaptersButtonEl && this.chaptersButtonClickHandler) {
                 this.chaptersButtonEl.removeEventListener('click', this.chaptersButtonClickHandler);
             }
-            
+
             // Clear references to prevent memory leaks when switching between mobile/desktop
             this.chaptersButtonEl = null;
             this.chaptersButtonClickHandler = null;
-            
+
             chaptersButton.off('click');
             chaptersButton.off('touchstart');
 

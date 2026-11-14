@@ -6,7 +6,9 @@ import { MediaPageActions, PageActions, PlaylistPageActions } from '../../../src
 import { PlaylistCreationForm } from '../../../src/static/js/components/playlist-form/PlaylistCreationForm';
 
 jest.mock('../../../src/static/js/utils/stores/', () => require('../../_support/compD_storeMocks').mockStoresModule());
-jest.mock('../../../src/static/js/utils/actions/', () => require('../../_support/compD_storeMocks').mockActionsModule());
+jest.mock('../../../src/static/js/utils/actions/', () =>
+    require('../../_support/compD_storeMocks').mockActionsModule()
+);
 
 const mediaStore = MediaPageStore as any;
 
@@ -21,7 +23,9 @@ describe('components/playlist-form', () => {
         function setup(id?: string) {
             const onCancel = jest.fn();
             const onPlaylistSave = jest.fn();
-            const view = renderIntoContainer(<PlaylistCreationForm id={id} onCancel={onCancel} onPlaylistSave={onPlaylistSave} />);
+            const view = renderIntoContainer(
+                <PlaylistCreationForm id={id} onCancel={onCancel} onPlaylistSave={onPlaylistSave} />
+            );
             return { ...view, onCancel, onPlaylistSave };
         }
 
@@ -58,7 +62,10 @@ describe('components/playlist-form', () => {
             changeValue(container.querySelector('.playlist-title input'), '  Mix  ');
             changeValue(container.querySelector('textarea'), ' Desc ');
             click(container.querySelector('.create-btn'));
-            expect((MediaPageActions as any).createPlaylist).toHaveBeenCalledWith({ title: 'Mix', description: 'Desc' });
+            expect((MediaPageActions as any).createPlaylist).toHaveBeenCalledWith({
+                title: 'Mix',
+                description: 'Desc',
+            });
             unmount();
         });
 
@@ -66,7 +73,10 @@ describe('components/playlist-form', () => {
             const { container, unmount } = setup('pl1');
             changeValue(container.querySelector('.playlist-title input'), 'New');
             click(container.querySelector('.create-btn'));
-            expect((PlaylistPageActions as any).updatePlaylist).toHaveBeenCalledWith({ title: 'New', description: 'Old description' });
+            expect((PlaylistPageActions as any).updatePlaylist).toHaveBeenCalledWith({
+                title: 'New',
+                description: 'Old description',
+            });
             unmount();
         });
 
@@ -100,7 +110,13 @@ describe('components/playlist-form', () => {
                 'Playlist created. Open a media item and use Save to add it to this playlist.',
                 'playlistCreationCompleted'
             );
-            expect(onPlaylistSave).toHaveBeenCalledWith({ playlist_id: 'abc123', add_date: '2024-01-01', description: 'd', title: 't', media_list: [] });
+            expect(onPlaylistSave).toHaveBeenCalledWith({
+                playlist_id: 'abc123',
+                add_date: '2024-01-01',
+                description: 'd',
+                title: 't',
+                media_list: [],
+            });
             unmount();
             jest.useRealTimers();
         });
@@ -112,7 +128,10 @@ describe('components/playlist-form', () => {
                 mediaStore.emit('playlist_creation_failed');
             });
             jest.advanceTimersByTime(100);
-            expect((PageActions as any).addNotification).toHaveBeenCalledWith('Playlist creation failed', 'playlistCreationFailed');
+            expect((PageActions as any).addNotification).toHaveBeenCalledWith(
+                'Playlist creation failed',
+                'playlistCreationFailed'
+            );
             click(container.querySelector('.cancel-btn'));
             expect(onCancel).toHaveBeenCalled();
             unmount();

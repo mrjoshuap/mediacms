@@ -259,9 +259,7 @@ export function applyMediaToPlayer(player, mediaData) {
         id: mediaData.data.friendly_token || 'default-video',
         title: mediaData.data.title || 'Video',
         author_name: mediaData.data.author_name || 'Unknown',
-        author_profile: mediaData.data.author_profile
-            ? (mediaData.siteUrl || '') + mediaData.data.author_profile
-            : '',
+        author_profile: mediaData.data.author_profile ? (mediaData.siteUrl || '') + mediaData.data.author_profile : '',
         author_thumbnail: mediaData.data.author_thumbnail
             ? (mediaData.siteUrl || '') + mediaData.data.author_thumbnail
             : '',
