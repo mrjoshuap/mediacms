@@ -14,10 +14,7 @@ def documentation(request, path=""):
 
     root = Path(getattr(settings, "DOCUMENTATION_ROOT", Path(settings.BASE_DIR) / "site"))
     if not root.is_dir():
-        raise Http404(
-            "Documentation is not built yet. Start the docs profile: "
-            "docker compose -f docker-compose-dev.yaml --profile docs up docs"
-        )
+        raise Http404("Documentation is not built yet. Start the docs profile: " "docker compose -f docker-compose-dev.yaml --profile docs up docs")
 
     # /documentation → /documentation/
     if path == "" and not request.path.endswith("/"):

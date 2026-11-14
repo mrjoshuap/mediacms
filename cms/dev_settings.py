@@ -66,4 +66,3 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_collected')
 SERVE_DOCUMENTATION = True
 DOCUMENTATION_ROOT = os.path.join(BASE_DIR, "site")
 DOCUMENTATION_URL = "/documentation/"
-

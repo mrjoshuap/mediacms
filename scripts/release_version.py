@@ -14,9 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 FORK_VERSION_FILE = ROOT / "version" / "FORK_VERSION"
-TAG_RE = re.compile(
-    r"^v(?P<base>\d+\.\d+\.\d+)\.(?P<stamp>\d{8})(?:\.(?P<n>\d+))?$"
-)
+TAG_RE = re.compile(r"^v(?P<base>\d+\.\d+\.\d+)\.(?P<stamp>\d{8})(?:\.(?P<n>\d+))?$")
 
 
 def read_base() -> str:
@@ -68,14 +66,10 @@ def next_tag(base: str, stamp: str, tags: set[str] | None = None) -> tuple[str, 
 def validate_stable_tag(tag: str, base: str | None = None) -> dict:
     parsed = parse_tag(tag)
     if not parsed:
-        raise SystemExit(
-            f"Tag {tag!r} does not match vMAJOR.MINOR.PATCH.YYYYMMDD[.N]"
-        )
+        raise SystemExit(f"Tag {tag!r} does not match vMAJOR.MINOR.PATCH.YYYYMMDD[.N]")
     expected = base or read_base()
     if parsed["base"] != expected:
-        raise SystemExit(
-            f"Tag base {parsed['base']!r} does not match FORK_VERSION {expected!r}"
-        )
+        raise SystemExit(f"Tag base {parsed['base']!r} does not match FORK_VERSION {expected!r}")
     return parsed
 
 
