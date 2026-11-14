@@ -2185,11 +2185,59 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#coverage-matrix-primary-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Coverage matrix (primary workflows)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Coverage matrix (primary workflows)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unimplemented-features-backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unimplemented features (backend)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#frontend-tests" class="md-nav__link">
     <span class="md-ellipsis">
       Frontend tests
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Frontend tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#add-a-frontend-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a frontend test
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unimplemented-features-testunimplemented" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unimplemented features (testUnimplemented)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2203,9 +2251,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#add-a-test" class="md-nav__link">
+  <a href="#add-a-backend-test" class="md-nav__link">
     <span class="md-ellipsis">
-      Add a test
+      Add a backend test
     </span>
   </a>
   
@@ -3298,11 +3346,59 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#coverage-matrix-primary-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Coverage matrix (primary workflows)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Coverage matrix (primary workflows)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unimplemented-features-backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unimplemented features (backend)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#frontend-tests" class="md-nav__link">
     <span class="md-ellipsis">
       Frontend tests
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Frontend tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#add-a-frontend-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a frontend test
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unimplemented-features-testunimplemented" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unimplemented features (testUnimplemented)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3316,9 +3412,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#add-a-test" class="md-nav__link">
+  <a href="#add-a-backend-test" class="md-nav__link">
     <span class="md-ellipsis">
-      Add a test
+      Add a backend test
     </span>
   </a>
   
@@ -3394,6 +3490,7 @@
 <li>Uses a temporary <code>MEDIA_ROOT</code> and a temporary <code>HLS_DIR</code>.</li>
 <li>Uses a local memory cache and a fast password hasher.</li>
 <li>Sets <code>MEDIA_IS_REVIEWED = True</code>, <code>USERS_NEEDS_TO_BE_APPROVED = False</code>, and <code>USE_IDENTITY_PROVIDERS = False</code>.</li>
+<li>Resets feature flags and auth that <code>deploy/docker/local_settings.py</code> may enable (<code>USE_LTI</code>, <code>USE_RBAC</code>, <code>USE_SAML</code>, <code>RELATED_MEDIA_STRATEGY</code>, session cookie secure flags, <code>AUTHENTICATION_BACKENDS</code>) so tests start from repository defaults.</li>
 <li>Uses the test database <code>test_mediacms</code>.</li>
 </ul>
 <p>The <code>norecursedirs</code> setting in <code>pytest.ini</code> skips <code>frontend</code>, <code>static</code>, <code>media_files</code>, <code>logs</code>, and <code>docs</code>.</p>
@@ -3403,6 +3500,7 @@
 <li><strong>Blocks network access.</strong> It replaces <code>socket.getaddrinfo</code>. A test can only reach <code>localhost</code>, <code>127.0.0.1</code>, <code>::1</code>, <code>0.0.0.0</code>, the database host, the Redis host, and the broker host. Any other host raises <code>socket.gaierror</code>.</li>
 <li><strong>Cleans up.</strong> After the run it deletes the temporary media folder.</li>
 <li><strong>Clears the cache.</strong> An automatic fixture clears the cache before each test.</li>
+<li><strong>Summarizes unimplemented cases.</strong> After the run it prints warn-mode <code>@unimplemented</code> / xfail cases so they stay visible next to pass/fail counts.</li>
 </ul>
 <p>Do not write a test that calls an outside service. Replace the call with a mock.</p>
 <h2 id="test-folders">Test folders<a class="headerlink" href="#test-folders" title="Permanent link">&para;</a></h2>
@@ -3446,33 +3544,131 @@
 <td><code>tests/management/</code>, <code>tests/upgrade/</code></td>
 <td>Management commands and site upgrade</td>
 </tr>
+<tr>
+<td><code>tests/settings/</code></td>
+<td>Portal workflow, roles, <code>MEDIA_IS_REVIEWED</code> gate</td>
+</tr>
+<tr>
+<td><code>tests/unimplemented/</code></td>
+<td>Warn-mode catalog for stubbed product features</td>
+</tr>
+<tr>
+<td><code>migrationservice/tests/</code></td>
+<td>Content migration providers, orchestrator, and migration APIs</td>
+</tr>
 </tbody>
 </table>
-<p>Some tests carry the marker <code>slow</code>. Skip them with <code>-m "not slow"</code>.</p>
+<p>Pytest discovers every <code>test_*.py</code> under the repo root except paths listed in <code>norecursedirs</code> (so <code>migrationservice/tests/</code> is included). Some tests carry the marker <code>slow</code>. Skip them with <code>-m "not slow"</code>.</p>
+<p>Real HLS packaging needs a working <code>MP4HLS_COMMAND</code> (bento4 <code>mp4hls</code>). Tests that require it call <code>tests._support.bento.mp4hls_is_usable</code> and <strong>skip</strong> when the binary is missing or cannot run (for example a broken Rosetta ELF under Docker Desktop on Apple Silicon). Encoding and mocked HLS tests still run.</p>
+<h2 id="coverage-matrix-primary-workflows">Coverage matrix (primary workflows)<a class="headerlink" href="#coverage-matrix-primary-workflows" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Workflow / surface</th>
+<th>Owning tests</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Upload (API + Fine Uploader)</td>
+<td><code>tests/api/test_api_media_upload_search.py</code>, <code>tests/pipeline/test_pipeline_upload.py</code></td>
+</tr>
+<tr>
+<td>Encode / HLS / sprites / trim</td>
+<td><code>tests/pipeline/test_pipeline_encoding.py</code>, <code>test_pipeline_trim.py</code>, <code>test_pipeline_tasks.py</code></td>
+</tr>
+<tr>
+<td>Media detail / share / chapters / password</td>
+<td><code>tests/api/test_api_media_detail.py</code>, <code>test_api_media_actions.py</code>, <code>test_media_password.py</code></td>
+</tr>
+<tr>
+<td>Playlist membership (Save popup)</td>
+<td><code>tests/api/test_api_media_playlist_membership.py</code>, <code>test_api_playlists.py</code></td>
+</tr>
+<tr>
+<td>Bulk user media actions</td>
+<td><code>tests/api/test_api_media_bulk.py</code></td>
+</tr>
+<tr>
+<td>Comments</td>
+<td><code>tests/api/test_api_comments.py</code></td>
+</tr>
+<tr>
+<td>Manage / operator APIs and pages</td>
+<td><code>tests/api/test_api_manage.py</code>, <code>tests/pages/test_pages_manage.py</code></td>
+</tr>
+<tr>
+<td>Review gate (<code>MEDIA_IS_REVIEWED</code>)</td>
+<td><code>tests/settings/test_media_is_reviewed.py</code></td>
+</tr>
+<tr>
+<td>Portal workflows / roles</td>
+<td><code>tests/settings/test_portal_workflow.py</code>, <code>test_user_roles_settings.py</code></td>
+</tr>
+<tr>
+<td>Application states (public/private/encoding/password)</td>
+<td><code>tests/pages/test_workflow_states.py</code></td>
+</tr>
+<tr>
+<td>Admin portal + media object/bulk actions</td>
+<td><code>tests/admin/</code> (especially <code>test_admin_files.py</code>, <code>test_admin_media_actions.py</code>, <code>test_admin_object_actions.py</code>)</td>
+</tr>
+<tr>
+<td>RBAC / SAML / LTI</td>
+<td><code>tests/rbac/</code>, <code>tests/saml/</code>, <code>tests/lti/</code></td>
+</tr>
+<tr>
+<td>Content migration</td>
+<td><code>migrationservice/tests/</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="unimplemented-features-backend">Unimplemented features (backend)<a class="headerlink" href="#unimplemented-features-backend" title="Permanent link">&para;</a></h3>
+<p>When a product feature is expected but the code is stubbed or missing, add a warn-mode case with <code>@unimplemented("...")</code> from <code>tests/_support/unimplemented.py</code>. Pytest reports these as xfailed (they do not fail CI). The terminal summary prints an <strong>unimplemented feature(s) (warn-mode)</strong> section. Use this only for stubbed/absent behavior — not for tests you have not written yet. See <code>tests/unimplemented/test_stubbed_features.py</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">tests._support.unimplemented</span><span class="w"> </span><span class="kn">import</span> <span class="n">unimplemented</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nd">@unimplemented</span><span class="p">(</span><span class="s2">"API uploads should reject files larger than UPLOAD_MAX_SIZE"</span><span class="p">)</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_api_upload_respects_upload_max_size</span><span class="p">():</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="k">pass</span>
+</code></pre></div>
+<p>List only unimplemented cases:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker-compose-dev.yaml<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>--env<span class="w"> </span><span class="nv">TESTING</span><span class="o">=</span>True<span class="w"> </span>-T<span class="w"> </span>web<span class="w"> </span>pytest<span class="w"> </span>-m<span class="w"> </span>unimplemented
+</code></pre></div>
 <h2 id="frontend-tests">Frontend tests<a class="headerlink" href="#frontend-tests" title="Permanent link">&para;</a></h2>
 <p>Frontend tests use Jest with the <code>jsdom</code> environment. The files are in <code>frontend/tests/</code>. The settings are in <code>frontend/jest.config.js</code>.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>make<span class="w"> </span>test-frontend
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>make<span class="w"> </span>test-frontend
 </code></pre></div>
 <p>This runs:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker-compose-dev.yaml<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-T<span class="w"> </span>frontend<span class="w"> </span>npm<span class="w"> </span>run<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--<span class="w"> </span>--ci
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker-compose-dev.yaml<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-T<span class="w"> </span>frontend<span class="w"> </span>npm<span class="w"> </span>run<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--<span class="w"> </span>--ci
 </code></pre></div>
 <p>Run with coverage:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>make<span class="w"> </span>test-frontend-coverage
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>make<span class="w"> </span>test-frontend-coverage
 </code></pre></div>
 <p>Run one test file:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker-compose-dev.yaml<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-T<span class="w"> </span>frontend<span class="w"> </span>npm<span class="w"> </span>run<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--<span class="w"> </span>--ci<span class="w"> </span>tests/utils/settings/member.test.ts
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker-compose-dev.yaml<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-T<span class="w"> </span>frontend<span class="w"> </span>npm<span class="w"> </span>run<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--<span class="w"> </span>--ci<span class="w"> </span>tests/utils/settings/member.test.ts
 </code></pre></div>
+<h3 id="add-a-frontend-test">Add a frontend test<a class="headerlink" href="#add-a-frontend-test" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Mirror the source path under <code>frontend/tests/</code> (for example <code>src/static/js/utils/helpers/foo.js</code> → <code>tests/utils/helpers/foo.test.ts</code>).</li>
+<li>Import <code>tests/_support/setupMediaCMS</code> when the code reads <code>window.MediaCMS</code>.</li>
+<li>Render with <code>renderIntoContainer</code> / <code>renderHook</code> from <code>tests/_support/render.ts</code> (the suite does not use React Testing Library).</li>
+<li>Use <code>compD_storeMocks</code>, <code>compD_dom</code>, and related helpers under <code>tests/_support/</code> for Flux stores and DOM events.</li>
+<li>Do not call outside hosts; mock <code>axios</code> or <code>utils/helpers/requests</code> instead.</li>
+</ol>
+<h3 id="unimplemented-features-testunimplemented">Unimplemented features (<code>testUnimplemented</code>)<a class="headerlink" href="#unimplemented-features-testunimplemented" title="Permanent link">&para;</a></h3>
+<p>When a product feature is expected but the code is stubbed or missing, add a warn-mode case with <code>testUnimplemented</code> from <code>tests/_support/unimplemented.ts</code>. Jest reports these as TODO (they do not fail CI). Use this only for stubbed/absent behavior — not for tests you have not written yet. See <code>tests/unimplemented/stubbedFeatures.test.ts</code> for examples.</p>
 <h2 id="check-the-result">Check the result<a class="headerlink" href="#check-the-result" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Read the last line of the pytest output. It must show <code>passed</code> and no <code>failed</code>.</li>
-<li>Read the Jest summary. It must show <code>Tests:</code> with no failures.</li>
+<li>Read the last line of the pytest output. It must show <code>passed</code> and no <code>failed</code>. Xfailed unimplemented cases are warnings, not failures.</li>
+<li>Read the Jest summary. It must show <code>Tests:</code> with no failures. TODO items from <code>testUnimplemented</code> are warnings, not failures.</li>
 <li>Run <code>pre-commit run --all</code> before you commit.</li>
 </ol>
-<h2 id="add-a-test">Add a test<a class="headerlink" href="#add-a-test" title="Permanent link">&para;</a></h2>
+<h2 id="add-a-backend-test">Add a backend test<a class="headerlink" href="#add-a-backend-test" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Put the file in the folder that matches the code. Name it <code>test_&lt;topic&gt;.py</code>.</li>
 <li>Do not call an outside host.</li>
 <li>Do not start real Celery workers. Eager mode runs the tasks.</li>
+<li>For stubbed product behavior, use <code>@unimplemented</code> instead of a failing assertion.</li>
 <li>Run the new test alone, then run <code>make test</code>.</li>
 </ol>
 

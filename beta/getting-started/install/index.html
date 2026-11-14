@@ -3300,7 +3300,7 @@
 <td>Latest stable <strong>full</strong> release</td>
 </tr>
 <tr>
-<td><code>ghcr.io/mrjoshuap/mediacms:v1.2.3.YYYYMMDD</code></td>
+<td><code>ghcr.io/mrjoshuap/mediacms:v10.0.0.YYYYMMDD</code></td>
 <td>Immutable pin for one release</td>
 </tr>
 <tr>
@@ -3322,7 +3322,7 @@
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">  </span><span class="nt">migrations</span><span class="p">:</span>
 <a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/mrjoshuap/mediacms:beta</span>
 </code></pre></div>
-<p>Beta builds publish a GitHub <strong>pre-release</strong> on every push to <code>mediacms-next</code>. Stable releases publish only when a stamp tag <code>v1.2.3.YYYYMMDD</code> (or <code>v1.2.3.YYYYMMDD.N</code> for a same-day emergency) is pushed from <code>main</code>. The product base version lives in <code>version/FORK_VERSION</code>.</p>
+<p>Beta builds publish a GitHub <strong>pre-release</strong> on every push to <code>mediacms-next</code>. Stable releases publish only when a stamp tag <code>v10.0.0.YYYYMMDD</code> (or <code>v10.0.0.YYYYMMDD.N</code> for a same-day emergency) is pushed from <code>main</code>. The product base version lives in <code>version/FORK_VERSION</code>.</p>
 <p>Upstream Docker Hub images remain <code>mediacms/mediacms</code> and <code>mediacms/mediacms:full</code>.</p>
 <h2 id="enable-whisper-transcription-optional">Enable Whisper transcription (optional)<a class="headerlink" href="#enable-whisper-transcription-optional" title="Permanent link">&para;</a></h2>
 <p>Whisper creates subtitles automatically. It works only in the Docker installation. It needs a <strong>full</strong> image (<code>mediacms/mediacms:full</code> upstream, or <code>ghcr.io/mrjoshuap/mediacms-full:beta</code> / <code>:stable</code> on this fork).</p>
