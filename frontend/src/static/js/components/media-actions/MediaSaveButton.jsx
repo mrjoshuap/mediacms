@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { usePopup } from '../../utils/hooks/';
+import { MediaPageActions } from '../../utils/actions/';
 import { CircleIconButton, MaterialIcon, NavigationContentApp, PopupMain } from '../_shared/';
 import { PlaylistsSelection } from '../playlists-selection/PlaylistsSelection';
 import { translateString } from '../../utils/helpers/';
@@ -35,7 +36,7 @@ export function MediaSaveButton(_props) {
 
     return (
         <div className="save" data-action-tooltip={translateString('Save')}>
-            <PopupTrigger contentRef={popupContentRef}>
+            <PopupTrigger contentRef={popupContentRef} onBeforeOpen={() => MediaPageActions.loadPlaylistsForSave()}>
                 <button>
                     <CircleIconButton type="span">
                         <MaterialIcon type="playlist_add" />

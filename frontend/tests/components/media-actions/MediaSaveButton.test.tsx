@@ -7,9 +7,7 @@ import { MediaPageActions } from '../../../src/static/js/utils/actions/';
 import { MediaSaveButton } from '../../../src/static/js/components/media-actions/MediaSaveButton';
 
 jest.mock('../../../src/static/js/utils/stores/', () => require('../../_support/compD_storeMocks').mockStoresModule());
-jest.mock('../../../src/static/js/utils/actions/', () =>
-    require('../../_support/compD_storeMocks').mockActionsModule()
-);
+jest.mock('../../../src/static/js/utils/actions/', () => require('../../_support/compD_storeMocks').mockActionsModule());
 
 const mediaStore = MediaPageStore as any;
 
@@ -30,6 +28,7 @@ describe('components/media-actions', () => {
             const { container, unmount } = renderIntoContainer(<MediaSaveButton />);
             expect(container.querySelector('.save > button')?.textContent).toBe('SAVE');
             click(container.querySelector('.save > button'));
+            expect((MediaPageActions as any).loadPlaylistsForSave).toHaveBeenCalled();
             const labels = Array.from(container.querySelectorAll('.saveto-select label')) as HTMLElement[];
             expect(labels.map((l) => l.textContent)).toEqual(['Fav', 'Later']);
             expect((labels[0].querySelector('input') as HTMLInputElement).checked).toBe(true);

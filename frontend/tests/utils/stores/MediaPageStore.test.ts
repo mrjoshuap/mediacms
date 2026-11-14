@@ -126,12 +126,7 @@ describe('utils/stores', () => {
 
                 expect(listener).toHaveBeenCalledTimes(1);
                 expect(store.get('media-id')).toBe('abc');
-                expect(getRequest).toHaveBeenCalledWith(
-                    api + '/media/abc',
-                    false,
-                    expect.any(Function),
-                    expect.any(Function)
-                );
+                expect(getRequest).toHaveBeenCalledWith(api + '/media/abc', false, expect.any(Function), expect.any(Function));
             });
 
             test('Reads the media id from the m URL param when page config has none', () => {
@@ -149,7 +144,7 @@ describe('utils/stores', () => {
                 expect(warn).toHaveBeenCalledWith('Invalid media id:', undefined);
             });
 
-            test('Video data emits video events and loads playlists and comments', () => {
+            test('Video data emits video events and loads comments without playlists', () => {
                 const ctx = loadStore();
                 const video = jest.fn();
                 const media = jest.fn();
@@ -164,7 +159,6 @@ describe('utils/stores', () => {
                 expect(ctx.store.isVideo()).toBe(true);
                 expect(ctx.getRequest.mock.calls.map((c) => c[0])).toStrictEqual([
                     api + '/media/abc',
-                    api + '/playlists?author=john',
                     api + '/media/abc/comments',
                 ]);
             });
@@ -199,10 +193,7 @@ describe('utils/stores', () => {
 
             test('Skips playlists and comments when user cannot save or read comments', () => {
                 const ctx = loadedStore({
-                    overrides: {
-                        user: { can: { readComment: false } },
-                        features: { media: { actions: { save: false } } },
-                    },
+                    overrides: { user: { can: { readComment: false } }, features: { media: { actions: { save: false } } } },
                 });
                 expect(ctx.getRequest).toHaveBeenCalledTimes(1);
             });
@@ -589,44 +580,23 @@ describe('utils/stores', () => {
             const ownPlaylists = {
                 count: 3,
                 results: [
-                    {
-                        user: 'john',
-                        url: '/playlists/P1',
-                        title: 'One',
-                        description: 'd1',
-                        add_date: 'x',
-                        api_url: '/api/v1/playlists/P1',
-                    },
-                    {
-                        user: 'john',
-                        url: '/playlists/P2',
-                        title: 'Two',
-                        description: 'd2',
-                        add_date: 'y',
-                        api_url: '/api/v1/playlists/P2',
-                    },
-                    {
-                        user: 'john',
-                        url: '/playlists/P3',
-                        title: 'Three',
-                        description: 'd3',
-                        add_date: 'z',
-                        api_url: '/api/v1/playlists/P3',
-                    },
+                    { user: 'john', friendly_token: 'P1', title: 'One', description: 'd1', add_date: 'x' },
+                    { user: 'john', friendly_token: 'P2', title: 'Two', description: 'd2', add_date: 'y' },
+                    { user: 'john', friendly_token: 'P3', title: 'Three', description: 'd3', add_date: 'z' },
                 ],
             };
 
             function withPlaylists() {
                 const ctx = loadedStore();
+                ctx.actions.loadPlaylistsForSave();
                 findCall(ctx.getRequest, api + '/playlists?author=john')[2]({ data: ownPlaylists });
-                findCall(ctx.getRequest, api + '/playlists/P1')[2]({
-                    data: { playlist_media: [{ url: '/view?m=abc' }, { url: '/view?m=def' }, { url: '/bad' }] },
+                findCall(ctx.getRequest, api + '/media/abc/playlists')[2]({
+                    data: { results: [{ friendly_token: 'P1' }] },
                 });
-                findCall(ctx.getRequest, api + '/playlists/P2')[2]({ data: { playlist_media: [] } });
                 return ctx;
             }
 
-            test('Builds playlist summaries with media tokens from playlist details', () => {
+            test('Builds playlist summaries from list plus membership endpoint', () => {
                 const ctx = withPlaylists();
                 const playlists = ctx.store.get('playlists');
                 expect(playlists).toHaveLength(3);
@@ -635,13 +605,14 @@ describe('utils/stores', () => {
                     title: 'One',
                     description: 'd1',
                     add_date: 'x',
-                    media_list: ['abc', 'def'],
+                    media_list: ['abc'],
                 });
                 expect(playlists[1].media_list).toStrictEqual([]);
             });
 
             test('Empty playlist responses produce no playlists', () => {
                 const ctx = loadedStore();
+                ctx.actions.loadPlaylistsForSave();
                 findCall(ctx.getRequest, api + '/playlists?author=john')[2]({ data: { count: 0 } });
                 expect(ctx.store.get('playlists')).toStrictEqual([]);
             });
@@ -712,7 +683,7 @@ describe('utils/stores', () => {
                 ctx.putRequest.mock.calls[0][4](undefined);
                 ctx.putRequest.mock.calls[0][5]();
 
-                expect(ctx.store.get('playlists')[0].media_list).toStrictEqual(['def']);
+                expect(ctx.store.get('playlists')[0].media_list).toStrictEqual([]);
                 expect(done).toHaveBeenCalledWith('P1');
                 expect(done).toHaveBeenCalledTimes(1);
                 expect(failed).toHaveBeenCalledTimes(1);
@@ -720,6 +691,7 @@ describe('utils/stores', () => {
 
             test('APPEND_NEW_PLAYLIST adds the playlist and emits playlists_load', () => {
                 const ctx = loadedStore();
+                ctx.actions.loadPlaylistsForSave();
                 findCall(ctx.getRequest, api + '/playlists?author=john')[2]({ data: { count: 0 } });
                 const listener = jest.fn();
                 ctx.store.on('playlists_load', listener);
@@ -749,10 +721,7 @@ describe('utils/stores', () => {
             test('Requests the playlist referenced by the pl URL param', () => {
                 const ctx = withPagePlaylist();
                 expect(ctx.store.get('playlist-id')).toBe('PL1');
-                expect(ctx.getRequest.mock.calls.map((c) => c[0])).toStrictEqual([
-                    api + '/playlists/PL1',
-                    api + '/media/abc',
-                ]);
+                expect(ctx.getRequest.mock.calls.map((c) => c[0])).toStrictEqual([api + '/playlists/PL1', api + '/media/abc']);
             });
 
             test('Keeps playlist data when the media belongs to it', () => {
