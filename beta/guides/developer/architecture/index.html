@@ -3412,6 +3412,7 @@
 </tr>
 </tbody>
 </table>
+<p>Uploads can POST optional metadata with the file to <code>/api/v1/media</code>: <code>state</code>, <code>category_uids</code> / <code>category_titles</code>, <code>tag_titles</code>, <code>enable_comments</code>, <code>allow_download</code>, and editor-only <code>owner</code>. The same fields work on <code>PUT /api/v1/media/{friendly_token}</code>. FineUploader success responses include <code>friendly_token</code> and optional <code>thumbnailUrl</code>.</p>
 <p>Other apps in <code>INSTALLED_APPS</code> are <code>actions</code> (user actions such as watch and like), <code>identity_providers</code>, <code>lti</code>, <code>saml_auth</code>, and <code>uploader</code>.</p>
 <h2 id="data-stores">Data stores<a class="headerlink" href="#data-stores" title="Permanent link">&para;</a></h2>
 <table>

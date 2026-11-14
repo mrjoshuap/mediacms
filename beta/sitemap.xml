@@ -493,6 +493,12 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/viewer-comment/"/>
     </url>
     <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/viewer-password-media/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/viewer-password-media/"/>
+    </url>
+    <url>
         <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/viewer-playlist/</loc>
         <lastmod>2026-11-14</lastmod>
         <changefreq>daily</changefreq>

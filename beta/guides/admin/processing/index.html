@@ -1753,6 +1753,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#hls-packaging" class="md-nav__link">
+    <span class="md-ellipsis">
+      HLS packaging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#encode-profiles" class="md-nav__link">
     <span class="md-ellipsis">
       Encode profiles
@@ -3251,6 +3260,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#hls-packaging" class="md-nav__link">
+    <span class="md-ellipsis">
+      HLS packaging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#encode-profiles" class="md-nav__link">
     <span class="md-ellipsis">
       Encode profiles
@@ -3476,6 +3494,10 @@
 </ol>
 <p>The final <code>Encoding</code> (<code>chunk=False</code>, <code>status=success</code>) is the file that the portal plays and offers for download.</p>
 <p>All workers must use the same file system as the web server. This can be one host, NFS, or EFS.</p>
+<h3 id="hls-packaging">HLS packaging<a class="headerlink" href="#hls-packaging" title="Permanent link">&para;</a></h3>
+<p>The <code>create_hls</code> task uses a Redis cache lock so two workers do not write the same media HLS tree at once. When a worker receives an <code>encoding_id</code>, it updates that resolution variant in place (incremental). When <code>encoding_id</code> is omitted, it rebuilds the HLS tree from every successful encoding.</p>
+<p>Set <code>MP4HLS_COMMAND</code> to a working Bento4 <code>mp4hls</code> binary. On some aarch64 hosts the packaged binary can fail; use a native build or run encoding workers on an architecture that Bento4 supports.</p>
+<p>The beat task <code>cleanup_encoding_chunks</code> removes stuck chunk <code>Encoding</code> rows and unreferenced source <code>.mkv</code> segments older than <code>ENCODING_CHUNKS_RETENTION_HOURS</code> (default 24).</p>
 <h3 id="encode-profiles">Encode profiles<a class="headerlink" href="#encode-profiles" title="Permanent link">&para;</a></h3>
 <p>Open <strong>Site</strong> &gt; <strong>Encode profiles</strong> (<code>/admin/files/encodeprofile/</code>).</p>
 <table>

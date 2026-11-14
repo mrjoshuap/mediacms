@@ -3249,6 +3249,17 @@
 <li><strong>logging:</strong> failed-login warnings with client IP for django-allauth and API token login</li>
 <li><strong>logging:</strong> operational logs for admin database backup/restore, support bundle, object actions, and related management commands</li>
 <li><strong>proxy:</strong> <code>TRUSTED_PROXIES</code> with <code>ProxyAwareMiddleware</code> and <code>get_client_ip</code> (off when the list is empty)</li>
+<li><strong>settings:</strong> <code>CAN_SEE_MEMBERS_PAGE = "anonymous"</code> for members nav and author search without sign-in</li>
+<li><strong>email:</strong> <code>EMAIL_TIMEOUT</code> and synchronous interactive mail for contact, profile contact, and auth</li>
+<li><strong>search:</strong> CJK-aware media search via <code>prepare_media_search_filter</code> (icontains for CJK tokens)</li>
+<li><strong>media:</strong> lazy playlist membership for Save popup (<code>GET /api/v1/media/{token}/playlists</code>)</li>
+<li><strong>encoding:</strong> <code>cleanup_encoding_chunks</code> beat task and <code>ENCODING_CHUNKS_RETENTION_HOURS</code> for orphan chunk cleanup</li>
+<li><strong>playlists:</strong> annotated media counts/thumbnails aligned with detail visibility; delete confirmation UI</li>
+<li><strong>tags:</strong> alphabetical tag/category lists and M2M search-vector/count sync (#1207)</li>
+<li><strong>hls:</strong> incremental HLS packaging with Redis lock and optional full rebuild</li>
+<li><strong>upload:</strong> FineUploader and API accept optional title, description, and related metadata on create</li>
+<li><strong>player:</strong> soft-nav next/prev keeps fullscreen and continues autoplay</li>
+<li><strong>media:</strong> session unlock for password-protected media (<code>POST /api/v1/media/{token}/unlock</code>) with hashed <code>Media.password</code></li>
 </ul>
 <h2 id="bug-fixes">Bug Fixes<a class="headerlink" href="#bug-fixes" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3256,6 +3267,10 @@
 <li><strong>i18n:</strong> German translation additions and corrections (#1622)</li>
 <li><strong>templates:</strong> default context keys for permissions, media, and current site to avoid AttributeError log floods</li>
 <li><strong>logging:</strong> skip model log handlers on fixture/raw loads so admin database restore is not interrupted</li>
+<li><strong>sidebar:</strong> light Home icon when the path is <code>/</code> by normalizing trailing slashes on nav URLs</li>
+<li><strong>player:</strong> desktop chapters overlay opens on click (#1453)</li>
+<li><strong>contact:</strong> surface SMTP failures instead of silent success on contact and profile contact forms</li>
+<li><strong>review:</strong> treat multipart <code>result="false"</code> as unreview and keep listable in sync (#1275/#1280)</li>
 </ul>
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
 <ul>

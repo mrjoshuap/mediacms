@@ -1539,6 +1539,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Layer 1: Media state">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#password-protection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Password protection
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3157,6 +3172,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Layer 1: Media state">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#password-protection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Password protection
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3268,6 +3298,36 @@
 </tbody>
 </table>
 <p>Listable media is public, encoded, and reviewed. See <a href="../review/">Review and publish</a>.</p>
+<h3 id="password-protection">Password protection<a class="headerlink" href="#password-protection" title="Permanent link">&para;</a></h3>
+<p>An owner can set a password on the <strong>Publish</strong> tab. The portal stores a hash, not the clear password.</p>
+<table>
+<thead>
+<tr>
+<th>Who</th>
+<th>Opens without the password</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Owner</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Editor</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>User with MediaPermission or RBAC member access</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Anyone else with the link</td>
+<td>No — must enter the password once per browser session</td>
+</tr>
+</tbody>
+</table>
+<p>Password protection works with <strong>Unlisted</strong> or <strong>Public</strong>. It does not replace <strong>Private</strong>. Private media still needs owner, permission, or RBAC access before the password step.</p>
+<p>Unlock uses <code>POST /api/v1/media/{token}/unlock</code> and stores the media token in the session. Failed and successful unlocks are logged without the password value.</p>
 <h2 id="layer-2-mediapermission-direct-share">Layer 2: MediaPermission (direct share)<a class="headerlink" href="#layer-2-mediapermission-direct-share" title="Permanent link">&para;</a></h2>
 <p>A <strong>MediaPermission</strong> gives one user access to one media item. The owner of the media or a user with the <strong>owner</strong> permission creates it.</p>
 <table>

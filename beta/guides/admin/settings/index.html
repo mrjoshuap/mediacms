@@ -3455,7 +3455,7 @@
 <tr>
 <td><code>CAN_SEE_MEMBERS_PAGE</code></td>
 <td><code>all</code></td>
-<td>Who sees the members page. <code>all</code>, <code>editors</code>, or <code>admins</code></td>
+<td>Who sees the members page. <code>anonymous</code> (anyone), <code>all</code> (signed-in), <code>editors</code>, or <code>admins</code>. For anonymous members, keep <code>ALLOW_ANONYMOUS_USER_LISTING = True</code></td>
 </tr>
 <tr>
 <td><code>USER_SEARCH_FIELD</code></td>
@@ -3717,6 +3717,10 @@
 <td><code>300</code>, <code>240</code></td>
 </tr>
 <tr>
+<td><code>ENCODING_CHUNKS_RETENTION_HOURS</code></td>
+<td><code>24</code></td>
+</tr>
+<tr>
 <td><code>MINIMUM_RESOLUTIONS_TO_ENCODE</code></td>
 <td><code>[144, 240]</code></td>
 </tr>
@@ -3857,7 +3861,17 @@
 <tr>
 <td><code>EMAIL_USE_TLS</code></td>
 <td><code>True</code></td>
-<td>Do not set it on together with <code>EMAIL_USE_SSL</code></td>
+<td>Mutually exclusive with <code>EMAIL_USE_SSL</code> (STARTTLS, typical port 587)</td>
+</tr>
+<tr>
+<td><code>EMAIL_USE_SSL</code></td>
+<td><code>False</code></td>
+<td>Mutually exclusive with <code>EMAIL_USE_TLS</code> (implicit SSL, typical port 465)</td>
+</tr>
+<tr>
+<td><code>EMAIL_TIMEOUT</code></td>
+<td><code>10</code></td>
+<td>Seconds for SMTP connect/send on interactive mail (contact form, auth mail)</td>
 </tr>
 <tr>
 <td><code>ADMIN_EMAIL_LIST</code></td>
@@ -3876,7 +3890,7 @@
 </tr>
 </tbody>
 </table>
-<p>Change <code>DEFAULT_FROM_EMAIL</code> and the mail credentials before production. The <strong>Health</strong> page warns when <code>DEFAULT_FROM_EMAIL</code> is empty and fails when <code>EMAIL_USE_TLS</code> and <code>EMAIL_USE_SSL</code> are both on.</p>
+<p>Change <code>DEFAULT_FROM_EMAIL</code> and the mail credentials before production. The <strong>Health</strong> page warns when <code>DEFAULT_FROM_EMAIL</code> is empty and fails when <code>EMAIL_USE_TLS</code> and <code>EMAIL_USE_SSL</code> are both on. Contact and profile contact forms, and django-allauth mail, send synchronously with <code>EMAIL_TIMEOUT</code> so failures surface to the user instead of failing silently.</p>
 <h2 id="integrations">Integrations<a class="headerlink" href="#integrations" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
