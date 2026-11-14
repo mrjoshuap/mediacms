@@ -2177,6 +2177,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Generated pages">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fork-whats-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fork what's new
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3211,6 +3226,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Generated pages">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fork-whats-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fork what's new
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3391,7 +3421,16 @@
 <li><code>docs/en/reference/openapi.yaml</code> (a stub if CI did not export it)</li>
 <li><code>docs/en/languages.md</code></li>
 </ul>
-<p>To change them, change the script or the source data (<code>package.json</code>, <code>CHANGELOG.md</code>, <code>docs/languages.yml</code>).</p>
+<p>To change them, change the script or the source data (<code>package.json</code>, <code>CHANGELOG.md</code>, <code>docs/languages.yml</code>, <code>version/FORK_VERSION</code>, <code>docs/_shared/fork-whats-new.md</code>).</p>
+<h3 id="fork-whats-new">Fork what's new<a class="headerlink" href="#fork-whats-new" title="Permanent link">&para;</a></h3>
+<p>Curated fork release notes live in <code>docs/_shared/fork-whats-new.md</code> (excluded from the MkDocs tree). Do not edit <code>docs/en/reference/whats-new.md</code> by hand.</p>
+<p>When <code>DOCS_CHANNEL</code> is <code>beta</code>, <code>local</code>, <code>dev</code>, <code>stable</code>, or <code>latest</code>, and the shared file exists, the prepare script:</p>
+<ol>
+<li>Puts the fork notes first on <a href="../../../reference/whats-new/">What's new</a>.</li>
+<li>Appends the upstream MediaCMS section from <code>CHANGELOG.md</code> for the <code>package.json</code> version.</li>
+<li>Adds a short fork preamble on <a href="../../../reference/changelog/">Changelog</a>.</li>
+</ol>
+<p>Use Conventional Commits section headings (<code>Features</code>, <code>Bug Fixes</code>, <code>Documentation</code>, <code>Refactors</code>) and a bold scope in each bullet (<code>**admin:** …</code>).</p>
 <h2 id="reference-pages">Reference pages<a class="headerlink" href="#reference-pages" title="Permanent link">&para;</a></h2>
 <ul>
 <li><code>docs/en/reference/python.md</code> uses mkdocstrings. Add a line <code>module.path.name</code> to document a function or class. The setting <code>paths: [.]</code> in <code>mkdocs.yml</code> lets mkdocstrings find the modules from the repository root.</li>
@@ -3403,20 +3442,23 @@
 </code></pre></div>
 <p>The script does these things:</p>
 <ol>
-<li>Reads the version from <code>package.json</code>.</li>
-<li>Writes <code>reference/this-version.md</code>, <code>reference/whats-new.md</code>, and <code>reference/changelog.md</code>.</li>
+<li>Reads the version from <code>package.json</code> and, when present, <code>version/FORK_VERSION</code>.</li>
+<li>Writes <code>reference/this-version.md</code>, <code>reference/whats-new.md</code>, and <code>reference/changelog.md</code> (fork notes from <code>docs/_shared/fork-whats-new.md</code> when the channel uses them).</li>
 <li>Writes <code>languages.md</code> from <code>docs/languages.yml</code>.</li>
 <li>Creates <code>reference/openapi.yaml</code> as a stub if the file is missing. Then it writes <code>reference/api.md</code>.</li>
 <li>Copies <code>docs/_shared/stylesheets/</code> and <code>docs/_shared/assets/</code> into each locale folder that builds.</li>
 </ol>
+<p>Set the channel for a local check:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nv">DOCS_CHANNEL</span><span class="o">=</span>beta<span class="w"> </span>python<span class="w"> </span>scripts/prepare_docs_build.py
+</code></pre></div>
 <p>To export the real OpenAPI schema, run this before the prepare script:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nv">DJANGO_SETTINGS_MODULE</span><span class="o">=</span>cms.docs_settings<span class="w"> </span><span class="nv">SECRET_KEY</span><span class="o">=</span>docs-build-not-a-secret<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>python<span class="w"> </span>manage.py<span class="w"> </span>generate_swagger<span class="w"> </span>-f<span class="w"> </span>yaml<span class="w"> </span>-o<span class="w"> </span>docs/en/reference/openapi.yaml
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nv">DJANGO_SETTINGS_MODULE</span><span class="o">=</span>cms.docs_settings<span class="w"> </span><span class="nv">SECRET_KEY</span><span class="o">=</span>docs-build-not-a-secret<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span>python<span class="w"> </span>manage.py<span class="w"> </span>generate_swagger<span class="w"> </span>-f<span class="w"> </span>yaml<span class="w"> </span>-o<span class="w"> </span>docs/en/reference/openapi.yaml
 </code></pre></div>
 <p><code>cms/docs_settings.py</code> uses an in-memory SQLite database, so no PostgreSQL is needed.</p>
 <h2 id="check-scenarios">Check scenarios<a class="headerlink" href="#check-scenarios" title="Permanent link">&para;</a></h2>
 <p>If you add or change a page in <code>docs/en/scenarios/</code>, run the scenario check:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>python<span class="w"> </span>scripts/check_doc_scenarios.py
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>python<span class="w"> </span>scripts/check_doc_scenarios.py
 </code></pre></div>
 <p>The script checks each scenario file for:</p>
 <ul>
@@ -3429,17 +3471,17 @@
 <ol>
 <li>
 <p>Run the prepare script:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>python<span class="w"> </span>scripts/prepare_docs_build.py
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>python<span class="w"> </span>scripts/prepare_docs_build.py
 </code></pre></div>
 </li>
 <li>
 <p>Run the scenario check:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>python<span class="w"> </span>scripts/check_doc_scenarios.py
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>python<span class="w"> </span>scripts/check_doc_scenarios.py
 </code></pre></div>
 </li>
 <li>
 <p>Build the site. Fix every warning, because <code>--strict</code> makes warnings errors:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>mkdocs<span class="w"> </span>build<span class="w"> </span>--strict
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>mkdocs<span class="w"> </span>build<span class="w"> </span>--strict
 </code></pre></div>
 </li>
 <li>
@@ -3452,7 +3494,7 @@
 <li>Open <code>docs/languages.yml</code>. Find the locale code. The codes match <code>LANGUAGES</code> in <code>cms/settings.py</code>.</li>
 <li>
 <p>Run the script:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>python<span class="w"> </span>scripts/add_docs_language.py<span class="w"> </span>fr
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>python<span class="w"> </span>scripts/add_docs_language.py<span class="w"> </span>fr
 </code></pre></div>
 <p>Replace <code>fr</code> with your locale code.</p>
 </li>
