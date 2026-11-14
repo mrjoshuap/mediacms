@@ -13,7 +13,8 @@
   max-width: 100%;
   justify-content: space-between;
   font-size: 14px;
-  z-index: +5;
+  // Above .page-sidebar / .page-header (z-index: 9999)
+  z-index: 10000;
 }
 
 .notification-item {

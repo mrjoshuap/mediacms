@@ -33,6 +33,8 @@ See [Site health and database](../guides/admin/site.md), [Admin portal map](../g
 * **search:** CJK-aware media search via `prepare_media_search_filter` (icontains for CJK tokens)
 * **media:** lazy playlist membership for Save popup (`GET /api/v1/media/{token}/playlists`)
 * **encoding:** `cleanup_encoding_chunks` beat task and `ENCODING_CHUNKS_RETENTION_HOURS` for orphan chunk cleanup
+* **playlists:** annotated media counts/thumbnails aligned with detail visibility; delete confirmation UI
+* **tags:** alphabetical tag/category lists and M2M search-vector/count sync (#1207)
 
 ## Bug Fixes
 

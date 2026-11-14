@@ -855,6 +855,91 @@
   font-size: 14px;
 }
 
+#page-profile-playlists {
+  .profile-playlists-actions {
+    display: block;
+    margin: 0 0 24px;
+  }
+
+  .create-playlist-wrap {
+    display: inline-block;
+    margin-bottom: 12px;
+
+    > button.create-playlist-btn.circle-icon-button {
+      width: auto;
+      height: auto;
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.007px;
+      border-radius: 2px;
+      color: var(--playlist-page-author-edit-playlist-icon-button-text-color);
+      background-color: var(--playlist-page-author-edit-playlist-icon-button-bg-color);
+
+      > * {
+        border-radius: 2px;
+
+        > * {
+          display: table;
+          padding: 10px 16px;
+
+          > * {
+            display: table-cell;
+            vertical-align: middle;
+            line-height: 1.5;
+          }
+        }
+      }
+
+      .material-icons {
+        line-height: 1;
+        padding-right: 8px;
+        vertical-align: middle;
+      }
+
+      &:active {
+        color: var(--playlist-page-author-edit-playlist-icon-button-active-text-color);
+      }
+    }
+
+    .create-playlist-form-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      display: inline-block;
+      text-align: initial;
+      color: var(--playlist-page-author-edit-playlist-form-wrap-text-color);
+      background-color: var(--playlist-page-author-edit-playlist-form-wrap-bg-color);
+
+      .create-playlist-popup-title {
+        height: 52px;
+        padding: 16px 52px 15px 24px;
+        line-height: 20px;
+        font-size: 16px;
+
+        .circle-icon-button {
+          position: absolute;
+          top: 6px;
+          right: 6px;
+          background: none;
+
+          &:hover,
+          &:focus,
+          &:active {
+            color: var(--playlist-page-author-edit-playlist-form-wrap-title-circle-icon-hover-text-color);
+          }
+        }
+      }
+
+      .playlist-form-wrap {
+        border-width: 1px 0 0;
+        border-style: solid;
+        border-color: var(--playlist-page-author-edit-playlist-form-wrap-border-color);
+      }
+    }
+  }
+}
+
 $item-width: 218px;
 $side-empty-space: 40px;
 

@@ -60,9 +60,7 @@ describe('components/list-item', () => {
     ])('%s', (_name, Component: any, extraProps, typeClass) => {
         test('Renders title link, thumbnail, meta and description', () => {
             const onMount = jest.fn();
-            const { container, unmount } = renderIntoContainer(
-                <Component {...baseProps} {...extraProps} onMount={onMount} />
-            );
+            const { container, unmount } = renderIntoContainer(<Component {...baseProps} {...extraProps} onMount={onMount} />);
             const root = container.firstElementChild as HTMLElement;
             expect(root.className).toBe('item ' + typeClass + ' pl-active-item');
 
@@ -112,14 +110,7 @@ describe('components/list-item', () => {
 
         test('Renders no-thumb thumbnail without thumbnail url and edit link when provided', () => {
             const { container, unmount } = renderIntoContainer(
-                <Component
-                    {...baseProps}
-                    {...extraProps}
-                    thumbnail=""
-                    editLink="/edit?m=abc123"
-                    class_name=" custom "
-                    playlistOrder={2}
-                />
+                <Component {...baseProps} {...extraProps} thumbnail="" editLink="/edit?m=abc123" class_name=" custom " playlistOrder={2} />
             );
             const root = container.firstElementChild as HTMLElement;
             expect(root.className).toBe('item ' + typeClass + ' custom');
@@ -174,13 +165,7 @@ describe('components/list-item', () => {
         test('Item click does not toggle selection when nothing is selected', () => {
             const onCheckboxChange = jest.fn();
             const { container, unmount } = renderIntoContainer(
-                <Component
-                    {...baseProps}
-                    {...extraProps}
-                    isSelected={true}
-                    showSelection={true}
-                    onCheckboxChange={onCheckboxChange}
-                />
+                <Component {...baseProps} {...extraProps} isSelected={true} showSelection={true} onCheckboxChange={onCheckboxChange} />
             );
             const root = container.firstElementChild as HTMLElement;
             expect(root.className).toContain(' selected');
@@ -197,12 +182,7 @@ describe('components/list-item', () => {
             enterSelectMediaMode();
             const onCheckboxChange = jest.fn();
             const { container, unmount } = renderIntoContainer(
-                <Component
-                    {...baseProps}
-                    {...extraProps}
-                    editLink="/edit?m=abc123"
-                    onCheckboxChange={onCheckboxChange}
-                />
+                <Component {...baseProps} {...extraProps} editLink="/edit?m=abc123" onCheckboxChange={onCheckboxChange} />
             );
             const root = container.firstElementChild as HTMLElement;
             expect(root.className).toContain('has-any-selection');
@@ -219,9 +199,7 @@ describe('components/list-item', () => {
 
         test('Select media embed mode marks missing thumbnails', () => {
             enterSelectMediaMode();
-            const { container, unmount } = renderIntoContainer(
-                <Component {...baseProps} {...extraProps} thumbnail="" />
-            );
+            const { container, unmount } = renderIntoContainer(<Component {...baseProps} {...extraProps} thumbnail="" />);
             expect(container.querySelector('div.item-thumb')?.className).toBe('item-thumb no-thumb');
             unmount();
         });
@@ -257,6 +235,24 @@ describe('components/list-item', () => {
         });
     });
 
+    describe('MediaItem playlist page controls', () => {
+        test('Shows order number and playlist options for image items', () => {
+            const { container, unmount } = renderIntoContainer(
+                <MediaItem
+                    {...baseProps}
+                    type="image"
+                    hidePlaylistOrderNumber={false}
+                    hidePlaylistOptions={false}
+                    playlistOrder={2}
+                    playlist_id="pl1"
+                />
+            );
+            expect(container.querySelector('.item-order-number [data-order]')?.textContent).toBe('2');
+            expect(container.querySelector('.item-playlist-options-wrap')).not.toBeNull();
+            unmount();
+        });
+    });
+
     describe('MediaItemVideo', () => {
         test('Renders video preview from preview thumbnail', () => {
             const { container, unmount } = renderIntoContainer(
@@ -275,9 +271,7 @@ describe('components/list-item', () => {
         });
 
         test('Renders media viewer instead of thumbnail when requested', () => {
-            const { container, unmount } = renderIntoContainer(
-                <MediaItemVideo {...baseProps} preview_thumbnail="" hasMediaViewer={true} />
-            );
+            const { container, unmount } = renderIntoContainer(<MediaItemVideo {...baseProps} preview_thumbnail="" hasMediaViewer={true} />);
             expect(container.querySelector('.item-player-wrapper')).not.toBeNull();
             expect(container.querySelector('.item-thumb')).toBeNull();
             unmount();

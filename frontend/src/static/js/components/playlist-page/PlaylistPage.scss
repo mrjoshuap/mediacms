@@ -22,43 +22,6 @@
     }
   }
 
-  .playlist-actions {
-    .circle-icon-button {
-      background-color: var(--playlist-page-actions-circle-icon-bg-color);
-    }
-
-    .playlist-options-wrap {
-      .popup-main {
-        .nav-menu {
-          ul {
-            li {
-              button {
-                color: var(--playlist-page-actions-nav-item-button-text-color);
-              }
-            }
-          }
-        }
-      }
-    }
-
-    .popup-message-bottom {
-      button {
-        &.cancel-playlist-removal {
-          color: var(--playlist-page-actions-popup-message-bottom-cancel-button-text-color);
-
-          &:hover,
-          &:focus {
-            color: var(--playlist-page-actions-popup-message-bottom-cancel-button-hover-text-color);
-
-            .material-icons {
-              color: var(--playlist-page-actions-popup-message-bottom-cancel-button-icon-hover-text-color);
-            }
-          }
-        }
-      }
-    }
-  }
-
   .playlist-status {
     color: var(--playlist-page-status-text-color);
     background-color: var(--playlist-page-status-bg-color);
@@ -83,7 +46,8 @@
       }
     }
 
-    .edit-playlist {
+    .edit-playlist,
+    .delete-playlist {
       > button.circle-icon-button {
         color: var(--playlist-page-author-edit-playlist-icon-button-text-color);
         background-color: var(--playlist-page-author-edit-playlist-icon-button-bg-color);
@@ -92,7 +56,9 @@
           color: var(--playlist-page-author-edit-playlist-icon-button-active-text-color);
         }
       }
+    }
 
+    .edit-playlist {
       .edit-playlist-form-wrap {
         color: var(--playlist-page-author-edit-playlist-form-wrap-text-color);
         background-color: var(--playlist-page-author-edit-playlist-form-wrap-bg-color);
@@ -107,6 +73,25 @@
             &:focus,
             &:active {
               color: var(--playlist-page-author-edit-playlist-form-wrap-title-circle-icon-hover-text-color);
+            }
+          }
+        }
+      }
+    }
+
+    .delete-playlist {
+      .popup-message-bottom {
+        button {
+          &.cancel-playlist-removal {
+            color: var(--playlist-page-actions-popup-message-bottom-cancel-button-text-color);
+
+            &:hover,
+            &:focus {
+              color: var(--playlist-page-actions-popup-message-bottom-cancel-button-hover-text-color);
+
+              .material-icons {
+                color: var(--playlist-page-actions-popup-message-bottom-cancel-button-icon-hover-text-color);
+              }
             }
           }
         }
@@ -414,78 +399,6 @@
     }
   }
 
-  .playlist-actions {
-    position: relative;
-
-    a.circle-icon-button,
-    button.circle-icon-button {
-      vertical-align: top;
-      display: inline-block;
-      margin-left: 8px;
-
-      &:first-child {
-        margin-left: -8px;
-      }
-    }
-
-    .playlist-options-wrap {
-      .popup {
-        position: absolute;
-        top: 100%;
-        left: -8px;
-        margin-bottom: 32px;
-
-        top: auto;
-        bottom: 100%;
-        margin-bottom: 4px;
-      }
-
-      &.playlist-options-main {
-        .popup {
-          width: 180px;
-        }
-      }
-
-      .popup-main {
-        .nav-menu {
-          padding: 8px 0;
-
-          ul {
-            li {
-              button {
-                font-size: 13px;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    .popup-message-bottom {
-      button {
-        position: relative;
-        width: auto;
-        padding: 0;
-        border: 0;
-
-        &.cancel-playlist-removal,
-        &.proceed-playlist-removal {
-          background-color: transparent;
-          background-color: rgba(0, 0, 0, 0);
-        }
-
-        &.proceed-playlist-removal {
-          float: right;
-          color: $theme-color;
-        }
-
-        &.cancel-playlist-removal {
-          float: left;
-        }
-      }
-    }
-  }
-
   .playlist-status {
     position: relative;
     display: inline-block;
@@ -524,6 +437,7 @@
     padding: 16px 0;
     border-top-width: 1px;
     border-top-style: solid;
+    overflow: visible;
 
     > * {
       display: table;
@@ -579,84 +493,133 @@
       }
     }
 
-    .edit-playlist {
-      padding-left: 16px;
-      padding-top: 4px;
+    .playlist-author-actions {
+      overflow: visible;
+      white-space: nowrap;
+      vertical-align: middle;
+      text-align: right;
+      padding-left: 8px;
 
-      > button.circle-icon-button {
+      .edit-playlist,
+      .delete-playlist {
         position: relative;
-        float: right;
-        width: auto;
-        height: auto;
         display: inline-block;
-        font-size: 14px;
-        font-weight: 500;
-        letter-spacing: 0.007px;
-        border-radius: 1px;
+        padding-left: 8px;
+        padding-top: 4px;
+        vertical-align: top;
 
-        > * {
+        > button.circle-icon-button {
+          position: relative;
+          width: auto;
+          height: auto;
+          display: inline-block;
+          font-size: 14px;
+          font-weight: 500;
+          letter-spacing: 0.007px;
           border-radius: 1px;
 
           > * {
-            display: table;
-            padding: 6px 16px;
+            border-radius: 1px;
 
             > * {
-              display: table-cell;
-              vertical-align: bottom;
-              line-height: 1.5;
+              display: table;
+              padding: 6px 16px;
+
+              > * {
+                display: table-cell;
+                vertical-align: bottom;
+                line-height: 1.5;
+              }
             }
           }
-        }
 
-        .material-icons {
-          line-height: 1;
-          padding-right: 8px;
-          vertical-align: bottom;
-        }
-      }
-
-      .popup {
-        position: absolute;
-      }
-
-      .popup-fullscreen {
-      }
-
-      .popup-main {
-      }
-
-      .popup-fullscreen-overlay {
-      }
-
-      .edit-playlist-form-wrap {
-        position: relative;
-        width: 100%;
-        max-width: 280px;
-        display: inline-block;
-        text-align: initial;
-
-        .edit-playlist-popup-title {
-          height: 52px;
-          padding: 16px 52px 15px 24px;
-          line-height: 20px;
-          font-size: 16px;
-
-          .circle-icon-button {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            background: none;
+          .material-icons {
+            line-height: 1;
+            padding-right: 8px;
+            vertical-align: bottom;
           }
         }
+      }
 
-        .playlist-form-wrap {
-          border-width: 1px 0 0;
-          border-style: solid;
+      .edit-playlist {
+        .popup {
+          position: absolute;
         }
 
-        .playlist-description {
-          margin-top: 16px;
+        .edit-playlist-form-wrap {
+          position: relative;
+          width: 100%;
+          max-width: 280px;
+          display: inline-block;
+          text-align: initial;
+
+          .edit-playlist-popup-title {
+            height: 52px;
+            padding: 16px 52px 15px 24px;
+            line-height: 20px;
+            font-size: 16px;
+
+            .circle-icon-button {
+              position: absolute;
+              top: 6px;
+              right: 6px;
+              background: none;
+            }
+          }
+
+          .playlist-form-wrap {
+            border-width: 1px 0 0;
+            border-style: solid;
+          }
+
+          .playlist-description {
+            margin-top: 16px;
+          }
+        }
+      }
+
+      .delete-playlist {
+        .popup {
+          position: absolute;
+          right: 0;
+          bottom: 100%;
+          margin-bottom: 4px;
+          width: 360px;
+          max-width: calc(100vw - 32px);
+          overflow: visible;
+        }
+
+        .popup-main {
+          overflow: visible;
+        }
+
+        .popup-message-main {
+          white-space: normal;
+          overflow-wrap: break-word;
+        }
+
+        .popup-message-bottom {
+          button {
+            position: relative;
+            width: auto;
+            padding: 0;
+            border: 0;
+
+            &.cancel-playlist-removal,
+            &.proceed-playlist-removal {
+              background-color: transparent;
+              background-color: rgba(0, 0, 0, 0);
+            }
+
+            &.proceed-playlist-removal {
+              float: right;
+              color: $theme-color;
+            }
+
+            &.cancel-playlist-removal {
+              float: left;
+            }
+          }
         }
       }
     }
@@ -873,6 +836,10 @@
 .playlist-videos-list.draggable {
   .item-content {
     overflow: visible;
+  }
+
+  .item-order-number {
+    cursor: move;
   }
 
   .item {
