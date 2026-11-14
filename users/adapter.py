@@ -6,7 +6,6 @@ from django.core.exceptions import ValidationError
 from django.urls import reverse
 
 from cms.utils import get_client_ip_for_logging
-from files.methods import get_interactive_email_connection
 
 from .models import User
 
@@ -34,6 +33,9 @@ class MyAccountAdapter(DefaultAccountAdapter):
         return settings.USERS_CAN_SELF_REGISTER
 
     def send_mail(self, template_prefix, email, context):
+        # Lazy import: files.methods pulls media models and would cycle through allauth forms.
+        from files.methods import get_interactive_email_connection
+
         msg = self.render_mail(template_prefix, email, context)
         msg.connection = get_interactive_email_connection()
         msg.send(fail_silently=False)

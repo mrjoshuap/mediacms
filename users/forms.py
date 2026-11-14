@@ -1,6 +1,5 @@
 import logging
 
-from allauth.account.forms import LoginForm as AllAuthLoginForm
 from django import forms
 from django.conf import settings
 
@@ -10,6 +9,24 @@ from files.methods import is_mediacms_manager
 from .models import Channel, User
 
 logger = logging.getLogger(__name__)
+
+
+class SignupForm(forms.Form):
+    """Must be defined before importing allauth account forms.
+
+    allauth loads ACCOUNT_SIGNUP_FORM_CLASS while importing its forms module,
+    so SignupForm has to already exist on users.forms.
+    """
+
+    name = forms.CharField(max_length=100, label="Name")
+
+    def signup(self, request, user):
+        user.name = self.cleaned_data["name"]
+        user.save()
+
+
+# Import after SignupForm: allauth.account.forms resolves ACCOUNT_SIGNUP_FORM_CLASS.
+from allauth.account.forms import LoginForm as AllAuthLoginForm  # noqa: E402
 
 
 class LoginForm(AllAuthLoginForm):
@@ -56,14 +73,6 @@ class LoginForm(AllAuthLoginForm):
             raise
 
         return cleaned_data
-
-
-class SignupForm(forms.Form):
-    name = forms.CharField(max_length=100, label="Name")
-
-    def signup(self, request, user):
-        user.name = self.cleaned_data["name"]
-        user.save()
 
 
 class UserForm(forms.ModelForm):

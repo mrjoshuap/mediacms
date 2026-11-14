@@ -28,6 +28,8 @@ See [Site health and database](../guides/admin/site.md), [Admin portal map](../g
 * **logging:** failed-login warnings with client IP for django-allauth and API token login
 * **logging:** operational logs for admin database backup/restore, support bundle, object actions, and related management commands
 * **proxy:** `TRUSTED_PROXIES` with `ProxyAwareMiddleware` and `get_client_ip` (off when the list is empty)
+* **settings:** `CAN_SEE_MEMBERS_PAGE = "anonymous"` for members nav and author search without sign-in
+* **email:** `EMAIL_TIMEOUT` and synchronous interactive mail for contact, profile contact, and auth
 
 ## Bug Fixes
 
@@ -35,6 +37,9 @@ See [Site health and database](../guides/admin/site.md), [Admin portal map](../g
 * **i18n:** German translation additions and corrections (#1622)
 * **templates:** default context keys for permissions, media, and current site to avoid AttributeError log floods
 * **logging:** skip model log handlers on fixture/raw loads so admin database restore is not interrupted
+* **sidebar:** light Home icon when the path is `/` by normalizing trailing slashes on nav URLs
+* **player:** desktop chapters overlay opens on click (#1453)
+* **contact:** surface SMTP failures instead of silent success on contact and profile contact forms
 
 ## Documentation
 

@@ -381,7 +381,7 @@ class AccountAdapterTest(TestCase):
 
     def test_send_mail_does_not_swallow_delivery_errors(self):
         user = make_user("resetfail")
-        with mock.patch("users.adapter.get_interactive_email_connection"):
+        with mock.patch("files.methods.get_interactive_email_connection"):
             with mock.patch.object(self.adapter, "render_mail") as render_mail:
                 message = mock.Mock()
                 message.send.side_effect = OSError("smtp down")
