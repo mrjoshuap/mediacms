@@ -46,3 +46,11 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 _allow_populate_fake_media = os.getenv('ALLOW_POPULATE_FAKE_MEDIA')
 if _allow_populate_fake_media is not None:
     ALLOW_POPULATE_FAKE_MEDIA = _allow_populate_fake_media.strip().lower() in ('1', 'true', 'yes', 'on')
+
+# Reverse proxy (disabled by default). See docs/en/guides/admin/settings.md
+# SET_REAL_IP_IN_META = os.getenv('SET_REAL_IP_IN_META', 'False') == 'True'
+# USE_X_FORWARDED_HOST = os.getenv('USE_X_FORWARDED_HOST', 'False') == 'True'
+# TRUSTED_PROXIES = [
+#     '127.0.0.1',  # localhost
+#     '192.168.0.0/16',  # Private network range
+# ]

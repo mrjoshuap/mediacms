@@ -1,3 +1,4 @@
+import logging
 import os
 
 from celery.schedules import crontab
@@ -137,6 +138,7 @@ ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_USERNAME_MIN_LENGTH = 4
 ACCOUNT_ADAPTER = "users.adapter.MyAccountAdapter"
 ACCOUNT_SIGNUP_FORM_CLASS = "users.forms.SignupForm"
+ACCOUNT_FORMS = {"login": "users.forms.LoginForm"}
 ACCOUNT_USERNAME_VALIDATORS = "users.validators.custom_username_validators"
 ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*"]
 ACCOUNT_LOGIN_ON_PASSWORD_RESET = True
@@ -390,31 +392,15 @@ error_filename = os.path.join(LOGS_DIR, "debug.log")
 if not os.path.exists(LOGS_DIR):
     try:
         os.mkdir(LOGS_DIR)
-    except PermissionError:
+    except PermissionError as e:
+        # Logging not yet configured, use basic logging
+        logging.warning("Failed to create logs directory: %s - %s", type(e).__name__, str(e))
         pass
 
 if not os.path.isfile(error_filename):
     open(error_filename, 'a').close()
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "file": {
-            "level": "ERROR",
-            "class": "logging.FileHandler",
-            "filename": error_filename,
-        },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["file"],
-            "level": "ERROR",
-            "propagate": True,
-        },
-    },
-}
-
+# LOGGING is configured later via LOGLEVEL / DEBUG (see below)
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -716,17 +702,216 @@ WHISPER_MODEL = "base"
 # show a custom text in the sidebar footer, otherwise the default will be shown if this is empty
 SIDEBAR_FOOTER_TEXT = ""
 
+# Reverse proxy configuration settings
+# These settings control how MediaCMS handles requests from reverse proxies (nginx, Apache, load balancers, etc.)
+# For detailed documentation, see docs/en/guides/admin/settings.md and docs/en/getting-started/deploy.md
+
+# TRUSTED_PROXIES: List of IP addresses or CIDR networks that are trusted proxies
+# Only proxy headers (X-Forwarded-For, X-Real-IP) from these IPs will be trusted
+# Default: Empty list (no proxies trusted - backward compatible)
+# Format: List of strings like ['127.0.0.1', '10.0.0.0/8', '192.168.0.0/16']
+# Empty list means no proxies trusted (backward compatible - existing deployments work as-is)
+# See commented examples below for common trusted proxy configurations
+TRUSTED_PROXIES = []
+# [
+#     '127.0.0.1/32',  # IPv4 localhost
+#     '::1/128',  # IPv6 localhost
+#     '10.0.0.0/8',  # Private network (RFC 1918)
+#     '172.16.0.0/12',  # Private network (RFC 1918)
+#     '192.168.0.0/16',  # Private network (RFC 1918)
+#     'fc00::/7',  # IPv6 private networks (RFC 4193)
+# ]
+
+# PROXY_AWARE_MIDDLEWARE_ENABLED: Enable the proxy-aware middleware
+# When enabled, the middleware will extract real client IPs from proxy headers
+# Default: True if TRUSTED_PROXIES is configured, False otherwise
+# Can be overridden in local_settings.py
+PROXY_AWARE_MIDDLEWARE_ENABLED = bool(TRUSTED_PROXIES)
+
+# SET_REAL_IP_IN_META: Whether to modify request.META['REMOTE_ADDR'] with the real client IP
+# When True: Sets REMOTE_ADDR to real client IP (allows Django's built-in middleware to work)
+# When False: Only sets request.client_ip attribute (safer default, recommended)
+# Default: False for maximum security
+SET_REAL_IP_IN_META = False
+
+# USE_X_FORWARDED_HOST: Use X-Forwarded-Host header to determine the host
+# Set to True when behind a reverse proxy that sets this header
+# Default: False (backward compatible)
+USE_X_FORWARDED_HOST = False
+
+# SECURE_PROXY_SSL_HEADER: Tuple specifying header that indicates HTTPS connection
+# Example: ('HTTP_X_FORWARDED_PROTO', 'https')
+# Set this when behind a reverse proxy that terminates SSL/TLS
+# Default: None (backward compatible)
+SECURE_PROXY_SSL_HEADER = None
+
 try:
     # keep a local_settings.py file for local overrides
     from .local_settings import *  # noqa
 
     # ALLOWED_HOSTS needs a url/ip
     ALLOWED_HOSTS.append(FRONTEND_HOST.replace("http://", "").replace("https://", ""))
-except ImportError:
+except ImportError as e:
     # local_settings not in use
+    # Use basic logging since logger is not yet configured
+    logging.warning("local_settings.py not found or import failed: %s - %s", type(e).__name__, str(e))
     pass
 
 # Don't add new settings below that could be overridden in local_settings.py!!!
+
+# Logging configuration
+# Note: This is placed after local_settings import so that DEBUG overrides from local_settings
+# are properly reflected in the logging configuration
+# Default: ERROR-level file logging (preserves existing behavior)
+# Enhanced: Console handler and formatters available when DEBUG=True
+# LOGLEVEL can be overridden via environment variable or local_settings.py
+# Env wins when set; otherwise keep a local_settings value; otherwise ERROR.
+LOGLEVEL = os.environ.get("LOGLEVEL", globals().get("LOGLEVEL", "ERROR"))
+
+# Enable SQL debug logging (default: False)
+# When DEBUG=True, SQL queries are only logged if ENABLE_SQL_DEBUG_LOGGING is also True
+# This can be set via environment variable or local_settings.py
+_sql_debug_env = os.environ.get("ENABLE_SQL_DEBUG_LOGGING")
+if _sql_debug_env is not None:
+    ENABLE_SQL_DEBUG_LOGGING = _sql_debug_env.lower() == "true"
+else:
+    ENABLE_SQL_DEBUG_LOGGING = bool(globals().get("ENABLE_SQL_DEBUG_LOGGING", False))
+
+# Determine effective log level: use DEBUG when DEBUG=True, otherwise use LOGLEVEL
+effective_log_level = "DEBUG" if DEBUG else LOGLEVEL
+
+# App packages that use logging.getLogger(__name__). Child loggers (e.g.
+# admin_customizations.views, files.tasks, lti.handlers) inherit these.
+# Keep in sync with INSTALLED_APPS custom packages that emit logs.
+MEDIACMS_APP_LOGGERS = (
+    "files",
+    "users",
+    "uploader",
+    "saml_auth",
+    "rbac",
+    "identity_providers",
+    "actions",
+    "cms",
+    "admin_customizations",
+    "lti",
+    "migrationservice",
+)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {name} {funcName}:{lineno} {message}",
+            "style": "{",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+        "detailed": {
+            "format": "{levelname} {asctime} {name} {funcName}:{lineno} [{pathname}:{lineno}] {message}",
+            "style": "{",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": effective_log_level,
+            "class": "logging.FileHandler",
+            "filename": error_filename,
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": effective_log_level,
+            "propagate": True,
+        },
+        # Propagate so assertLogs / parent capture still works in tests.
+        "users": {
+            "handlers": ["file"],
+            "level": effective_log_level,
+            "propagate": True,
+        },
+        "users.models": {
+            "handlers": ["file"],
+            "level": effective_log_level,
+            "propagate": False,
+        },
+        "saml_auth": {
+            "handlers": ["file"],
+            "level": effective_log_level,
+            "propagate": True,
+        },
+        # Celery always writes to the file handler (console only when DEBUG).
+        "celery": {
+            "handlers": ["file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "celery.task": {
+            "handlers": ["file"],
+            "level": effective_log_level,
+            "propagate": False,
+        },
+        "celery.utils.functional": {
+            "handlers": ["file"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+    },
+}
+
+for _app_logger in MEDIACMS_APP_LOGGERS:
+    if _app_logger in LOGGING["loggers"]:
+        continue
+    LOGGING["loggers"][_app_logger] = {
+        "handlers": ["file"],
+        "level": effective_log_level,
+        "propagate": False,
+    }
+
+# Enhanced logging configuration when DEBUG=True
+# Adds console handler and additional loggers for development
+if DEBUG:
+    LOGGING["handlers"]["console"] = {
+        "level": "DEBUG",
+        "class": "logging.StreamHandler",
+        "formatter": "detailed",
+    }
+    # Set django.db.backends to DEBUG for detailed SQL logging in development
+    # Only enable SQL debug logging if explicitly requested via ENABLE_SQL_DEBUG_LOGGING
+    if ENABLE_SQL_DEBUG_LOGGING:
+        LOGGING["loggers"]["django.db.backends"] = {
+            "handlers": ["file", "console"],
+            "level": "DEBUG",
+            "propagate": False,
+        }
+    else:
+        # Explicitly suppress SQL query logging when ENABLE_SQL_DEBUG_LOGGING is False
+        LOGGING["loggers"]["django.db.backends"] = {
+            "handlers": ["file", "console"],
+            "level": "ERROR",
+            "propagate": False,
+        }
+    # Add console handler to existing loggers for DEBUG mode
+    LOGGING["loggers"]["django"]["handlers"] = ["file", "console"]
+    LOGGING["loggers"]["celery"]["handlers"] = ["file", "console"]
+    LOGGING["loggers"]["celery.task"]["handlers"] = ["file", "console"]
+    LOGGING["loggers"]["celery.task"]["level"] = "DEBUG"
+    LOGGING["loggers"]["celery.utils.functional"]["handlers"] = ["file", "console"]
+    LOGGING["loggers"]["django.request"] = {
+        "handlers": ["file", "console"],
+        "level": "DEBUG",
+        "propagate": False,
+    }
+    for app_name in MEDIACMS_APP_LOGGERS:
+        if app_name in LOGGING["loggers"]:
+            LOGGING["loggers"][app_name]["handlers"] = ["file", "console"]
+    if "users.models" in LOGGING["loggers"]:
+        LOGGING["loggers"]["users.models"]["handlers"] = ["file", "console"]
+
+# Initialize logger after LOGGING configuration
+logger = logging.getLogger(__name__)
 
 if "http" not in FRONTEND_HOST:
     # FRONTEND_HOST needs a http:// preffix
@@ -740,6 +925,16 @@ else:
 
 # CSRF_COOKIE_SECURE = True
 # SESSION_COOKIE_SECURE = True
+
+# Session and CSRF cookie settings for reverse proxy support
+# When behind a reverse proxy with HTTPS, you may need to enable these:
+# - Set CSRF_COOKIE_SECURE = True
+# - Set SESSION_COOKIE_SECURE = True
+# - Set SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# The default SameSite settings ('Lax') work well with most reverse proxies
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+# SESSION_COOKIE_DOMAIN is None by default, which respects the proxy's Host header
 
 PYSUBS_COMMAND = "pysubs2"
 
@@ -756,7 +951,8 @@ try:
         for _app in _apps_before_dev:
             if _app not in INSTALLED_APPS:
                 INSTALLED_APPS.append(_app)
-except ImportError:
+except ImportError as e:
+    logger.warning("dev_settings.py import failed: %s - %s", type(e).__name__, str(e))
     pass
 
 # Resolve after local_settings / DEVELOPMENT_MODE may have changed DEBUG.
@@ -776,6 +972,19 @@ if USERS_NEEDS_TO_BE_APPROVED:
     )
     auth_index = MIDDLEWARE.index("django.contrib.auth.middleware.AuthenticationMiddleware")
     MIDDLEWARE.insert(auth_index + 1, "cms.middleware.ApprovalMiddleware")
+
+# Conditionally add ProxyAwareMiddleware if enabled
+# Insert after SecurityMiddleware, before SessionMiddleware
+# This allows the middleware to process proxy headers early in the request chain
+# Note: PROXY_AWARE_MIDDLEWARE_ENABLED is evaluated here, after potential local_settings override
+if PROXY_AWARE_MIDDLEWARE_ENABLED:
+    try:
+        security_index = MIDDLEWARE.index("django.middleware.security.SecurityMiddleware")
+        # Insert after SecurityMiddleware, before SessionMiddleware
+        MIDDLEWARE.insert(security_index + 1, "cms.middleware.ProxyAwareMiddleware")
+    except ValueError:
+        # SecurityMiddleware not found, insert at beginning
+        MIDDLEWARE.insert(0, "cms.middleware.ProxyAwareMiddleware")
 
 
 # LTI 1.3 Integration Settings

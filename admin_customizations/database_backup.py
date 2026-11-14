@@ -1,6 +1,7 @@
 """Stream a dated Django fixture of the database, leaving out operational rows."""
 
 import json
+import logging
 import zlib
 
 from django.apps import apps
@@ -8,6 +9,8 @@ from django.core import serializers
 from django.utils import timezone
 
 from actions.models import ENGAGEMENT_MEDIA_ACTIONS, EXPORTED_MEDIA_ACTIONS
+
+logger = logging.getLogger(__name__)
 
 # Job queues, sessions, and logs. Content such as finished captions stays.
 EXCLUDED_MODELS = frozenset(
@@ -141,6 +144,11 @@ def _fixture_bytes(profile):
 def iter_database_backup(profile=None):
     """Yield gzip chunks of a JSON document with a manifest and fixture objects."""
     profile = profile or default_backup_profile()
+    logger.info(
+        "Database backup stream started - include_engagement=%s, include_noisy_status=%s",
+        profile.include_engagement,
+        profile.include_noisy_status,
+    )
     compressor = zlib.compressobj(wbits=16 + zlib.MAX_WBITS)
     for chunk in _fixture_bytes(profile):
         compressed = compressor.compress(chunk)
@@ -149,3 +157,4 @@ def iter_database_backup(profile=None):
     tail = compressor.flush()
     if tail:
         yield tail
+    logger.info("Database backup stream finished")

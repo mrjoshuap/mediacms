@@ -1,7 +1,13 @@
+import logging
+
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from files.models import Media
 from users.models import User
+
+logger = logging.getLogger(__name__)
 
 PUBLIC_USER_MEDIA_ACTIONS = (
     ("like", "Like"),
@@ -71,3 +77,34 @@ class MediaAction(models.Model):
             models.Index(fields=["session_key", "action"]),
             models.Index(fields=["action", "-action_date"]),
         ]
+
+
+@receiver(post_save, sender=MediaAction)
+def mediaaction_save(sender, instance, created, **kwargs):
+    """Log user action creation (like, dislike, watch, report, rate)"""
+    # Fixture/raw loads may not have related rows yet; skip to avoid restore failures.
+    if kwargs.get("raw") or not created:
+        return
+    media_token = None
+    try:
+        if instance.media_id:
+            media_token = instance.media.friendly_token
+    except Exception:
+        media_token = None
+    user_id = instance.user_id
+    username = None
+    try:
+        if instance.user_id:
+            username = instance.user.username
+    except Exception:
+        username = None
+    logger.info(
+        "User action - action_id=%s, action=%s, user_id=%s, username=%s, media_friendly_token=%s, session_key=%s, remote_ip=%s",
+        instance.id,
+        instance.action,
+        user_id,
+        username,
+        media_token,
+        instance.session_key if instance.session_key else None,
+        instance.remote_ip if instance.remote_ip else None,
+    )

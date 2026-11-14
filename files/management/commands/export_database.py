@@ -1,5 +1,7 @@
 """Write a gzipped database backup. The admin download stays on the quiet profile."""
 
+import logging
+
 from django.core.management.base import BaseCommand
 
 from admin_customizations.database_backup import (
@@ -7,6 +9,8 @@ from admin_customizations.database_backup import (
     database_backup_filename,
     iter_database_backup,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -23,7 +27,14 @@ class Command(BaseCommand):
             include_noisy_status=options["include_noisy_status"],
         )
         path = options["output"]
+        logger.info(
+            "export_database started - output=%s, include_engagement=%s, include_noisy_status=%s",
+            path,
+            profile.include_engagement,
+            profile.include_noisy_status,
+        )
         with open(path, "wb") as handle:
             for chunk in iter_database_backup(profile):
                 handle.write(chunk)
+        logger.info("export_database finished - output=%s", path)
         self.stdout.write(database_backup_filename())

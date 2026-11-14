@@ -1,3 +1,4 @@
+import logging
 import os
 import random
 import string
@@ -37,6 +38,8 @@ from files.models import (
     VideoTrimRequest,
 )
 from users.models import Channel, User
+
+logger = logging.getLogger(__name__)
 
 # HTML comment kept on pages this command owns. A later run refreshes those
 # pages. An admin who replaces the body and deletes the comment keeps their copy.
@@ -108,6 +111,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if not getattr(settings, 'ALLOW_POPULATE_FAKE_MEDIA', False):
+            logger.warning("populate_fake_media refused - ALLOW_POPULATE_FAKE_MEDIA disabled")
             raise CommandError(
                 'Refusing to run populate_fake_media: ALLOW_POPULATE_FAKE_MEDIA is disabled. '
                 'This command is for development and demo instances only. '
@@ -117,6 +121,7 @@ class Command(BaseCommand):
 
         count = options['count']
         clear_existing = options['clear']
+        logger.info("populate_fake_media started - count=%s, clear=%s", count, clear_existing)
 
         self.stdout.write(self.style.SUCCESS(f'Starting to populate {count} fake media records...'))
         self._init_content_locales(

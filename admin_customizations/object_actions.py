@@ -1,5 +1,7 @@
 """Expose ModelAdmin bulk actions on the single-object change form."""
 
+import logging
+
 from django.contrib import messages
 from django.contrib.admin import ModelAdmin
 from django.contrib.admin.utils import unquote
@@ -10,6 +12,8 @@ from django.urls import path, reverse
 
 from admin_customizations.action_choices import object_action_select_choices
 from files.frontend_translations import translate_string
+
+logger = logging.getLogger(__name__)
 
 CHANGE_FORM_TEMPLATE = "admin/change_form_with_object_actions.html"
 EXCLUDED_ACTIONS = frozenset({"delete_selected"})
@@ -59,6 +63,14 @@ def object_action_view(model_admin, request, object_id):
 
     func, _name, _description = actions[action_name]
     queryset = model_admin.model.objects.filter(pk=obj.pk)
+    logger.info(
+        "Admin object action - action=%s, model=%s, object_pk=%s, user_id=%s, username=%s",
+        action_name,
+        model_admin.model._meta.label,
+        obj.pk,
+        getattr(request.user, "id", None),
+        getattr(request.user, "username", None),
+    )
     response = func(model_admin, request, queryset)
     if response:
         return response

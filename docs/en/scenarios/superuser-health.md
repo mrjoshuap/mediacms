@@ -55,6 +55,6 @@ The check that you fixed now shows OK. The **Warnings** counter is lower by one.
 ## If this fails
 
 - If the number does not change, the page uses a cache for 60 seconds. Select **Refresh stats** again.
-- If a reverse-proxy check shows a warning, check `FRONTEND_HOST`, `ALLOWED_HOSTS`, and the proxy settings. Local and `DEBUG` installs show these gaps as **Info**.
+- If a reverse-proxy check shows a warning, check `FRONTEND_HOST`, `ALLOWED_HOSTS`, and the proxy settings (`USE_X_FORWARDED_HOST`, `SECURE_PROXY_SSL_HEADER`, and `TRUSTED_PROXIES` when a proxy sits in front). Local and `DEBUG` installs show these gaps as **Info**.
 - If a storage check fails, the portal cannot write in the directory. Check the owner and the permissions of the directory.
 - Settings changes need a restart. See the [Settings catalog](../guides/admin/settings.md).

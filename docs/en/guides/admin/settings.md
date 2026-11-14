@@ -181,7 +181,23 @@ Change `DEFAULT_FROM_EMAIL` and the mail credentials before production. The **He
 | `TEMP_DIRECTORY` | `/tmp` | Do not set it inside `BASE_DIR` |
 | `MEDIA_UPLOAD_DIR`, `MEDIA_ENCODING_DIR`, `HLS_DIR` | `original/`, `encoded/`, `<MEDIA_ROOT>/hls/` | Storage sub-directories |
 | `USE_X_FORWARDED_HOST`, `SECURE_PROXY_SSL_HEADER`, `SECURE_SSL_REDIRECT`, `CSRF_COOKIE_SECURE`, `SESSION_COOKIE_SECURE`, `CSRF_TRUSTED_ORIGINS` | Not set in `settings.py` | Set them behind an HTTPS reverse proxy. The **Health** page checks them |
-| `ALLAUTH_TRUSTED_PROXY_COUNT` | `1` | Number of proxies in front of the app |
+| `TRUSTED_PROXIES` | `[]` | IP addresses or CIDR networks that may set `X-Forwarded-For` / `X-Real-IP`. Empty means proxy headers are not trusted |
+| `PROXY_AWARE_MIDDLEWARE_ENABLED` | `bool(TRUSTED_PROXIES)` | When `True`, `ProxyAwareMiddleware` sets `request.client_ip`. Override in `local_settings.py` if needed |
+| `SET_REAL_IP_IN_META` | `False` | When `True`, also writes the client IP into `request.META['REMOTE_ADDR']`. Keep `False` unless you need that |
+| `ALLAUTH_TRUSTED_PROXY_COUNT` | `1` | Number of proxies in front of the app for django-allauth |
+
+## Logging
+
+Logging is built **after** `local_settings.py` is read, so `DEBUG` and other overrides apply. A change needs a restart of web, celery_worker, and celery_beat.
+
+| Setting | Default | Effect |
+|---------|---------|--------|
+| `LOGLEVEL` | `ERROR` (or `LOGLEVEL` env) | File log level when `DEBUG` is `False` |
+| `ENABLE_SQL_DEBUG_LOGGING` | `False` (or env) | When `DEBUG` is `True` and this is `True`, SQL queries are logged. Otherwise SQL stays quiet |
+
+App loggers (from `MEDIACMS_APP_LOGGERS` in `cms/settings.py`) write to the same file: `files`, `users`, `uploader`, `saml_auth`, `rbac`, `identity_providers`, `actions`, `cms`, `admin_customizations` (admin portal), `lti`, and `migrationservice`. Child modules such as `admin_customizations.views` and `files.tasks` use those parents. Celery (`celery`, `celery.task`) always uses the file handler; the console handler is added when `DEBUG` is `True`.
+
+When `DEBUG` is `True`, the effective file and console log level is `DEBUG`, and a console handler is added.
 
 ## Database, cache, and Celery
 
@@ -202,6 +218,8 @@ Change `DEFAULT_FROM_EMAIL` and the mail credentials before production. The **He
 | `USE_LTI = True` | Sets `SESSION_COOKIE_SAMESITE` and `CSRF_COOKIE_SAMESITE` to `None`, both secure cookies to `True`, `RELATED_MEDIA_STRATEGY` to `no_related`. Sets `LTI_SESSION_TIMEOUT` to 3600 |
 | `LOCAL_INSTALL = True` | Sets `SSL_FRONTEND_HOST` to the `https` form of `FRONTEND_HOST` |
 | `ALLOW_POPULATE_FAKE_MEDIA = None` | Follows `DEBUG` |
+| `TRUSTED_PROXIES` non-empty (and you do not override the flag) | `PROXY_AWARE_MIDDLEWARE_ENABLED` defaults to `True` before `local_settings.py`. Set the flag in `local_settings.py` when you set `TRUSTED_PROXIES` there |
+| `DEBUG = True` | Effective log level becomes `DEBUG` and a console handler is added |
 
 ## MediaCMS Architecture
 

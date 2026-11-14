@@ -54,8 +54,13 @@ A reverse proxy receives browser requests and sends them to one or more web cont
 
 1. Open `deploy/docker/local_settings.py`.
 2. Set `FRONTEND_HOST` to the public address, for example `https://mediacms.io`.
-3. Start the proxy Compose file that matches the address scheme.
-4. Check that DNS or your hosts file points the name to the proxy.
+3. Set `TRUSTED_PROXIES` to the proxy IP or CIDR list, and set `PROXY_AWARE_MIDDLEWARE_ENABLED = True` so auth and failed-login logs use the real client IP.
+4. When the proxy ends HTTPS, set `USE_X_FORWARDED_HOST = True` and `SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')`.
+5. Start the proxy Compose file that matches the address scheme.
+6. Check that DNS or your hosts file points the name to the proxy.
+7. Restart web, celery_worker, and celery_beat after the settings change.
+
+See the [Settings catalog](../guides/admin/settings.md) for the full proxy and logging table. Leave `TRUSTED_PROXIES` empty when nothing sits in front of the app.
 
 If you use your own proxy, send the media authorization requests to Django. See **Use your own nginx configuration** in [Install with Docker](install.md).
 

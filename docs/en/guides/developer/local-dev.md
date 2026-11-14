@@ -108,6 +108,14 @@ docker compose -f docker-compose-dev.yaml restart web
 
     The development stack has no `celery_beat` service. Restart `celery_beat` only on a stack that has it.
 
+### Logging in development
+
+The development stack usually runs with `DEBUG=True`, so logs go to the file handler and the console at `DEBUG`.
+
+- Set `LOGLEVEL` in the environment or in `deploy/docker/local_settings.py` when you need a different level with `DEBUG=False`.
+- Leave `ENABLE_SQL_DEBUG_LOGGING` off unless you are debugging SQL. SQL logging needs both `DEBUG=True` and `ENABLE_SQL_DEBUG_LOGGING=True`.
+- Leave reverse-proxy settings commented out in Compose. Set `TRUSTED_PROXIES` only when you put a proxy in front of the stack.
+
 ## Change frontend code
 
 React is a library that Django templates load. It is not a separate single-page application. Django owns the routes, the pages, the data, and the login.

@@ -1,5 +1,6 @@
 """Redacted support bundle and starter issue text for the admin Get Support page."""
 
+import logging
 import re
 
 from django.utils import timezone
@@ -13,6 +14,8 @@ from admin_customizations.runtime_info import (
     get_installation_rows,
     get_system_runtime_rows,
 )
+
+logger = logging.getLogger(__name__)
 
 BUNDLE_NOTE = "This file is safe to paste into a GitHub issue. Secrets are omitted or redacted."
 BUNDLE_FILENAME = re.compile(r"^mediacms-support-\d{4}-\d{2}-\d{2}-\d{4}\.(txt|md)$")
@@ -90,6 +93,7 @@ def support_bundle_format(filename):
 def render_support_bundle(fmt):
     """Build a text or Markdown dump of warnings, settings, and runtime facts."""
     generated = timezone.now().isoformat()
+    logger.info("Support bundle render started - format=%s", fmt)
     database_stats = get_database_statistics()
     warnings = _warning_records(database_stats)
     configuration = [(item["label"], item["value"]) for item in get_site_configuration_status()]

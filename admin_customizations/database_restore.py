@@ -1,6 +1,7 @@
 """Restore a database backup onto an initial installation."""
 
 import json
+import logging
 import zlib
 from contextlib import contextmanager
 from pathlib import Path
@@ -15,6 +16,8 @@ from django.core.serializers.base import DeserializationError
 from django.db import IntegrityError, connection, transaction
 
 from admin_customizations.database_backup import _models_in_order, split_backup_document
+
+logger = logging.getLogger(__name__)
 
 MAX_COMPRESSED_BYTES = 64 * 1024 * 1024
 MAX_DECOMPRESSED_BYTES = 256 * 1024 * 1024
@@ -240,6 +243,7 @@ def _quiet_signals():
     """Keep restore from creating extra channels or starting transcoding."""
     from django.db.models.signals import post_save
 
+    from actions.models import MediaAction, mediaaction_save
     from files.models.encoding import Encoding, encoding_file_save
     from files.models.media import Media, media_save
     from files.models.subtitle import Subtitle, subtitle_save
@@ -250,6 +254,7 @@ def _quiet_signals():
         (post_save, media_save, Media),
         (post_save, encoding_file_save, Encoding),
         (post_save, subtitle_save, Subtitle),
+        (post_save, mediaaction_save, MediaAction),
     )
     for signal, receiver, sender in receivers:
         signal.disconnect(receiver, sender=sender)
@@ -271,12 +276,14 @@ def _reset_sequences(models):
 
 def restore_database_backup(uploaded):
     """Replace an initial installation with a backup downloaded from this page."""
+    logger.info("Database restore started")
     payload = _gunzip(_read_compressed(uploaded))
     try:
         text = payload.decode("utf-8")
         document = json.loads(text)
         profile, objects = split_backup_document(document)
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        logger.error("Database restore rejected - invalid backup payload: %s", type(exc).__name__)
         raise RestoreError("The backup file is not a database fixture.") from exc
     _validate_fixture(objects, profile)
     text = json.dumps(objects)
@@ -299,9 +306,17 @@ def restore_database_backup(uploaded):
                     loaded[label] = model
             _reset_sequences(list(loaded.values()))
     except RestoreNotAllowed:
+        logger.warning("Database restore blocked - installation is not vanilla")
         raise
     except (DeserializationError, IntegrityError, TypeError, ValueError) as exc:
+        logger.error("Database restore failed during load: %s", type(exc).__name__)
         raise RestoreError("The backup file is not a database fixture.") from exc
     from admin_customizations.admin import DASHBOARD_STATS_CACHE_KEY
 
     cache.delete(DASHBOARD_STATS_CACHE_KEY)
+    logger.info(
+        "Database restore completed - models_loaded=%s, include_engagement=%s, include_noisy_status=%s",
+        len(loaded),
+        profile.include_engagement,
+        profile.include_noisy_status,
+    )

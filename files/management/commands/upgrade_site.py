@@ -1,6 +1,7 @@
 """Inventory a mounted install, optionally restore a scratch database, and apply answers once."""
 
 import json
+import logging
 import os
 import subprocess
 import sys
@@ -19,6 +20,8 @@ from files.upgrade_audit import (
     report_only,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class Command(BaseCommand):
     help = "Report upgrade deltas. Migrates a scratch database only. Does not run prestart."
@@ -33,6 +36,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         step = options["step"]
+        logger.info("upgrade_site started - step=%s", step)
         if step == "inventory":
             image = migration_hashes(settings.BASE_DIR)
             previous = migration_hashes(options["previous"])
@@ -47,13 +51,17 @@ class Command(BaseCommand):
                 "reports": report_only(settings.BASE_DIR, options["previous"], os.environ.get("AUDIT_MEDIA", "/audit/media")),
             }
             self.stdout.write(json.dumps(report, default=list))
+            logger.info("upgrade_site inventory finished")
             return
         if step == "apply":
             if options["choice"]:
                 updated = apply_approval_choice(options["choice"])
                 self.stdout.write(f"approval {options['choice']} {updated}")
+                logger.info("upgrade_site apply approval - choice=%s, updated=%s", options["choice"], updated)
             if options["recount"]:
-                self.stdout.write(f"recount {rebuild_taxonomy_counts()}")
+                recounted = rebuild_taxonomy_counts()
+                self.stdout.write(f"recount {recounted}")
+                logger.info("upgrade_site apply recount finished - result=%s", recounted)
             if not options["choice"] and not options["recount"]:
                 raise CommandError("Pass --choice and or --recount.")
             return
@@ -62,6 +70,7 @@ class Command(BaseCommand):
         if not source or not dest:
             raise CommandError("scratch needs --source-url and --dest-url.")
         restore_scratch(source, dest)
+        logger.info("upgrade_site scratch restore finished")
         self.stdout.write("scratch restored and migrated")
 
 

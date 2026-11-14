@@ -24,17 +24,24 @@ See [Site health and database](../guides/admin/site.md), [Admin portal map](../g
 * **ci:** mike versioned docs deploy on GitHub Pages (`dev` / `beta` / `latest`)
 * **release:** GHCR date-stamped `:beta` and `:stable` images from `version/FORK_VERSION`
 * **settings:** `ACCOUNT_LOGIN_BY_CODE_ENABLED` and `ALLOW_POPULATE_FAKE_MEDIA`
+* **logging:** structured app logging with `LOGLEVEL`, optional SQL debug via `ENABLE_SQL_DEBUG_LOGGING`, and per-app loggers
+* **logging:** failed-login warnings with client IP for django-allauth and API token login
+* **logging:** operational logs for admin database backup/restore, support bundle, object actions, and related management commands
+* **proxy:** `TRUSTED_PROXIES` with `ProxyAwareMiddleware` and `get_client_ip` (off when the list is empty)
 
 ## Bug Fixes
 
 * **docs:** publish mike docs through the GitHub Pages Actions deploy path
 * **i18n:** German translation additions and corrections (#1622)
+* **templates:** default context keys for permissions, media, and current site to avoid AttributeError log floods
+* **logging:** skip model log handlers on fixture/raw loads so admin database restore is not interrupted
 
 ## Documentation
 
 * **admin:** admin portal guides for site, moderation, processing, people, integrations, and site upgrade
 * **ops:** Docker upgrade checklist and maintenance backup notes (#1562, #1564)
 * **meta:** AI disclosure attestation on pull request and issue templates (#1640)
+* **settings:** catalog and deploy notes for logging and trusted reverse-proxy settings
 
 ## Refactors
 

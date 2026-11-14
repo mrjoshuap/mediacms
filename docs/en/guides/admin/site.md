@@ -43,7 +43,7 @@ The table shows **Copy** tools. Use them to paste the table into a ticket.
 | Email | `DEFAULT_FROM_EMAIL` is set. `EMAIL_USE_TLS` and `EMAIL_USE_SSL` are not both on |
 | Encoding | Active encode profiles exist. Encoding failures. Encode, trim, and caption job failures |
 | Integrity | Listable flag mismatch. Video success with no encodings. Queued video with no encoding rows. Stale running encodings. Duplicate md5sum. Duplicate names. Missing media metadata. Recent integrity warnings |
-| Reverse proxy | `USE_X_FORWARDED_HOST`, `SECURE_PROXY_SSL_HEADER`, `CSRF_TRUSTED_ORIGINS`, secure cookies, `SECURE_SSL_REDIRECT`, CORS allow-all |
+| Reverse proxy | `USE_X_FORWARDED_HOST`, `SECURE_PROXY_SSL_HEADER`, `CSRF_TRUSTED_ORIGINS`, secure cookies, `SECURE_SSL_REDIRECT`, CORS allow-all. For accurate client IPs in auth logs, also set `TRUSTED_PROXIES` |
 | Storage | `MEDIA_ROOT`, `HLS_DIR`, and `TEMP_DIRECTORY` can be read and written. The sub-directories for original, encoded, upload, and chunk files can be read and written |
 | Workflow | Open reports. Reports above the limit. Media waiting for review. Users waiting for approval. Inactive users |
 | Integrations | See [Integrations](integrations.md) |

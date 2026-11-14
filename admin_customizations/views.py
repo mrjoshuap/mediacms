@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib import admin, messages
 from django.contrib.auth import logout
 from django.http import (
@@ -29,6 +31,8 @@ from admin_customizations.support_bundle import (
     support_bundle_format,
 )
 from files.admin_helpers import admin_text
+
+logger = logging.getLogger(__name__)
 
 DASHBOARD_SECTIONS = {
     "moderation": {
@@ -116,8 +120,18 @@ def dashboard_section(request, section):
 def database_backup_download(request):
     """Download a gzipped fixture. Superusers only; operational rows are omitted."""
     if not request.user.is_superuser:
+        logger.warning(
+            "Database backup download refused - not superuser - user_id=%s",
+            getattr(request.user, "id", None),
+        )
         return HttpResponseForbidden()
     filename = database_backup_filename()
+    logger.info(
+        "Database backup download started - user_id=%s, username=%s, filename=%s",
+        request.user.id,
+        request.user.username,
+        filename,
+    )
     response = StreamingHttpResponse(iter_database_backup(), content_type="application/gzip")
     response["Content-Disposition"] = content_disposition_header(True, filename)
     return response
@@ -128,6 +142,10 @@ def database_restore_upload(request):
     if request.method != "POST":
         return redirect("admin:dashboard_section", section="database")
     if not request.user.is_superuser:
+        logger.warning(
+            "Database restore refused - not superuser - user_id=%s",
+            getattr(request.user, "id", None),
+        )
         return HttpResponseForbidden()
     page = redirect("admin:dashboard_section", section="database")
 
@@ -141,11 +159,27 @@ def database_restore_upload(request):
     try:
         restore_database_backup(upload)
     except RestoreNotAllowed:
+        logger.warning(
+            "Database restore not allowed - user_id=%s, username=%s",
+            request.user.id,
+            request.user.username,
+        )
         messages.error(request, note("Database restore is not available on this installation."))
         return page
     except RestoreError as exc:
+        logger.error(
+            "Database restore failed - user_id=%s, username=%s, error=%s",
+            request.user.id,
+            request.user.username,
+            exc,
+        )
         messages.error(request, note(str(exc)))
         return page
+    logger.info(
+        "Database restore finished - user_id=%s, username=%s",
+        request.user.id,
+        request.user.username,
+    )
     logout(request)
     messages.success(request, note("Database restore finished. Sign in with an account from the backup."))
     return redirect("admin:login")
@@ -157,6 +191,13 @@ def support_bundle_download(request, filename):
     if fmt is None:
         raise Http404("Unknown support bundle filename")
     body = render_support_bundle(fmt)
+    logger.info(
+        "Support bundle download - user_id=%s, username=%s, filename=%s, format=%s",
+        getattr(request.user, "id", None),
+        getattr(request.user, "username", None),
+        filename,
+        fmt,
+    )
     content_type = "text/markdown; charset=utf-8" if fmt == "md" else "text/plain; charset=utf-8"
     response = HttpResponse(body, content_type=content_type)
     response["Content-Disposition"] = content_disposition_header(True, filename)
