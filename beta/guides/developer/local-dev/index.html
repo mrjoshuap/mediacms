@@ -3564,10 +3564,20 @@
 <h2 id="check-the-code-style">Check the code style<a class="headerlink" href="#check-the-code-style" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Install the hook once: <code>pre-commit install</code>.</li>
-<li>Run all checks: <code>pre-commit run --all</code>.</li>
+<li>
+<p>Install Node dependencies in each frontend package you touch (or all four):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>npm<span class="w"> </span>install<span class="w"> </span>--prefix<span class="w"> </span>frontend
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>npm<span class="w"> </span>install<span class="w"> </span>--prefix<span class="w"> </span>frontend-tools/video-js
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>npm<span class="w"> </span>install<span class="w"> </span>--prefix<span class="w"> </span>frontend-tools/video-editor
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>npm<span class="w"> </span>install<span class="w"> </span>--prefix<span class="w"> </span>frontend-tools/chapters-editor
+</code></pre></div>
+</li>
+<li>
+<p>Run all checks: <code>pre-commit run --all</code>.</p>
+</li>
 <li>Fix every problem the checks report.</li>
 </ol>
-<p>Python uses <code>black</code>, <code>isort</code> (profile <code>black</code>), and <code>flake8</code>. The frontend uses Prettier. The Prettier settings are in <code>.prettierrc</code>.</p>
+<p>Python uses <code>black</code>, <code>isort</code> (profile <code>black</code>), and <code>flake8</code>. JavaScript and TypeScript use Prettier (<code>.prettierrc</code>) and ESLint. Pre-commit also runs hygiene hooks (end-of-file, trailing whitespace, YAML/JSON, merge conflicts, large files, private keys). Local ESLint hooks need the package <code>node_modules</code> above. You can also run <code>make lint-frontend</code> on the host.</p>
 <h2 id="fake-media-for-development">Fake media for development<a class="headerlink" href="#fake-media-for-development" title="Permanent link">&para;</a></h2>
 <p>The <code>web</code> service sets <code>ALLOW_POPULATE_FAKE_MEDIA</code> to <code>True</code>. This allows the management command <code>populate_fake_media</code>.</p>
 <h2 id="stop-the-stack">Stop the stack<a class="headerlink" href="#stop-the-stack" title="Permanent link">&para;</a></h2>
@@ -3575,7 +3585,7 @@
 <li>Press <code>Ctrl+C</code> in the terminal that runs <code>up</code>.</li>
 <li>
 <p>Remove the containers when you no longer need them:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker-compose-dev.yaml<span class="w"> </span>down
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker-compose-dev.yaml<span class="w"> </span>down
 </code></pre></div>
 </li>
 </ol>

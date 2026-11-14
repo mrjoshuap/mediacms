@@ -3146,7 +3146,7 @@
 </ol>
 <h2 id="rules-for-every-change">Rules for every change<a class="headerlink" href="#rules-for-every-change" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Run <code>pre-commit run --all</code> before you commit. It runs <code>black</code>, <code>isort</code>, and <code>flake8</code> for Python.</li>
+<li>Run <code>pre-commit run --all</code> before you commit. It runs <code>black</code>, <code>isort</code>, and <code>flake8</code> for Python, plus Prettier, ESLint, and hygiene hooks for the frontend packages.</li>
 <li>Use Conventional Commit messages: <code>feat</code>, <code>fix</code>, <code>chore</code>, <code>docs</code>, <code>style</code>, <code>refactor</code>, <code>perf</code>, <code>test</code>, <code>depr</code>.</li>
 <li>Do not change the version in <code>package.json</code>. Releases are automatic.</li>
 <li>Do not edit <code>CHANGELOG.md</code>. Releases are automatic.</li>
