@@ -2,8 +2,6 @@
 
 Use this page to connect Moodle to MediaCMS with LTI 1.3 and the MediaCMS Moodle plugins. Lecturers and students then use **My Media** and embed media inside Moodle.
 
-The full source guide is [MediaCMS plugin for Moodle](https://github.com/mediacms-io/mediacms/blob/main/docs/moodle_plugin.md).
-
 ## Before you start
 
 - Use the same domain for Moodle and MediaCMS. For example, use `moodle.organisation.org` and `mediacms.organisation.org`. Browsers block cross-site content more and more. A shared parent domain avoids limits on embedded media.

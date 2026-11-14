@@ -15,6 +15,7 @@ PROTECTED_NAMES = frozenset(
         "api-auth",
         "swagger",
         "docs",
+        "documentation",
         "admin",
         "lti",
         "tinymce",

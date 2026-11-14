@@ -567,7 +567,7 @@ TINYMCE_DEFAULT_CONFIG = {
 
 SPRITE_NUM_SECS = 10
 # number of seconds for sprite image.
-# If you plan to change this, you must also follow the instructions on admins_docs.md
+# If you plan to change this, follow docs/en/getting-started/deploy.md and the nginx notes there
 # to change the equivalent value in ./frontend/src/static/js/components/media-viewer/VideoViewer/index.js and then re-build frontend
 
 # how many images will be shown on the slideshow

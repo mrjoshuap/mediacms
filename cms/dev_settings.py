@@ -61,3 +61,9 @@ DEBUG = True
 CORS_ORIGIN_ALLOW_ALL = True
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_collected')
+
+# Serve MkDocs output from site/ at /documentation/ (optional docs Compose profile).
+SERVE_DOCUMENTATION = True
+DOCUMENTATION_ROOT = os.path.join(BASE_DIR, "site")
+DOCUMENTATION_URL = "/documentation/"
+

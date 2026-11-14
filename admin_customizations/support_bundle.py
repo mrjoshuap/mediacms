@@ -17,11 +17,11 @@ from admin_customizations.runtime_info import (
 BUNDLE_NOTE = "This file is safe to paste into a GitHub issue. Secrets are omitted or redacted."
 BUNDLE_FILENAME = re.compile(r"^mediacms-support-\d{4}-\d{2}-\d{2}-\d{4}\.(txt|md)$")
 
-DOCS_ADMIN = "https://github.com/mediacms-io/mediacms/blob/main/docs/admins_docs.md"
-DOCS_TRANSLATIONS = "https://github.com/mediacms-io/mediacms/blob/main/docs/admins_docs.md#20-translations"
-DOCS_TRANSCODING = "https://github.com/mediacms-io/mediacms/blob/main/docs/transcoding.md"
-DOCS_EMAIL = "https://github.com/mediacms-io/mediacms/blob/main/docs/admins_docs.md#512-set-email-settings"
-DOCS_PROXY = "https://github.com/mediacms-io/mediacms/blob/main/docs/admins_docs.md#advanced-deployment-with-reverse-proxy-accessed-as-httpmediacmsio"
+DOCS_ADMIN = "https://github.com/mediacms-io/mediacms/blob/main/docs/en/guides/admin/index.md"
+DOCS_TRANSLATIONS = "https://github.com/mediacms-io/mediacms/blob/main/docs/en/guides/developer/translations.md"
+DOCS_TRANSCODING = "https://github.com/mediacms-io/mediacms/blob/main/docs/en/guides/admin/processing.md"
+DOCS_EMAIL = "https://github.com/mediacms-io/mediacms/blob/main/docs/en/guides/admin/settings.md"
+DOCS_PROXY = "https://github.com/mediacms-io/mediacms/blob/main/docs/en/getting-started/deploy.md"
 DISCUSSIONS_URL = "https://github.com/mediacms-io/mediacms/discussions"
 BUG_URL = "https://github.com/mediacms-io/mediacms/issues/new?template=bug_report.md"
 FEATURE_URL = "https://github.com/mediacms-io/mediacms/issues/new?template=feature_request.md"

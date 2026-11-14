@@ -45,3 +45,24 @@ templates/todo-MS4.md
 .coverage
 .coverage.*
 htmlcov/
+
+# MkDocs — build output and prepare_docs_build / docs_dev_watch artifacts
+site/
+mkdocs.local.yml
+.cache/
+
+# Locale copies of shared assets (source of truth: docs/_shared/)
+docs/*/assets/
+docs/*/stylesheets/
+!docs/_shared/assets/
+!docs/_shared/assets/**
+!docs/_shared/stylesheets/
+!docs/_shared/stylesheets/**
+
+# Generated pages (English; recreate with prepare_docs_build.py)
+docs/en/languages.md
+docs/en/reference/api.md
+docs/en/reference/changelog.md
+docs/en/reference/openapi.yaml
+docs/en/reference/this-version.md
+docs/en/reference/whats-new.md

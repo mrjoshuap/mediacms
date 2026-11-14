@@ -1,0 +1,200 @@
+site_name: MediaCMS Documentation
+site_description: Guides for MediaCMS users, operators, administrators, and developers
+site_url: https://mrjoshuap.github.io/mediacms/
+repo_url: https://github.com/mediacms-io/mediacms
+repo_name: mediacms-io/mediacms
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: en
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - toc.follow
+
+plugins:
+  - search
+  - i18n:
+      docs_structure: folder
+      fallback_to_default: true
+      reconfigure_material: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            docstring_style: google
+            show_source: true
+            members_order: source
+  - swagger-ui-tag
+  - mike:
+      canonical_version: latest
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/mediacms-io/mediacms
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - getting-started/index.md
+      - Install with Docker: getting-started/install.md
+      - Deploy: getting-started/deploy.md
+      - First sign-in: getting-started/first-sign-in.md
+      - Concepts: getting-started/concepts.md
+      - Update and site upgrade: getting-started/update.md
+  - Roles:
+      - roles/index.md
+      - Anonymous: roles/anonymous.md
+      - Pending approval: roles/pending.md
+      - Viewer: roles/viewer.md
+      - Editor: roles/editor.md
+      - Manager: roles/manager.md
+      - Staff: roles/staff.md
+      - Superuser: roles/superuser.md
+      - Compare roles: roles/compare.md
+  - Guides:
+      - guides/index.md
+      - User:
+          - guides/user/index.md
+          - Browse and play: guides/user/browse.md
+          - Search: guides/user/search.md
+          - Upload: guides/user/upload.md
+          - Edit your media: guides/user/edit.md
+          - Captions: guides/user/captions.md
+          - Comments and mentions: guides/user/comments.md
+          - Playlists: guides/user/playlists.md
+          - Share and embed: guides/user/share.md
+          - Trim: guides/user/trim.md
+          - Profile: guides/user/profile.md
+          - Download: guides/user/download.md
+      - Operator:
+          - guides/operator/index.md
+          - Manage media and comments: guides/operator/manage-media.md
+          - Review and publish: guides/operator/review.md
+          - Categories and tags: guides/operator/categories.md
+          - Permissions and RBAC: guides/operator/permissions.md
+          - Manage users: guides/operator/manage-users.md
+      - Admin:
+          - guides/admin/index.md
+          - Admin portal map: guides/admin/portal-map.md
+          - Moderation: guides/admin/moderation.md
+          - Library and engagement: guides/admin/library.md
+          - Processing: guides/admin/processing.md
+          - People: guides/admin/people.md
+          - Integrations: guides/admin/integrations.md
+          - Site health and database: guides/admin/site.md
+          - Settings catalog: guides/admin/settings.md
+          - Content migration: guides/admin/content-migration.md
+          - Site upgrade: guides/admin/site-upgrade.md
+          - Moodle and LTI: guides/admin/moodle.md
+          - SAML and identity providers: guides/admin/saml.md
+          - Custom pages and appearance: guides/admin/pages-appearance.md
+      - Developer:
+          - guides/developer/index.md
+          - Local development: guides/developer/local-dev.md
+          - Architecture: guides/developer/architecture.md
+          - Tests: guides/developer/tests.md
+          - Translations: guides/developer/translations.md
+          - Add a documentation page: guides/developer/add-docs-page.md
+  - Scenarios:
+      - scenarios/index.md
+      - Anonymous browse: scenarios/anonymous-browse.md
+      - Anonymous sign-in required: scenarios/anonymous-signin-required.md
+      - Pending browse: scenarios/pending-browse.md
+      - Pending upload refused: scenarios/pending-upload-refused.md
+      - Viewer upload: scenarios/viewer-upload.md
+      - Viewer comment: scenarios/viewer-comment.md
+      - Viewer playlist: scenarios/viewer-playlist.md
+      - Viewer share: scenarios/viewer-share.md
+      - Editor review: scenarios/editor-review.md
+      - Editor moderate comment: scenarios/editor-moderate-comment.md
+      - Manager approve user: scenarios/manager-approve-user.md
+      - Manager assign editor: scenarios/manager-assign-editor.md
+      - Manager admin refused: scenarios/manager-admin-refused.md
+      - Staff dashboard: scenarios/staff-dashboard.md
+      - Staff processing queue: scenarios/staff-processing-queue.md
+      - Superuser mark reviewed: scenarios/superuser-mark-reviewed.md
+      - Superuser health: scenarios/superuser-health.md
+      - Superuser content migration: scenarios/superuser-content-migration.md
+      - Superuser upgrade inventory: scenarios/superuser-upgrade-inventory.md
+  - Reference:
+      - This version: reference/this-version.md
+      - What's new: reference/whats-new.md
+      - Changelog: reference/changelog.md
+      - REST API: reference/api.md
+      - Python: reference/python.md
+      - Node: reference/node.md
+      - Languages: languages.md
+  - Contributing:
+      - Writing guide: contributing/writing.md
+      - Glossary: contributing/glossary.md
+      - Scenario template: contributing/scenario-template.md
+
+watch:
+  - docs
+  - scripts
+
+exclude_docs: |
+  /images/**
+  /languages.yml
+  /_shared/**

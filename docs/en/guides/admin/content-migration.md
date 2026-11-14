@@ -30,7 +30,6 @@ The source of a saved migration cannot change. To use another source, create a n
 | Captions | WebVTT, optional | English only, if the uploader gave one | If Panopto offers a caption file |
 | Reuse of existing encodings | Yes, with **Migrate media flavors / encodings** | Yes, with **Attempt to skip transcoding** | No. One mp4 per recording. MediaCMS encodes |
 | RBAC groups | Yes, with `USE_RBAC` | No | Yes, with `USE_RBAC` |
-| Full guide | [Kaltura migration](https://github.com/mediacms-io/mediacms/blob/main/docs/kaltura_migration.md) | [YouTube migration](https://github.com/mediacms-io/mediacms/blob/main/docs/youtube_migration.md) | [Panopto migration](https://github.com/mediacms-io/mediacms/blob/main/docs/panopto_migration.md) |
 
 ## Run a migration
 

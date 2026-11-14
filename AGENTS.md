@@ -25,7 +25,7 @@ MediaCMS is an open source video and media CMS built with **Django + React**, ex
 | `frontend/tests/` | Frontend Jest tests |
 | `deploy/docker/` | Docker entrypoints, `local_settings.py` used by docker-compose installs |
 | `docker-compose-dev.yaml` | Development environment (see below) |
-| `docs/` | Admin docs (`admins_docs.md`), developer docs (`developers_docs.md`), `dev_exp.md`, transcoding, migrations, SAML setup guides |
+| `docs/en/` | MkDocs documentation (getting started, roles, guides, scenarios, reference) |
 | `actions/`, `admin_customizations/` | Additional Django apps |
 | `cli-tool/` | CLI tooling |
 
@@ -43,6 +43,7 @@ This starts: Django dev server (`runserver`, auto-reloads) on **http://localhost
 - The webpack dev server on port 8088 proxies all pages/API requests to Django (`MEDIACMS_BACKEND=http://web` in `frontend/.env`), so you see real Django pages with live frontend bundles.
 - Backend Python changes auto-reload; if Django breaks (e.g. syntax error), restart with `docker compose -f docker-compose-dev.yaml restart web`.
 - **Frontend changes are only visible on port 80 after building**: run `make build-frontend` (or `docker compose -f docker-compose-dev.yaml exec -T frontend npm run dist` then `cp -r frontend/dist/static/* static/`).
+- **Docs on the same origin**: `make docs-up` starts the optional Compose profile `docs`; Django serves `site/` at `http://localhost/documentation/` (not `/docs/`, which is ReDoc + a protected slug).
 - Shared styles go in `static/css/_commons.css`; per-entry styles in `static/css/<name>.css`.
 
 ## Common Commands
@@ -56,6 +57,8 @@ make test-frontend        # frontend Jest tests (CI mode)
 make test-frontend-coverage
 make build-frontend       # build frontend bundles + copy to static/ + restart web
 make admin-shell          # shell into the web container
+make docs-up              # optional MkDocs watcher → http://localhost/documentation/
+make docs-build           # one-shot docs build into site/
 ```
 
 Direct equivalents:
@@ -132,9 +135,15 @@ Django templates load bundles from `static/js/<name>.js`. After `npm run dist`, 
 
 ## Useful Docs
 
-- `docs/developers_docs.md` — architecture, contributing, Docker tips, testing, transcoding
-- `docs/admins_docs.md` — installation, deployment options, full settings reference, RBAC/SAML setup
-- `docs/dev_exp.md` — local Docker development walkthrough
-- `docs/transcoding.md`, `docs/media_permissions.md`, `docs/kaltura_migration.md`, `docs/youtube_migration.md`, `docs/panopto_migration.md`, `docs/saml_entraid_setup.md`
+Documentation source is under `docs/en/` (MkDocs Material). Start here:
+
+- `docs/en/getting-started/` — install, deploy, concepts, update
+- `docs/en/roles/` — anonymous, pending, viewer, editor, manager, staff, superuser
+- `docs/en/guides/developer/` — local development, architecture, tests, translations, adding docs pages
+- `docs/en/guides/admin/` — admin portal, settings catalog, processing, content migration, site upgrade, SAML, Moodle
+- `docs/en/guides/operator/` — Manage pages, review, permissions/RBAC, manage users
+- `docs/en/contributing/writing.md` — writing rules and glossary
 - `CODE_OF_CONDUCT.md` — required reading before contributing
+
+Build docs: `pip install -r requirements-docs.txt && python scripts/prepare_docs_build.py && mkdocs build --strict`
 

@@ -4,8 +4,6 @@ Use this page to add single sign-on to MediaCMS with SAML 2.0. The example uses 
 
 MediaCMS is the service provider (SP). Entra ID is the identity provider (IdP). The user's browser carries all messages between them. The MediaCMS server does not need inbound access from the Internet.
 
-The full source guide is [Integrating Microsoft Entra ID with MediaCMS via SAML](https://github.com/mediacms-io/mediacms/blob/main/docs/saml_entraid_setup.md).
-
 ## Before you start
 
 - You have admin access to MediaCMS and to Entra ID.

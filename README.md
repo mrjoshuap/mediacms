@@ -95,25 +95,32 @@ In order to support automatic transcriptions through Whisper, consider more CPUs
 
 ## Installation / Maintanance
 
-There are two ways to run MediaCMS, through Docker Compose and through installing it on a server via an automation script that installs and configures all needed services. Find the related pages:
+Install with Docker Compose. See the documentation:
 
-- [Docker Compose](docs/admins_docs.md#3-docker-installation) page
+- [Install with Docker](docs/en/getting-started/install.md)
+- [Deploy](docs/en/getting-started/deploy.md)
 
   A complete guide can be found on the blog post [How to self-host and share your videos in 2021](https://medium.com/@MediaCMS.io/how-to-self-host-and-share-your-videos-in-2021-14067e3b291b).
 
 ## Documentation
 
-* [Users documentation](docs/user_docs.md) page
-* [Administrators documentation](docs/admins_docs.md) page
-* [Developers documentation](docs/developers_docs.md) page
-* [Configuration](docs/admins_docs.md#5-configuration) page
-* [Transcoding](docs/transcoding.md) page
-* [Developer Experience](docs/dev_exp.md) page
-* [Media Permissions](docs/media_permissions.md) page
-* [Moodle Plugin](docs/moodle_plugin.md) page
-* [Kaltura migration](docs/kaltura_migration.md) page
-* [YouTube migration](docs/youtube_migration.md) page
-* [Panopto migration](docs/panopto_migration.md) page
+The documentation site source lives under [`docs/en/`](docs/en/). Build it with MkDocs (see [`mkdocs.yml`](mkdocs.yml) and [`.github/workflows/docs.yml`](.github/workflows/docs.yml)).
+
+* [Getting started](docs/en/getting-started/index.md)
+* [Roles](docs/en/roles/index.md)
+* [User guides](docs/en/guides/user/index.md)
+* [Operator guides](docs/en/guides/operator/index.md)
+* [Admin guides](docs/en/guides/admin/index.md)
+* [Developer guides](docs/en/guides/developer/index.md)
+* [Settings catalog](docs/en/guides/admin/settings.md)
+* [Processing and transcoding](docs/en/guides/admin/processing.md)
+* [Permissions and RBAC](docs/en/guides/operator/permissions.md)
+* [Content migration](docs/en/guides/admin/content-migration.md)
+* [Site upgrade](docs/en/guides/admin/site-upgrade.md)
+* [Moodle and LTI](docs/en/guides/admin/moodle.md)
+* [SAML and identity providers](docs/en/guides/admin/saml.md)
+* [Scenarios](docs/en/scenarios/index.md)
+* [Writing guide](docs/en/contributing/writing.md)
 
 
 ## Technology
