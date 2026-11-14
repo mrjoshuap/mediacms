@@ -108,6 +108,7 @@ See [Processing](processing.md) for use.
 | `FFMPEG_DEFAULT_PRESET` | `medium` |
 | `DO_NOT_TRANSCODE_VIDEO` | `False` |
 | `CHUNKIZE_VIDEO_DURATION`, `VIDEO_CHUNKS_DURATION` | `300`, `240` |
+| `ENCODING_CHUNKS_RETENTION_HOURS` | `24` | Age after which failed/orphan encoding chunk rows and unreferenced `.mkv` segments are removed by the `cleanup_encoding_chunks` beat task |
 | `MINIMUM_RESOLUTIONS_TO_ENCODE` | `[144, 240]` |
 | `MP4HLS_COMMAND` | Path to Bento4 `mp4hls` |
 | `RUNNING_STATE_STALE` | `7200` |

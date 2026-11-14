@@ -30,6 +30,9 @@ See [Site health and database](../guides/admin/site.md), [Admin portal map](../g
 * **proxy:** `TRUSTED_PROXIES` with `ProxyAwareMiddleware` and `get_client_ip` (off when the list is empty)
 * **settings:** `CAN_SEE_MEMBERS_PAGE = "anonymous"` for members nav and author search without sign-in
 * **email:** `EMAIL_TIMEOUT` and synchronous interactive mail for contact, profile contact, and auth
+* **search:** CJK-aware media search via `prepare_media_search_filter` (icontains for CJK tokens)
+* **media:** lazy playlist membership for Save popup (`GET /api/v1/media/{token}/playlists`)
+* **encoding:** `cleanup_encoding_chunks` beat task and `ENCODING_CHUNKS_RETENTION_HOURS` for orphan chunk cleanup
 
 ## Bug Fixes
 
@@ -40,6 +43,7 @@ See [Site health and database](../guides/admin/site.md), [Admin portal map](../g
 * **sidebar:** light Home icon when the path is `/` by normalizing trailing slashes on nav URLs
 * **player:** desktop chapters overlay opens on click (#1453)
 * **contact:** surface SMTP failures instead of silent success on contact and profile contact forms
+* **review:** treat multipart `result="false"` as unreview and keep listable in sync (#1275/#1280)
 
 ## Documentation
 

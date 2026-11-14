@@ -38,6 +38,8 @@ The final `Encoding` (`chunk=False`, `status=success`) is the file that the port
 
 All workers must use the same file system as the web server. This can be one host, NFS, or EFS.
 
+The beat task `cleanup_encoding_chunks` removes stuck chunk `Encoding` rows and unreferenced source `.mkv` segments older than `ENCODING_CHUNKS_RETENTION_HOURS` (default 24).
+
 ### Encode profiles
 
 Open **Site** > **Encode profiles** (`/admin/files/encodeprofile/`).

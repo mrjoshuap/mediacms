@@ -1671,6 +1671,7 @@ def cleanup_encoding_chunks():
     referenced = _referenced_encoding_chunk_paths()
     original_root = os.path.join(settings.MEDIA_ROOT, settings.MEDIA_UPLOAD_DIR)
     segment_name = re.compile(r"^\d{2}_.+\.mkv$")
+    removed_files = 0
     if os.path.isdir(original_root):
         for root, _dirs, files in os.walk(original_root):
             for name in files:
@@ -1679,6 +1680,13 @@ def cleanup_encoding_chunks():
                 path = os.path.join(root, name)
                 if path in referenced:
                     continue
-                _rm_aged_encoding_chunk_file(path, cutoff)
+                if _rm_aged_encoding_chunk_file(path, cutoff):
+                    removed_files += 1
 
+    logger.info(
+        "cleanup_encoding_chunks finished - retention_hours=%s, leftover_chunk_groups=%s, removed_orphan_files=%s",
+        retention_hours,
+        len(deleted_chunks_infos),
+        removed_files,
+    )
     return True
