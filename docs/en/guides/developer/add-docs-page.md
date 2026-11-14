@@ -100,7 +100,19 @@ Do not edit these files. `scripts/prepare_docs_build.py` writes them and each fi
 - `docs/en/reference/openapi.yaml` (a stub if CI did not export it)
 - `docs/en/languages.md`
 
-To change them, change the script or the source data (`package.json`, `CHANGELOG.md`, `docs/languages.yml`).
+To change them, change the script or the source data (`package.json`, `CHANGELOG.md`, `docs/languages.yml`, `version/FORK_VERSION`, `docs/_shared/fork-whats-new.md`).
+
+### Fork what's new
+
+Curated fork release notes live in `docs/_shared/fork-whats-new.md` (excluded from the MkDocs tree). Do not edit `docs/en/reference/whats-new.md` by hand.
+
+When `DOCS_CHANNEL` is `beta`, `local`, `dev`, `stable`, or `latest`, and the shared file exists, the prepare script:
+
+1. Puts the fork notes first on [What's new](../../reference/whats-new.md).
+2. Appends the upstream MediaCMS section from `CHANGELOG.md` for the `package.json` version.
+3. Adds a short fork preamble on [Changelog](../../reference/changelog.md).
+
+Use Conventional Commits section headings (`Features`, `Bug Fixes`, `Documentation`, `Refactors`) and a bold scope in each bullet (`**admin:** …`).
 
 ## Reference pages
 
@@ -117,11 +129,17 @@ python scripts/prepare_docs_build.py
 
 The script does these things:
 
-1. Reads the version from `package.json`.
-2. Writes `reference/this-version.md`, `reference/whats-new.md`, and `reference/changelog.md`.
+1. Reads the version from `package.json` and, when present, `version/FORK_VERSION`.
+2. Writes `reference/this-version.md`, `reference/whats-new.md`, and `reference/changelog.md` (fork notes from `docs/_shared/fork-whats-new.md` when the channel uses them).
 3. Writes `languages.md` from `docs/languages.yml`.
 4. Creates `reference/openapi.yaml` as a stub if the file is missing. Then it writes `reference/api.md`.
 5. Copies `docs/_shared/stylesheets/` and `docs/_shared/assets/` into each locale folder that builds.
+
+Set the channel for a local check:
+
+```bash
+DOCS_CHANNEL=beta python scripts/prepare_docs_build.py
+```
 
 To export the real OpenAPI schema, run this before the prepare script:
 

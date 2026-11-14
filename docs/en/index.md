@@ -15,7 +15,7 @@ Use this documentation to install MediaCMS, understand each role, and complete c
 | [Guides](guides/index.md) | Follow step-by-step instructions for users, operators, administrators, and developers. |
 | [Scenarios](scenarios/index.md) | Follow one role through one path. Use scenarios as a script for a recording or a test. |
 | [This version](reference/this-version.md) | Check which MediaCMS version this documentation describes. |
-| [What's new](reference/whats-new.md) | Read the changes in recent releases. |
+| [What's new](reference/whats-new.md) | Read fork changes since upstream, then the upstream release notes. |
 | [Languages](languages.md) | Find the languages that this documentation supports. |
 
 ## MediaCMS Architecture
