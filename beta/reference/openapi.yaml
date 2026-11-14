@@ -1,0 +1,8 @@
+openapi: 3.0.3
+info:
+  title: MediaCMS API
+  version: v1
+  description: >
+    Schema placeholder. Replace this file in CI with
+    `python manage.py generate_swagger --format yaml`.
+paths: {}

@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/languages/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/languages/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/contributing/glossary/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/contributing/glossary/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/contributing/scenario-template/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/contributing/scenario-template/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/contributing/writing/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/contributing/writing/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/getting-started/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/getting-started/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/getting-started/concepts/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/getting-started/concepts/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/getting-started/deploy/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/getting-started/deploy/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/getting-started/first-sign-in/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/getting-started/first-sign-in/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/getting-started/install/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/getting-started/install/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/getting-started/update/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/getting-started/update/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/admin/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/admin/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/admin/content-migration/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/admin/content-migration/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/admin/integrations/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/admin/integrations/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/admin/library/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/admin/library/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/admin/moderation/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/admin/moderation/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/admin/moodle/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/admin/moodle/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/admin/pages-appearance/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/admin/pages-appearance/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/admin/people/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/admin/people/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/admin/portal-map/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/admin/portal-map/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/admin/processing/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/admin/processing/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/admin/saml/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/admin/saml/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/admin/settings/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/admin/settings/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/admin/site-upgrade/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/admin/site-upgrade/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/admin/site/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/admin/site/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/developer/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/developer/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/developer/add-docs-page/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/developer/add-docs-page/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/developer/architecture/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/developer/architecture/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/developer/local-dev/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/developer/local-dev/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/developer/tests/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/developer/tests/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/developer/translations/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/developer/translations/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/operator/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/operator/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/operator/categories/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/operator/categories/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/operator/manage-media/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/operator/manage-media/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/operator/manage-users/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/operator/manage-users/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/operator/permissions/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/operator/permissions/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/operator/review/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/operator/review/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/user/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/user/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/user/browse/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/user/browse/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/user/captions/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/user/captions/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/user/comments/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/user/comments/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/user/download/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/user/download/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/user/edit/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/user/edit/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/user/playlists/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/user/playlists/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/user/profile/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/user/profile/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/user/search/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/user/search/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/user/share/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/user/share/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/user/trim/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/user/trim/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/guides/user/upload/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/guides/user/upload/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/reference/api/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/reference/api/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/reference/changelog/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/reference/changelog/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/reference/node/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/reference/node/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/reference/python/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/reference/python/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/reference/this-version/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/reference/this-version/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/reference/whats-new/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/reference/whats-new/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/roles/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/roles/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/roles/anonymous/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/roles/anonymous/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/roles/compare/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/roles/compare/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/roles/editor/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/roles/editor/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/roles/manager/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/roles/manager/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/roles/pending/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/roles/pending/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/roles/staff/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/roles/staff/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/roles/superuser/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/roles/superuser/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/roles/viewer/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/roles/viewer/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/anonymous-browse/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/anonymous-browse/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/anonymous-signin-required/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/anonymous-signin-required/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/editor-moderate-comment/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/editor-moderate-comment/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/editor-review/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/editor-review/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/manager-admin-refused/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/manager-admin-refused/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/manager-approve-user/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/manager-approve-user/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/manager-assign-editor/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/manager-assign-editor/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/pending-browse/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/pending-browse/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/pending-upload-refused/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/pending-upload-refused/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/staff-dashboard/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/staff-dashboard/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/staff-processing-queue/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/staff-processing-queue/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/superuser-content-migration/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/superuser-content-migration/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/superuser-health/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/superuser-health/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/superuser-mark-reviewed/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/superuser-mark-reviewed/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/superuser-upgrade-inventory/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/superuser-upgrade-inventory/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/viewer-comment/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/viewer-comment/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/viewer-playlist/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/viewer-playlist/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/viewer-share/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/viewer-share/"/>
+    </url>
+    <url>
+        <loc>https://mrjoshuap.github.io/mediacms/latest/scenarios/viewer-upload/</loc>
+        <lastmod>2026-11-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://mrjoshuap.github.io/mediacms/latest/scenarios/viewer-upload/"/>
+    </url>
+</urlset>

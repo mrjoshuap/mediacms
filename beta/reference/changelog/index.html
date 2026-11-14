@@ -1,0 +1,5089 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Guides for MediaCMS users, operators, administrators, and developers">
+      
+      
+      
+        <link rel="canonical" href="https://mrjoshuap.github.io/mediacms/latest/reference/changelog/">
+      
+      
+        <link rel="prev" href="../whats-new/">
+      
+      
+        <link rel="next" href="../api/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+    
+    
+      
+        <title>Changelog - MediaCMS Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.342714a4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changelog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="MediaCMS Documentation" class="md-header__button md-logo" aria-label="MediaCMS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MediaCMS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Changelog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/mediacms-io/mediacms" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mediacms-io/mediacms
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Getting started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../roles/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Roles
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../scenarios/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Scenarios
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../this-version/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../contributing/writing/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MediaCMS Documentation" class="md-nav__button md-logo" aria-label="MediaCMS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MediaCMS Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/mediacms-io/mediacms" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mediacms-io/mediacms
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../getting-started/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Getting started
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Install with Docker
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/deploy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Deploy
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/first-sign-in/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    First sign-in
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Concepts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/update/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Update and site upgrade
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../roles/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Roles
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Roles
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roles/anonymous/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Anonymous
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roles/pending/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pending approval
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roles/viewer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Viewer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roles/editor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Editor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roles/manager/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Manager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roles/staff/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Staff
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roles/superuser/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Superuser
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roles/compare/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Compare roles
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guides/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Guides
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guides/user/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    User
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            User
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/user/browse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Browse and play
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/user/search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Search
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/user/upload/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Upload
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/user/edit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Edit your media
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/user/captions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Captions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/user/comments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Comments and mentions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/user/playlists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Playlists
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/user/share/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Share and embed
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/user/trim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Trim
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/user/profile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Profile
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/user/download/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Download
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guides/operator/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Operator
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Operator
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/operator/manage-media/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Manage media and comments
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/operator/review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Review and publish
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/operator/categories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Categories and tags
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/operator/permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Permissions and RBAC
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/operator/manage-users/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Manage users
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guides/admin/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Admin
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            Admin
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/admin/portal-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Admin portal map
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/admin/moderation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Moderation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/admin/library/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Library and engagement
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/admin/processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Processing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/admin/people/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    People
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/admin/integrations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Integrations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/admin/site/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Site health and database
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/admin/settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Settings catalog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/admin/content-migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Content migration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/admin/site-upgrade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Site upgrade
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/admin/moodle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Moodle and LTI
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/admin/saml/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SAML and identity providers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/admin/pages-appearance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom pages and appearance
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guides/developer/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Developer
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            Developer
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/developer/local-dev/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Local development
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/developer/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/developer/tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tests
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/developer/translations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Translations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/developer/add-docs-page/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Add a documentation page
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scenarios/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Scenarios
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Scenarios
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/anonymous-browse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Anonymous browse
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/anonymous-signin-required/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Anonymous sign-in required
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/pending-browse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pending browse
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/pending-upload-refused/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pending upload refused
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/viewer-upload/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Viewer upload
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/viewer-comment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Viewer comment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/viewer-playlist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Viewer playlist
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/viewer-share/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Viewer share
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/editor-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Editor review
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/editor-moderate-comment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Editor moderate comment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/manager-approve-user/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Manager approve user
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/manager-assign-editor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Manager assign editor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/manager-admin-refused/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Manager admin refused
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/staff-dashboard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Staff dashboard
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/staff-processing-queue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Staff processing queue
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/superuser-mark-reviewed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Superuser mark reviewed
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/superuser-health/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Superuser health
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/superuser-content-migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Superuser content migration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scenarios/superuser-upgrade-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Superuser upgrade inventory
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../this-version/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    This version
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../whats-new/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    What's new
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#940-2026-10-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.4.0 (2026-10-26)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.4.0 (2026-10-26)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#931-2026-10-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.3.1 (2026-10-20)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.3.1 (2026-10-20)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#930-2026-10-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.3.0 (2026-10-20)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.3.0 (2026-10-20)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#921-2026-10-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.2.1 (2026-10-07)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.2.1 (2026-10-07)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#920-2026-10-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.2.0 (2026-10-07)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.2.0 (2026-10-07)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#912-2026-10-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.1.2 (2026-10-05)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.1.2 (2026-10-05)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#911-2026-10-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.1.1 (2026-10-05)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.1.1 (2026-10-05)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#910-2026-10-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.1.0 (2026-10-01)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.1.0 (2026-10-01)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#900-2026-10-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.0.0 (2026-10-01)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.0.0 (2026-10-01)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚠ BREAKING CHANGES
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#features_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#840-2026-08-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.4.0 (2026-08-25)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.4.0 (2026-08-25)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#835-2026-08-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.5 (2026-08-25)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.3.5 (2026-08-25)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#834-2026-07-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.4 (2026-07-15)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.3.4 (2026-07-15)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#833-2026-07-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.3 (2026-07-08)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.3.3 (2026-07-08)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#832-2026-06-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.2 (2026-06-24)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.3.2 (2026-06-24)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#831-2026-06-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.1 (2026-06-23)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.3.1 (2026-06-23)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#830-2026-06-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.0 (2026-06-19)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.3.0 (2026-06-19)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#821-2026-06-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.2.1 (2026-06-07)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.2.1 (2026-06-07)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#820-2026-05-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.2.0 (2026-05-31)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.2.0 (2026-05-31)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#813-2026-05-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.1.3 (2026-05-19)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.1.3 (2026-05-19)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#812-2026-05-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.1.2 (2026-05-18)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.1.2 (2026-05-18)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#811-2026-05-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.1.1 (2026-05-18)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.1.1 (2026-05-18)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#810-2026-05-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.1.0 (2026-05-17)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.1.0 (2026-05-17)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#808-2026-05-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.0.8 (2026-05-13)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.0.8 (2026-05-13)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#807-2026-05-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.0.7 (2026-05-12)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.0.7 (2026-05-12)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#806-2026-05-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.0.6 (2026-05-11)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.0.6 (2026-05-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#805-2026-05-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.0.5 (2026-05-11)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.0.5 (2026-05-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#804-2026-05-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.0.4 (2026-05-11)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.0.4 (2026-05-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#803-2026-05-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.0.3 (2026-05-11)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.0.3 (2026-05-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#802-2026-05-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.0.2 (2026-05-11)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.0.2 (2026-05-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#770-2026-05-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.7.0 (2026-05-11)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7.7.0 (2026-05-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#760-2026-02-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.6.0 (2026-02-07)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7.6.0 (2026-02-07)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#750-2026-02-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.5.0 (2026-02-06)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7.5.0 (2026-02-06)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#740-2026-02-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.4.0 (2026-02-06)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7.4.0 (2026-02-06)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#730-2026-02-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.3.0 (2026-02-06)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7.3.0 (2026-02-06)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    REST API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Python
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../node/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Node
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../languages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Languages
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/writing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Writing guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Glossary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/scenario-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scenario template
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#940-2026-10-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.4.0 (2026-10-26)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.4.0 (2026-10-26)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#931-2026-10-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.3.1 (2026-10-20)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.3.1 (2026-10-20)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#930-2026-10-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.3.0 (2026-10-20)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.3.0 (2026-10-20)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#921-2026-10-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.2.1 (2026-10-07)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.2.1 (2026-10-07)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#920-2026-10-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.2.0 (2026-10-07)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.2.0 (2026-10-07)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#912-2026-10-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.1.2 (2026-10-05)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.1.2 (2026-10-05)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#911-2026-10-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.1.1 (2026-10-05)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.1.1 (2026-10-05)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#910-2026-10-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.1.0 (2026-10-01)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.1.0 (2026-10-01)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#900-2026-10-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.0.0 (2026-10-01)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.0.0 (2026-10-01)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚠ BREAKING CHANGES
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#features_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#840-2026-08-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.4.0 (2026-08-25)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.4.0 (2026-08-25)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#835-2026-08-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.5 (2026-08-25)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.3.5 (2026-08-25)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#834-2026-07-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.4 (2026-07-15)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.3.4 (2026-07-15)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#833-2026-07-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.3 (2026-07-08)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.3.3 (2026-07-08)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#832-2026-06-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.2 (2026-06-24)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.3.2 (2026-06-24)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#831-2026-06-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.1 (2026-06-23)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.3.1 (2026-06-23)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#830-2026-06-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.0 (2026-06-19)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.3.0 (2026-06-19)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#821-2026-06-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.2.1 (2026-06-07)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.2.1 (2026-06-07)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#820-2026-05-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.2.0 (2026-05-31)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.2.0 (2026-05-31)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#813-2026-05-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.1.3 (2026-05-19)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.1.3 (2026-05-19)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#812-2026-05-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.1.2 (2026-05-18)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.1.2 (2026-05-18)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#811-2026-05-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.1.1 (2026-05-18)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.1.1 (2026-05-18)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#810-2026-05-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.1.0 (2026-05-17)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.1.0 (2026-05-17)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#808-2026-05-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.0.8 (2026-05-13)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.0.8 (2026-05-13)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#807-2026-05-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.0.7 (2026-05-12)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.0.7 (2026-05-12)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#806-2026-05-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.0.6 (2026-05-11)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.0.6 (2026-05-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#805-2026-05-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.0.5 (2026-05-11)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.0.5 (2026-05-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#804-2026-05-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.0.4 (2026-05-11)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.0.4 (2026-05-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#803-2026-05-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.0.3 (2026-05-11)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.0.3 (2026-05-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#802-2026-05-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.0.2 (2026-05-11)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.0.2 (2026-05-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#770-2026-05-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.7.0 (2026-05-11)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7.7.0 (2026-05-11)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#760-2026-02-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.6.0 (2026-02-07)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7.6.0 (2026-02-07)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#750-2026-02-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.5.0 (2026-02-06)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7.5.0 (2026-02-06)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#740-2026-02-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.4.0 (2026-02-06)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7.4.0 (2026-02-06)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#730-2026-02-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.3.0 (2026-02-06)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7.3.0 (2026-02-06)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bug Fixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<!-- generated by scripts/prepare_docs_build.py; do not edit -->
+<h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<p>Release history through the version of this documentation build.</p>
+<h2 id="940-2026-10-26"><a href="https://github.com/mediacms-io/mediacms/compare/v9.3.1...v9.4.0">9.4.0</a> (2026-10-26)<a class="headerlink" href="#940-2026-10-26" title="Permanent link">&para;</a></h2>
+<h3 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Video player optimizations (<a href="https://github.com/mediacms-io/mediacms/issues/1610">#1610</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/e4f9f973d5c4c9143227d1c549969cdb6a44d25e">e4f9f97</a>)</li>
+</ul>
+<h2 id="931-2026-10-20"><a href="https://github.com/mediacms-io/mediacms/compare/v9.3.0...v9.3.1">9.3.1</a> (2026-10-20)<a class="headerlink" href="#931-2026-10-20" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes">Bug Fixes<a class="headerlink" href="#bug-fixes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>like and dislike buttons (<a href="https://github.com/mediacms-io/mediacms/issues/1608">#1608</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/f0658414439b59d3fabab82c007c2739114e6fb4">f065841</a>)</li>
+</ul>
+<h2 id="930-2026-10-20"><a href="https://github.com/mediacms-io/mediacms/compare/v9.2.1...v9.3.0">9.3.0</a> (2026-10-20)<a class="headerlink" href="#930-2026-10-20" title="Permanent link">&para;</a></h2>
+<h3 id="features_1">Features<a class="headerlink" href="#features_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>misc Kaltura fixes (<a href="https://github.com/mediacms-io/mediacms/issues/1606">#1606</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/92d531304b53068647da14f70eeebfea5cabd4d4">92d5313</a>)</li>
+</ul>
+<h3 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>add ZopDay to Commercial Hostings (<a href="https://github.com/mediacms-io/mediacms/issues/1604">#1604</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/874e687d29bfcacb7c4d67f409d6ea0e73ca0365">874e687</a>)</li>
+</ul>
+<h2 id="921-2026-10-07"><a href="https://github.com/mediacms-io/mediacms/compare/v9.2.0...v9.2.1">9.2.1</a> (2026-10-07)<a class="headerlink" href="#921-2026-10-07" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_1">Bug Fixes<a class="headerlink" href="#bug-fixes_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>trimming video (<a href="https://github.com/mediacms-io/mediacms/issues/1600">#1600</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/a1ffd4677cfb976a1dd591227783f881e6fc2ad9">a1ffd46</a>)</li>
+</ul>
+<h2 id="920-2026-10-07"><a href="https://github.com/mediacms-io/mediacms/compare/v9.1.2...v9.2.0">9.2.0</a> (2026-10-07)<a class="headerlink" href="#920-2026-10-07" title="Permanent link">&para;</a></h2>
+<h3 id="features_2">Features<a class="headerlink" href="#features_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>upgrade React from 17 to 19 and modernize build (<a href="https://github.com/mediacms-io/mediacms/issues/1599">#1599</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/d1112c06b13b0c13d836316daf0201f8b705244c">d1112c0</a>)</li>
+</ul>
+<h2 id="912-2026-10-05"><a href="https://github.com/mediacms-io/mediacms/compare/v9.1.1...v9.1.2">9.1.2</a> (2026-10-05)<a class="headerlink" href="#912-2026-10-05" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_2">Bug Fixes<a class="headerlink" href="#bug-fixes_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>tests infrastructure (<a href="https://github.com/mediacms-io/mediacms/issues/1598">#1598</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/ce49813cc6aa1a1ab58c015f5118558291efbae3">ce49813</a>)</li>
+</ul>
+<h2 id="911-2026-10-05"><a href="https://github.com/mediacms-io/mediacms/compare/v9.1.0...v9.1.1">9.1.1</a> (2026-10-05)<a class="headerlink" href="#911-2026-10-05" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_3">Bug Fixes<a class="headerlink" href="#bug-fixes_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>issue with trim video (<a href="https://github.com/mediacms-io/mediacms/issues/1597">#1597</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/2cdf0174533df6e5efa4bf62d438199d73bc2dc2">2cdf017</a>)</li>
+</ul>
+<h2 id="910-2026-10-01"><a href="https://github.com/mediacms-io/mediacms/compare/v9.0.0...v9.1.0">9.1.0</a> (2026-10-01)<a class="headerlink" href="#910-2026-10-01" title="Permanent link">&para;</a></h2>
+<h3 id="features_3">Features<a class="headerlink" href="#features_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>LTI changes for ItsLearning LMS support (<a href="https://github.com/mediacms-io/mediacms/issues/1596">#1596</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/db74610908c7575310159f472e1b3b7759d1cae7">db74610</a>)</li>
+</ul>
+<h2 id="900-2026-10-01"><a href="https://github.com/mediacms-io/mediacms/compare/v8.4.0...v9.0.0">9.0.0</a> (2026-10-01)<a class="headerlink" href="#900-2026-10-01" title="Permanent link">&para;</a></h2>
+<h3 id="breaking-changes">⚠ BREAKING CHANGES<a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>migrate media from Kaltura, YouTube and Panopto (#1571)</li>
+</ul>
+<h3 id="features_4">Features<a class="headerlink" href="#features_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>migrate media from Kaltura, YouTube and Panopto (<a href="https://github.com/mediacms-io/mediacms/issues/1571">#1571</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/cb14ea94f79960180550cafe6f207690a75a9ff9">cb14ea9</a>)</li>
+</ul>
+<h2 id="840-2026-08-25"><a href="https://github.com/mediacms-io/mediacms/compare/v8.3.5...v8.4.0">8.4.0</a> (2026-08-25)<a class="headerlink" href="#840-2026-08-25" title="Permanent link">&para;</a></h2>
+<h3 id="features_5">Features<a class="headerlink" href="#features_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>trigger release (<a href="https://github.com/mediacms-io/mediacms/commit/6efb9a494a8c0dcdf2264f4adc0ff49b892417ea">6efb9a4</a>)</li>
+</ul>
+<h2 id="835-2026-08-25"><a href="https://github.com/mediacms-io/mediacms/compare/v8.3.4...v8.3.5">8.3.5</a> (2026-08-25)<a class="headerlink" href="#835-2026-08-25" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_4">Bug Fixes<a class="headerlink" href="#bug-fixes_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>subtitles errors (<a href="https://github.com/mediacms-io/mediacms/issues/1560">#1560</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/7d25502050865ed3303682e1f88f8851b6e85ab0">7d25502</a>)</li>
+</ul>
+<h2 id="834-2026-07-15"><a href="https://github.com/mediacms-io/mediacms/compare/v8.3.3...v8.3.4">8.3.4</a> (2026-07-15)<a class="headerlink" href="#834-2026-07-15" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_5">Bug Fixes<a class="headerlink" href="#bug-fixes_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>use shutil (<a href="https://github.com/mediacms-io/mediacms/commit/e421546e580efac3cbf19b8a84efc5e9f013b194">e421546</a>)</li>
+</ul>
+<h2 id="833-2026-07-08"><a href="https://github.com/mediacms-io/mediacms/compare/v8.3.2...v8.3.3">8.3.3</a> (2026-07-08)<a class="headerlink" href="#833-2026-07-08" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_6">Bug Fixes<a class="headerlink" href="#bug-fixes_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>private media and playlists (<a href="https://github.com/mediacms-io/mediacms/issues/1549">#1549</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/44715e4eb348a4464124b449b801ea8f6653c6dc">44715e4</a>)</li>
+</ul>
+<h2 id="832-2026-06-24"><a href="https://github.com/mediacms-io/mediacms/compare/v8.3.1...v8.3.2">8.3.2</a> (2026-06-24)<a class="headerlink" href="#832-2026-06-24" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_7">Bug Fixes<a class="headerlink" href="#bug-fixes_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>nginx traversal (<a href="https://github.com/mediacms-io/mediacms/issues/1545">#1545</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/a223f0fd6015305d8f620474ef0d84ec5869ea97">a223f0f</a>)</li>
+</ul>
+<h2 id="831-2026-06-23"><a href="https://github.com/mediacms-io/mediacms/compare/v8.3.0...v8.3.1">8.3.1</a> (2026-06-23)<a class="headerlink" href="#831-2026-06-23" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_8">Bug Fixes<a class="headerlink" href="#bug-fixes_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li>update documentation regarding plugin (<a href="https://github.com/mediacms-io/mediacms/issues/1544">#1544</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/15e9e509e5a27745b8aff575d59d93a7f33e0f57">15e9e50</a>)</li>
+</ul>
+<h2 id="830-2026-06-19"><a href="https://github.com/mediacms-io/mediacms/compare/v8.2.1...v8.3.0">8.3.0</a> (2026-06-19)<a class="headerlink" href="#830-2026-06-19" title="Permanent link">&para;</a></h2>
+<h3 id="features_6">Features<a class="headerlink" href="#features_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>split moodle plugin into 2 (<a href="https://github.com/mediacms-io/mediacms/commit/d02dfcf7d60c4c26ce222b58cd2a178e12f6b78a">d02dfcf</a>)</li>
+</ul>
+<h3 id="documentation_1">Documentation<a class="headerlink" href="#documentation_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Moodle plugin doc (<a href="https://github.com/mediacms-io/mediacms/issues/1539">#1539</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/8a59eb6977c48c0c63d586332db4921fc67dba18">8a59eb6</a>)</li>
+<li>Moodle Plugin Documentation (<a href="https://github.com/mediacms-io/mediacms/issues/1537">#1537</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/7ee720fee4ac1d416bf1614b7447a987a018bb01">7ee720f</a>)</li>
+</ul>
+<h2 id="821-2026-06-07"><a href="https://github.com/mediacms-io/mediacms/compare/v8.2.0...v8.2.1">8.2.1</a> (2026-06-07)<a class="headerlink" href="#821-2026-06-07" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_9">Bug Fixes<a class="headerlink" href="#bug-fixes_9" title="Permanent link">&para;</a></h3>
+<ul>
+<li>SAML provider add guard to skip empty mappings before iterating (<a href="https://github.com/mediacms-io/mediacms/issues/1536">#1536</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/9da6a85ad86f5092edb96495eeb1cca22d5334bf">9da6a85</a>)</li>
+</ul>
+<h2 id="820-2026-05-31"><a href="https://github.com/mediacms-io/mediacms/compare/v8.1.3...v8.2.0">8.2.0</a> (2026-05-31)<a class="headerlink" href="#820-2026-05-31" title="Permanent link">&para;</a></h2>
+<h3 id="features_7">Features<a class="headerlink" href="#features_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>configure SP certificate and private key via SAMLConfiguration (<a href="https://github.com/mediacms-io/mediacms/issues/1531">#1531</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/95644dc9615f428191d9fda0847c1b91a0b094a5">95644dc</a>)</li>
+</ul>
+<h2 id="813-2026-05-19"><a href="https://github.com/mediacms-io/mediacms/compare/v8.1.2...v8.1.3">8.1.3</a> (2026-05-19)<a class="headerlink" href="#813-2026-05-19" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_10">Bug Fixes<a class="headerlink" href="#bug-fixes_10" title="Permanent link">&para;</a></h3>
+<ul>
+<li>django connection settings (<a href="https://github.com/mediacms-io/mediacms/issues/1529">#1529</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/e89c4a3c8523574b5852a434ed67e281b6290584">e89c4a3</a>)</li>
+<li>prestart.sh loaddata re-runs on every container restart (<a href="https://github.com/mediacms-io/mediacms/issues/1502">#1502</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/777b06bbebf141e5b1cb27e17533fe65d57eb6cd">777b06b</a>)</li>
+</ul>
+<h2 id="812-2026-05-18"><a href="https://github.com/mediacms-io/mediacms/compare/v8.1.1...v8.1.2">8.1.2</a> (2026-05-18)<a class="headerlink" href="#812-2026-05-18" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_11">Bug Fixes<a class="headerlink" href="#bug-fixes_11" title="Permanent link">&para;</a></h3>
+<ul>
+<li>remove redundant check (<a href="https://github.com/mediacms-io/mediacms/issues/1528">#1528</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/c7a673bbbf46efc37621dc4a5109a85fc10e1317">c7a673b</a>)</li>
+</ul>
+<h2 id="811-2026-05-18"><a href="https://github.com/mediacms-io/mediacms/compare/v8.1.0...v8.1.1">8.1.1</a> (2026-05-18)<a class="headerlink" href="#811-2026-05-18" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_12">Bug Fixes<a class="headerlink" href="#bug-fixes_12" title="Permanent link">&para;</a></h3>
+<ul>
+<li>x-accell headers on uploaded poster (<a href="https://github.com/mediacms-io/mediacms/issues/1526">#1526</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/ae63a5af647c8865b96e6e50dda1ea9d29b5bd0b">ae63a5a</a>)</li>
+</ul>
+<h2 id="810-2026-05-17"><a href="https://github.com/mediacms-io/mediacms/compare/v8.0.8...v8.1.0">8.1.0</a> (2026-05-17)<a class="headerlink" href="#810-2026-05-17" title="Permanent link">&para;</a></h2>
+<h3 id="features_8">Features<a class="headerlink" href="#features_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li>introduce x-accell headers (<a href="https://github.com/mediacms-io/mediacms/commit/9302559d4bb3e4d0adb299ed37438b04c39e1864">9302559</a>)</li>
+</ul>
+<h2 id="808-2026-05-13"><a href="https://github.com/mediacms-io/mediacms/compare/v8.0.7...v8.0.8">8.0.8</a> (2026-05-13)<a class="headerlink" href="#808-2026-05-13" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_13">Bug Fixes<a class="headerlink" href="#bug-fixes_13" title="Permanent link">&para;</a></h3>
+<ul>
+<li>update documentation and fix smaller issues (<a href="https://github.com/mediacms-io/mediacms/issues/1520">#1520</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/d6a11514e54b9341ec8a306a259adce6b4199d42">d6a1151</a>)</li>
+</ul>
+<h2 id="807-2026-05-12"><a href="https://github.com/mediacms-io/mediacms/compare/v8.0.6...v8.0.7">8.0.7</a> (2026-05-12)<a class="headerlink" href="#807-2026-05-12" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_14">Bug Fixes<a class="headerlink" href="#bug-fixes_14" title="Permanent link">&para;</a></h3>
+<ul>
+<li>bring related items back (<a href="https://github.com/mediacms-io/mediacms/issues/1515">#1515</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/6ee5bef6ce31cf849941f65d0817e53b8f03362f">6ee5bef</a>)</li>
+</ul>
+<h2 id="806-2026-05-11"><a href="https://github.com/mediacms-io/mediacms/compare/v8.0.5...v8.0.6">8.0.6</a> (2026-05-11)<a class="headerlink" href="#806-2026-05-11" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_15">Bug Fixes<a class="headerlink" href="#bug-fixes_15" title="Permanent link">&para;</a></h3>
+<ul>
+<li>better place secret key settings (<a href="https://github.com/mediacms-io/mediacms/commit/4f11addcfd6657e7e63eed0570b1d4d9bca75698">4f11add</a>)</li>
+</ul>
+<h2 id="805-2026-05-11"><a href="https://github.com/mediacms-io/mediacms/compare/v8.0.4...v8.0.5">8.0.5</a> (2026-05-11)<a class="headerlink" href="#805-2026-05-11" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_16">Bug Fixes<a class="headerlink" href="#bug-fixes_16" title="Permanent link">&para;</a></h3>
+<ul>
+<li>add secret key to gitignore (<a href="https://github.com/mediacms-io/mediacms/commit/b6da9c4662b3fba234b8dc69700ffa44fced7482">b6da9c4</a>)</li>
+</ul>
+<h2 id="804-2026-05-11"><a href="https://github.com/mediacms-io/mediacms/compare/v8.0.3...v8.0.4">8.0.4</a> (2026-05-11)<a class="headerlink" href="#804-2026-05-11" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_17">Bug Fixes<a class="headerlink" href="#bug-fixes_17" title="Permanent link">&para;</a></h3>
+<ul>
+<li>docker compose settings, provide key (<a href="https://github.com/mediacms-io/mediacms/commit/318dad0e5d2512d68068c019eb87f942f83318e9">318dad0</a>)</li>
+</ul>
+<h2 id="803-2026-05-11"><a href="https://github.com/mediacms-io/mediacms/compare/v8.0.2...v8.0.3">8.0.3</a> (2026-05-11)<a class="headerlink" href="#803-2026-05-11" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_18">Bug Fixes<a class="headerlink" href="#bug-fixes_18" title="Permanent link">&para;</a></h3>
+<ul>
+<li>secret key (<a href="https://github.com/mediacms-io/mediacms/commit/559977f9bc74412739784926862b94a558e6fd84">559977f</a>)</li>
+</ul>
+<h2 id="802-2026-05-11"><a href="https://github.com/mediacms-io/mediacms/compare/v8.0.1...v8.0.2">8.0.2</a> (2026-05-11)<a class="headerlink" href="#802-2026-05-11" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_19">Bug Fixes<a class="headerlink" href="#bug-fixes_19" title="Permanent link">&para;</a></h3>
+<ul>
+<li>provide Bento4 url (<a href="https://github.com/mediacms-io/mediacms/commit/c19c5207e907cbd7d0c968d8cd8caaec20706277">c19c520</a>)</li>
+</ul>
+<h2 id="770-2026-05-11"><a href="https://github.com/mediacms-io/mediacms/compare/v7.6.0...v7.7.0">7.7.0</a> (2026-05-11)<a class="headerlink" href="#770-2026-05-11" title="Permanent link">&para;</a></h2>
+<h3 id="features_9">Features<a class="headerlink" href="#features_9" title="Permanent link">&para;</a></h3>
+<ul>
+<li>LTI support and Moodle plugin (<a href="https://github.com/mediacms-io/mediacms/commit/55ab7ff34fcd05806b845cf958f07841a7cdfc78">55ab7ff</a>)</li>
+</ul>
+<h2 id="760-2026-02-07"><a href="https://github.com/mediacms-io/mediacms/compare/v7.5.0...v7.6.0">7.6.0</a> (2026-02-07)<a class="headerlink" href="#760-2026-02-07" title="Permanent link">&para;</a></h2>
+<h3 id="features_10">Features<a class="headerlink" href="#features_10" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Create SECURITY.md (<a href="https://github.com/mediacms-io/mediacms/issues/1485">#1485</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/11449c2187d0f450b86915d88f92595a1825e4cf">11449c2</a>)</li>
+</ul>
+<h2 id="750-2026-02-06"><a href="https://github.com/mediacms-io/mediacms/compare/v7.4.0...v7.5.0">7.5.0</a> (2026-02-06)<a class="headerlink" href="#750-2026-02-06" title="Permanent link">&para;</a></h2>
+<h3 id="features_11">Features<a class="headerlink" href="#features_11" title="Permanent link">&para;</a></h3>
+<ul>
+<li>bump version (<a href="https://github.com/mediacms-io/mediacms/commit/36d815c0cfbe21d3136541d410d545742b9ebecd">36d815c</a>)</li>
+</ul>
+<h2 id="740-2026-02-06"><a href="https://github.com/mediacms-io/mediacms/compare/v7.3.0...v7.4.0">7.4.0</a> (2026-02-06)<a class="headerlink" href="#740-2026-02-06" title="Permanent link">&para;</a></h2>
+<h3 id="features_12">Features<a class="headerlink" href="#features_12" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add video player context menu with share/embed options (<a href="https://github.com/mediacms-io/mediacms/issues/1472">#1472</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/74952f68d79bc67617edb38eac62d2f5e7457565">74952f6</a>)</li>
+</ul>
+<h2 id="730-2026-02-06"><a href="https://github.com/mediacms-io/mediacms/compare/v7.2.0...v7.3.0">7.3.0</a> (2026-02-06)<a class="headerlink" href="#730-2026-02-06" title="Permanent link">&para;</a></h2>
+<h3 id="features_13">Features<a class="headerlink" href="#features_13" title="Permanent link">&para;</a></h3>
+<ul>
+<li>add package json for semantic release (<a href="https://github.com/mediacms-io/mediacms/commit/b405a04e346ca81b7d3f4e099eb984e7785cdd0f">b405a04</a>)</li>
+<li>add semantic release github actions (<a href="https://github.com/mediacms-io/mediacms/commit/76a27ae25609178c1bd47c947b9f1a082c791d61">76a27ae</a>)</li>
+<li>frontend unit tests (<a href="https://github.com/mediacms-io/mediacms/commit/1c15880ae3ef1ce77f53d5b473dfc0cc448b4977">1c15880</a>)</li>
+<li>Implement persistent "Embed Mode" to hide UI shell via Session Storage (<a href="https://github.com/mediacms-io/mediacms/issues/1484">#1484</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/223e87073f7d5e44130c9976854cac670db0ae66">223e870</a>)</li>
+<li>Improve Visual Distinction Between Trim and Chapters Editors (<a href="https://github.com/mediacms-io/mediacms/issues/1445">#1445</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/d9b1d6cab1d2bdfc16f799a0a27b64313e2e0d22">d9b1d6c</a>)</li>
+<li>semantic release (<a href="https://github.com/mediacms-io/mediacms/commit/b76282f9e465a39c2da5e9a22184d1db23de3f56">b76282f</a>)</li>
+</ul>
+<h3 id="bug-fixes_20">Bug Fixes<a class="headerlink" href="#bug-fixes_20" title="Permanent link">&para;</a></h3>
+<ul>
+<li>add delay to task creation (<a href="https://github.com/mediacms-io/mediacms/commit/1b3cdfd302abc5e69ebe01ca52b5091f3b24c0b2">1b3cdfd</a>)</li>
+<li>Add regex denoter and improve celerybeat gitignore (<a href="https://github.com/mediacms-io/mediacms/issues/1446">#1446</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/90331f3b4a2a5737de9dd75ab45c096944813c42">90331f3</a>)</li>
+<li>adjust poster url for audio (<a href="https://github.com/mediacms-io/mediacms/commit/01912ea1f99ef43793a65712539d6264f1f6410f">01912ea</a>)</li>
+<li>Chapter numbering and preserve custom titles on segment reorder (<a href="https://github.com/mediacms-io/mediacms/issues/1435">#1435</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/cd7dd4f72c9f0bac466c680f686a9ecfdd3a38dd">cd7dd4f</a>)</li>
+<li>Show default chapter names in textarea instead of placeholder text (<a href="https://github.com/mediacms-io/mediacms/issues/1428">#1428</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/5eb6fafb8c6928b8bc3fe5f0c7af315273f78a55">5eb6faf</a>)</li>
+<li>static files (<a href="https://github.com/mediacms-io/mediacms/issues/1429">#1429</a>) (<a href="https://github.com/mediacms-io/mediacms/commit/ba2c31b1e65b7f508dee598b1f2d86f01f9bf036">ba2c31b</a>)</li>
+</ul>
+<h3 id="documentation_2">Documentation<a class="headerlink" href="#documentation_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>update page link (<a href="https://github.com/mediacms-io/mediacms/commit/aeef8284bfba2a9a7f69c684f96c54f0e0e0cf92">aeef828</a>)</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/mediacms-io/mediacms" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "toc.follow"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>
