@@ -246,7 +246,9 @@ class RecommendedAndRelatedMediaTests(TestCase):
         self.assertEqual(methods.show_related_media(self.media), [])
 
     @override_settings(RELATED_MEDIA_STRATEGY="calculated")
-    def test_calculated_strategy_is_not_implemented_yet(self):
+    def test_calculated_strategy_returns_empty_until_implemented(self):
+        # Documented current behavior; warn-mode expectation lives in
+        # tests/unimplemented/test_stubbed_features.py.
         self.assertEqual(methods.show_related_media(self.media), [])
 
 

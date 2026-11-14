@@ -39,6 +39,30 @@ def pytest_unconfigure(config):
         shutil.rmtree(media_root, ignore_errors=True)
 
 
+def pytest_terminal_summary(terminalreporter, exitstatus, config):
+    """Surface unimplemented (warn-mode) cases next to pass/fail counts."""
+    unimplemented = []
+    for key in ("xfailed", "skipped"):
+        for report in terminalreporter.stats.get(key, []):
+            text = " ".join(
+                str(part)
+                for part in (
+                    getattr(report, "longrepr", None),
+                    getattr(report, "wasxfail", None),
+                    getattr(report, "reason", None),
+                )
+                if part
+            )
+            if "[unimplemented]" in text and report not in unimplemented:
+                unimplemented.append(report)
+    if unimplemented:
+        terminalreporter.write_sep("=", f"{len(unimplemented)} unimplemented feature(s) (warn-mode)")
+        for report in unimplemented:
+            nodeid = getattr(report, "nodeid", None) or "?"
+            reason = getattr(report, "wasxfail", None) or getattr(report, "longrepr", "")
+            terminalreporter.write_line(f"  - {nodeid}: {reason}")
+
+
 @pytest.fixture(autouse=True)
 def _clear_cache():
     cache.clear()

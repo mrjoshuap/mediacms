@@ -1,3 +1,4 @@
+import { testUnimplemented } from '../../_support/unimplemented';
 import { init, settings } from '../../../src/static/js/utils/settings/theme';
 
 const themeConfig = (theme?: any, logo?: any) => {
@@ -30,10 +31,13 @@ describe('utils/settings', () => {
             expect(themeConfig({ switch: { enabled: undefined } }).switch.enabled).toBe(true);
 
             expect(themeConfig({ switch: { position: 'sidebar' } }).switch.position).toBe('sidebar');
-            expect(themeConfig({ switch: { position: ' sidebar ' } }).switch.position).toBe('header'); // @todo: Fix this. It should be 'sidebar'
+            // Current buggy behavior: trimmed ' sidebar ' does not match exact 'sidebar'.
+            expect(themeConfig({ switch: { position: ' sidebar ' } }).switch.position).toBe('header');
             expect(themeConfig({ switch: { position: 'header' } }).switch.position).toBe('header');
             expect(themeConfig({ switch: { position: 'foot' } }).switch.position).toBe('header');
         });
+
+        testUnimplemented("theme switch.position ' sidebar ' should trim to 'sidebar'");
 
         test('Trims and maps logo URLs for both light and dark modes; ignores missing fields', () => {
             const cfg = themeConfig(undefined, {

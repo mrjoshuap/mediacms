@@ -41,5 +41,8 @@ jobs:
             - name: Test script
               run: npm run test -- --ci
 
+            - name: Coverage summary
+              run: npm run test-coverage -- --ci --coverageReporters=text-summary --coverageReporters=json-summary
+
             - name: Build script
               run: npm run dist

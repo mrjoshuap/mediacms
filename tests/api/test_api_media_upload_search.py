@@ -220,6 +220,14 @@ class MediaUploadTest(TestCase):
         with self.settings(CAN_ADD_MEDIA="nobody"):
             self.assertEqual(self.client.get(MEDIA_LIST_URL).status_code, 200)
 
+    @override_settings(MEDIA_IS_REVIEWED=False)
+    def test_upload_defaults_to_unreviewed_when_review_is_required(self):
+        response = self.upload(title="needs review")
+        self.assertEqual(response.status_code, 201)
+        media = Media.objects.get(friendly_token=response.data["friendly_token"])
+        self.assertFalse(media.is_reviewed)
+        self.assertFalse(media.listable)
+
 
 class MediaEncodingInfoTest(TestCase):
     fixtures = ["fixtures/categories.json", "fixtures/encoding_profiles.json"]
@@ -238,7 +246,12 @@ class MediaEncodingInfoTest(TestCase):
         successful = [info for resolution in encodings.values() for info in resolution.values() if info.get("status") == "success"]
         self.assertTrue(successful)
         self.assertTrue(all(info["url"] for info in successful))
-        self.assertTrue(response.data["hls_info"])
+        from tests._support.bento import mp4hls_is_usable
+
+        if mp4hls_is_usable(video.media_file.path):
+            self.assertTrue(response.data["hls_info"])
+        else:
+            self.assertFalse(response.data.get("hls_info"))
 
 
 class MediaSearchEdgeCasesTest(TestCase):

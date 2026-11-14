@@ -125,6 +125,8 @@ class UserMediaCountTest(TestCase):
         create_media(user, title=unique("private"), state="private")
         request = RequestFactory().get("/admin/")
         request.user = make_user("admin_root", is_superuser=True)
+        # media_count is an optional column; enable it so get_queryset annotates.
+        request.session = {UserAdmin.optional_columns_session_key: ["media_count"]}
         annotated = UserAdmin(User, admin_site).get_queryset(request).get(pk=user.pk)
         self.assertEqual(annotated.media_count_annot, 1)
         self.assertEqual(UserAdmin(User, admin_site).media_count(annotated), 1)

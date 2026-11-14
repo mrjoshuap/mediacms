@@ -423,6 +423,10 @@ class UploadedVideoTranscodeTest(TestCase):
         self.assertTrue(self.media.preview_url.endswith(".mp4"))
 
     def test_hls_master_playlist_and_streams_are_created(self):
+        from tests._support.bento import mp4hls_is_usable
+
+        if not mp4hls_is_usable(self.media.media_file.path):
+            self.skipTest("usable mp4hls binary is not available")
         self.assertTrue(self.media.hls_file.endswith("master.m3u8"))
         self.assertTrue(os.path.exists(self.media.hls_file))
 
@@ -441,12 +445,17 @@ class UploadedVideoTranscodeTest(TestCase):
         self.assertTrue(info[240]["h264"]["url"].endswith(".mp4"))
 
     def test_api_detail_exposes_the_processed_assets(self):
+        from tests._support.bento import mp4hls_is_usable
+
         detail = Client().get(self.media.get_absolute_url(api=True)).json()
 
         self.assertEqual(detail["encoding_status"], "success")
-        self.assertTrue(detail["hls_info"]["master_file"])
         self.assertTrue(detail["sprites_url"])
         self.assertTrue(detail["preview_url"])
+        if mp4hls_is_usable(self.media.media_file.path):
+            self.assertTrue(detail["hls_info"]["master_file"])
+        else:
+            self.assertFalse(detail.get("hls_info"))
 
     def test_the_media_page_renders_for_the_video(self):
         response = Client().get(self.media.get_absolute_url())

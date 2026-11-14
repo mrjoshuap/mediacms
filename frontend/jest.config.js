@@ -12,4 +12,20 @@ module.exports = {
     },
     maxWorkers: '25%',
     collectCoverageFrom: ['src/**'],
+    // Modest floors for the areas expanded by the coverage-gap plan. Raise as
+    // page/viewer/media-page suites deepen; do not lower without documenting why.
+    coverageThreshold: {
+        './src/static/js/pages/': {
+            lines: 25,
+            functions: 20,
+        },
+        './src/static/js/components/media-viewer/': {
+            lines: 40,
+            functions: 40,
+        },
+        './src/static/js/components/media-page/': {
+            lines: 50,
+            functions: 55,
+        },
+    },
 };

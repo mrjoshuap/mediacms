@@ -57,6 +57,7 @@ See [Site health and database](../guides/admin/site.md), [Admin portal map](../g
 * **ops:** Docker upgrade checklist and maintenance backup notes (#1562, #1564)
 * **meta:** AI disclosure attestation on pull request and issue templates (#1640)
 * **settings:** catalog and deploy notes for logging and trusted reverse-proxy settings
+* **tests:** backend `@unimplemented` warn-mode helper, coverage matrix, and gap-fill for playlist membership, review gate, and admin media actions
 
 ## Refactors
 

@@ -68,6 +68,36 @@ describe('js/utils/helpers', () => {
                 });
             });
 
+            test('Error handler maps status 403 with password_required to password error', async () => {
+                const data = { password_required: true, title: 'Secret clip' };
+                const error = { response: { status: 403, data } };
+                mockedAxios.get.mockRejectedValueOnce(error);
+                const errorCb = jest.fn();
+
+                await getRequest(url, true, undefined, errorCb);
+
+                expect(errorCb).toHaveBeenCalledWith({
+                    type: 'password',
+                    error,
+                    message: 'Password required',
+                    data,
+                });
+            });
+
+            test('Error handler maps status 403 without password_required to private error', async () => {
+                const error = { response: { status: 403, data: {} } };
+                mockedAxios.get.mockRejectedValueOnce(error);
+                const errorCb = jest.fn();
+
+                await getRequest(url, true, undefined, errorCb);
+
+                expect(errorCb).toHaveBeenCalledWith({
+                    type: 'private',
+                    error,
+                    message: 'Media is private',
+                });
+            });
+
             test('Error handler maps status 400 to unavailable error', async () => {
                 const error = { response: { status: 400 } };
                 mockedAxios.get.mockRejectedValueOnce(error);

@@ -45,6 +45,12 @@ class TestPermissions(ApiTestCase):
         self.login(self.editor)
         self.assertEqual(self.client.get(API).status_code, 403)
 
+    def test_a_manager_is_rejected(self):
+        manager = create_account(username="manager", password=self.password, is_manager=True)
+        self.login(manager)
+        self.assertEqual(self.client.get(API).status_code, 403)
+        self.assertEqual(self.client.post(API, data=json.dumps({"name": "x", "provider": "kaltura", "connection": CONNECTION}), content_type="application/json").status_code, 403)
+
     def test_a_superuser_is_allowed(self):
         self.login(self.admin)
         self.assertEqual(self.client.get(API).status_code, 200)

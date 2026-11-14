@@ -1,7 +1,7 @@
 import publishedOnDate from '../../../src/static/js/utils/helpers/publishedOnDate';
 
-// Helper to create Date in UTC to avoid timezone issues in CI environments
-const makeDate = (y: number, mZeroBased: number, d: number) => new Date(Date.UTC(y, mZeroBased, d));
+// Local calendar date — publishedOnDate uses getDate()/getMonth()/getFullYear() (local).
+const makeDate = (y: number, mZeroBased: number, d: number) => new Date(y, mZeroBased, d);
 
 describe('js/utils/helpers', () => {
     describe('publishedOnDate', () => {

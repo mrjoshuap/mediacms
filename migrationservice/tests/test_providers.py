@@ -14,6 +14,12 @@ class TestProviderRegistry(TestCase):
         with self.assertRaises(ValueError):
             get_provider_class("vimeo")
 
+    def test_get_provider_rejects_an_unknown_service_provider(self):
+        service = MigrationService(name="broken", provider="kaltura", connection={}, options={})
+        service.provider = "vimeo"
+        with self.assertRaises(ValueError):
+            get_provider(service)
+
     def test_every_registered_provider_is_implemented(self):
         for name in ["kaltura", "panopto", "youtube"]:
             self.assertTrue(get_provider_class(name).implemented, name)

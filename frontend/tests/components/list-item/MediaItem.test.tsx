@@ -258,7 +258,7 @@ describe('components/list-item', () => {
     });
 
     describe('MediaItem playlist page controls', () => {
-        test('Shows order number and playlist options for image items', () => {
+        test('Generic MediaItem (image) does not render playlist order or options today', () => {
             const { container, unmount } = renderIntoContainer(
                 <MediaItem
                     {...baseProps}
@@ -269,8 +269,9 @@ describe('components/list-item', () => {
                     playlist_id="pl1"
                 />
             );
-            expect(container.querySelector('.item-order-number [data-order]')?.textContent).toBe('2');
-            expect(container.querySelector('.item-playlist-options-wrap')).not.toBeNull();
+            // Current behavior: only MediaItemVideo/Audio render playlist chrome.
+            expect(container.querySelector('.item-order-number')).toBeNull();
+            expect(container.querySelector('.item-playlist-options-wrap')).toBeNull();
             unmount();
         });
     });

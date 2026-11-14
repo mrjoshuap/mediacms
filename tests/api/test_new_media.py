@@ -43,7 +43,12 @@ class TestX(TestCase):
         self.assertEqual(Media.objects.filter(media_type='image').count(), 1, "Media identification failed")
         self.assertEqual(Media.objects.filter(user=self.user).count(), 3, "User assignment failed")
         medium_video = Media.objects.get(title="medium_video.mp4")
-        self.assertEqual(len(medium_video.hls_info), 13, "Problem with HLS info")
+        from tests._support.bento import mp4hls_is_usable
+
+        if mp4hls_is_usable(medium_video.media_file.path):
+            self.assertEqual(len(medium_video.hls_info), 13, "Problem with HLS info")
+        else:
+            self.skipTest("usable mp4hls binary is not available")
 
         # using the provided EncodeProfiles, these two files should produce 9 Encoding objects.
         # if new EncodeProfiles are added and enabled, this will break!

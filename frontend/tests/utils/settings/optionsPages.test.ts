@@ -1,3 +1,4 @@
+import { testUnimplemented } from '../../_support/unimplemented';
 import { init, settings } from '../../../src/static/js/utils/settings/optionsPages';
 
 const optionsPagesConfig = (home?: any, search?: any, media?: any, profile?: any, VALID_PAGES?: any) => {
@@ -66,8 +67,11 @@ describe('utils/settings', () => {
             expect(override.media.categoriesWithTitle).toBe(true);
             expect(override.media.htmlInDescription).toBe(true);
             expect(override.media.displayViews).toBe(false);
-            expect(override.media.related.initialSize).toBe(10); // @todo: Fix this! It should return 25.
+            // Current buggy behavior: numeric 25 is ignored and default 10 is kept.
+            expect(override.media.related.initialSize).toBe(10);
         });
+
+        testUnimplemented('optionsPages media.related.initialSize should honor a numeric override of 25');
 
         test('Ignores NaN and non-numeric media.related.initialSize and keeps default 10', () => {
             const cfg1 = optionsPagesConfig(undefined, undefined, { related: { initialSize: NaN } }, undefined, {});

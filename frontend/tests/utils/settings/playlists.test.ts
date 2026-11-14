@@ -1,3 +1,4 @@
+import { testUnimplemented } from '../../_support/unimplemented';
 import { init, settings } from '../../../src/static/js/utils/settings/playlists';
 
 const playlistsConfig = (plists?: any) => {
@@ -25,22 +26,27 @@ describe('utils/settings', () => {
         test('Returns default when provided mediaTypes is non-array or undefined/null', () => {
             expect(playlistsConfig({}).mediaTypes).toEqual(['audio', 'video']);
             expect(playlistsConfig({ mediaTypes: undefined }).mediaTypes).toEqual(['audio', 'video']);
-            // expect(playlistsConfig({ mediaTypes: null }).mediaTypes).toEqual(['audio', 'video']); // @todo: Revisit this behavior
             expect(playlistsConfig({ mediaTypes: 'audio' }).mediaTypes).toEqual(['audio', 'video']);
             expect(playlistsConfig({ mediaTypes: 123 }).mediaTypes).toEqual(['audio', 'video']);
         });
 
-        // @todo: Revisit this behavior
-        test('Handles duplicates and preserves order among valid items', () => {
+        testUnimplemented('playlistsConfig({ mediaTypes: null }) should fall back to default audio/video');
+
+        // Current buggy behavior: duplicates are preserved.
+        test('Handles duplicates and preserves order among valid items (current buggy behavior)', () => {
             const cfg = playlistsConfig({ mediaTypes: ['video', 'audio', 'video', 'audio', 'invalid'] });
             expect(cfg.mediaTypes).toEqual(['video', 'audio', 'video', 'audio']);
         });
 
-        // @todo: Revisit this behavior
-        test('Rejects non-exact case values (e.g., "Audio")', () => {
+        testUnimplemented('playlists mediaTypes should dedupe valid entries');
+
+        // Current buggy behavior: case variants are rejected and defaults apply.
+        test('Rejects non-exact case values (e.g., "Audio") (current buggy behavior)', () => {
             const cfg = playlistsConfig({ mediaTypes: ['Audio', 'Video'] });
             expect(cfg.mediaTypes).toEqual(['audio', 'video']);
         });
+
+        testUnimplemented('playlists mediaTypes should accept case-insensitive "Audio"/"Video"');
 
         test('does not mutate the input object', () => {
             const input = { mediaTypes: ['audio', 'video', 'invalid'] };

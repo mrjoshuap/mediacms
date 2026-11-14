@@ -52,6 +52,8 @@ class VideoTrimTaskTest(TestCase):
         self.assertEqual(Media.objects.filter(user=self.user).count(), 1)
 
     def test_post_trim_refreshes_thumbnails_sprites_and_hls(self):
+        from tests._support.bento import mp4hls_is_usable
+
         request = self.trim_request("replace", ("00:00:02.000", "00:00:08.000"))
 
         tasks.video_trim_task(request.id)
@@ -59,8 +61,11 @@ class VideoTrimTaskTest(TestCase):
         self.video.refresh_from_db()
         self.assertTrue(os.path.exists(self.video.thumbnail.path))
         self.assertTrue(self.video.sprites)
-        self.assertTrue(os.path.exists(self.video.hls_file))
         self.assertTrue(self.rendition_of(self.video).size.endswith("MB"))
+        if mp4hls_is_usable(self.video.media_file.path):
+            self.assertTrue(os.path.exists(self.video.hls_file))
+        else:
+            self.assertFalse(self.video.hls_file)
 
     def test_a_trim_from_the_start_keeps_the_head_of_the_video(self):
         request = self.trim_request("replace", ("00:00:00.000", "00:00:06.000"))

@@ -1,8 +1,10 @@
+import { testUnimplemented } from '../../_support/unimplemented';
 import { imageExtension } from '../../../src/static/js/utils/helpers/imageExtension';
 
 describe('js/utils/helpers', () => {
     describe('imageExtension', () => {
-        // @todo: 'imageExtension' behaves as a 'fileExtension' function. It should be renamed...
+        testUnimplemented('imageExtension should be renamed to fileExtension (it is not image-specific)');
+
         test('Returns the extension for a typical filename', () => {
             expect(imageExtension('photo.png')).toBe('png');
             expect(imageExtension('document.pdf')).toBe('pdf');
@@ -13,11 +15,13 @@ describe('js/utils/helpers', () => {
             expect(imageExtension('backup.2024.12.31.zip')).toBe('zip');
         });
 
-        // @todo: It shouldn't happen. Fix that
-        test('Returns the entire string when there is no dot in the filename', () => {
+        // Current buggy behavior: no-dot inputs return the whole string.
+        test('Returns the entire string when there is no dot in the filename (current buggy behavior)', () => {
             expect(imageExtension('file')).toBe('file');
             expect(imageExtension('README')).toBe('README');
         });
+
+        testUnimplemented('imageExtension should return undefined (not the whole string) when there is no dot');
 
         test('Handles hidden files that start with a dot', () => {
             expect(imageExtension('.gitignore')).toBe('gitignore');

@@ -1,7 +1,6 @@
 import contextlib
 import json
 import os
-import tempfile
 import time
 from datetime import timedelta
 from unittest import mock
@@ -27,6 +26,7 @@ from files.models import (
 )
 from files.tests import create_account, create_media
 from files.tests.media_utils import IMAGE, SMALL_VIDEO
+from tests._support.bento import mp4hls_is_usable
 
 FIXTURES = ["fixtures/categories.json", "fixtures/encoding_profiles.json"]
 
@@ -563,7 +563,10 @@ class EncodeMediaSingleProfileTest(TestCase):
         self.assertAlmostEqual(float(info["video_duration"]), 27.2, delta=0.5)
         self.video.refresh_from_db()
         self.assertEqual(self.video.encoding_status, "success")
-        self.assertTrue(os.path.exists(self.video.hls_file))
+        if mp4hls_is_usable(self.video.media_file.path):
+            self.assertTrue(os.path.exists(self.video.hls_file))
+        else:
+            self.assertFalse(self.video.hls_file)
 
     def test_a_corrupt_source_fails_the_encoding_with_ffmpegs_error(self):
         with open(self.video.media_file.path, "wb") as handle:
@@ -702,20 +705,6 @@ def write_fake_bento_tree(output_dir, resolution, bandwidth=500000, marker=None)
             f'#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH={bandwidth // 10},CODECS="avc1.42E01E",'
             f'RESOLUTION={width}x{resolution},URI="media-1/iframes.m3u8"\n'
         )
-
-
-def mp4hls_is_usable(sample_mp4):
-    """True when configured mp4hls can package a real MP4 in this environment."""
-    command = getattr(settings, "MP4HLS_COMMAND", None)
-    if not command or not os.path.isfile(command) or not os.path.isfile(sample_mp4):
-        return False
-    with tempfile.TemporaryDirectory(dir=settings.TEMP_DIRECTORY) as temp_dir:
-        output_dir = os.path.join(temp_dir, "probe")
-        result = helpers.run_command([command, "--segment-duration=4", f"--output-dir={output_dir}", sample_mp4])
-        combined = f"{result.get('out', '')}\n{result.get('error', '')}".lower()
-        if "rosetta error" in combined or "failed to open elf" in combined:
-            return False
-        return os.path.exists(os.path.join(output_dir, "master.m3u8"))
 
 
 class CreateHlsTest(TestCase):

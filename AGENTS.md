@@ -92,6 +92,7 @@ This repo uses **semantic-release with Conventional Commits** (`.releaserc.json`
 -   `pytest.ini` uses `cms/test_settings.py` as the Django settings module.
 -   `conftest.py` blocks network access to non-local hosts during tests and cleans up temp media dirs — do not make tests hit external services.
 -   Coverage config in `.coveragerc` (migrations, tests, frontend, etc. are omitted).
+-   For stubbed/absent product behavior, use `@unimplemented` from `tests/_support/unimplemented.py` (warn-mode; does not fail CI). See `docs/en/guides/developer/tests.md`.
 
 ## Key Domain Knowledge
 

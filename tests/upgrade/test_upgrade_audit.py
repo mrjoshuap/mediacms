@@ -77,17 +77,14 @@ class UpgradeAnswerTest(TestCase):
 
     def test_category_and_tag_counts_rebuild_once(self):
         user = create_account()
-        media = create_media(user, title="counted", state="public")
-        media.is_reviewed = True
-        media.save()
+        media = create_media(user, title="counted", state="public", is_reviewed=True)
         category = Category.objects.create(uid="count-uid", title="Counted")
-        category.media_count = 0
-        category.save(update_fields=["media_count"])
-        media.category.add(category)
         tag = Tag.objects.create(title="Counted tag")
-        tag.media_count = 4
-        tag.save(update_fields=["media_count"])
+        media.category.add(category)
         media.tags.add(tag)
+        # M2M signals may already sync counts; force stale values so rebuild has work.
+        Category.objects.filter(pk=category.pk).update(media_count=0)
+        Tag.objects.filter(pk=tag.pk).update(media_count=4)
         self.assertGreater(rebuild_taxonomy_counts(), 0)
         category.refresh_from_db()
         tag.refresh_from_db()

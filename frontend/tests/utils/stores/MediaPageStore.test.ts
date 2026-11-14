@@ -241,15 +241,96 @@ describe('utils/stores', () => {
                 [{ type: 'network', error: 'e' }, 'network', "Αn error occurred while loading the media's data"],
                 [{ type: 'private', message: 'Media is private' }, 'private', 'Media is private'],
                 [{ type: 'unavailable', message: 'Media is unavailable' }, 'unavailable', 'Media is unavailable'],
-            ])('Load error %j sets error type and message', (error, type, message) => {
+            ])(
+                'Load error %j sets error type and message (current buggy behavior for network copy)',
+                (error, type, message) => {
+                    const ctx = loadStore();
+                    const listener = jest.fn();
+                    ctx.store.on('loaded_media_error', listener);
+                    ctx.actions.loadMediaData();
+                    ctx.getRequest.mock.calls[0][3](error);
+                    expect(ctx.store.get('media-load-error-type')).toBe(type);
+                    expect(ctx.store.get('media-load-error-message')).toBe(message);
+                    expect(listener).toHaveBeenCalledTimes(1);
+                }
+            );
+
+            test('Load error type password emits loaded_media_password_required and sets password fields', () => {
                 const ctx = loadStore();
-                const listener = jest.fn();
-                ctx.store.on('loaded_media_error', listener);
+                const passwordListener = jest.fn();
+                const errorListener = jest.fn();
+                ctx.store.on('loaded_media_password_required', passwordListener);
+                ctx.store.on('loaded_media_error', errorListener);
                 ctx.actions.loadMediaData();
-                ctx.getRequest.mock.calls[0][3](error);
-                expect(ctx.store.get('media-load-error-type')).toBe(type);
-                expect(ctx.store.get('media-load-error-message')).toBe(message);
-                expect(listener).toHaveBeenCalledTimes(1);
+                ctx.getRequest.mock.calls[0][3]({ type: 'password', data: { title: 'Secret media' } });
+                expect(passwordListener).toHaveBeenCalledTimes(1);
+                expect(errorListener).not.toHaveBeenCalled();
+                expect(ctx.store.get('password-required')).toBe(true);
+                expect(ctx.store.get('password-media-title')).toBe('Secret media');
+                expect(ctx.store.get('password-unlock-error')).toBeNull();
+                expect(ctx.store.get('password-unlocking')).toBe(false);
+                expect(ctx.store.get('media-load-error-type')).toBeNull();
+            });
+
+            test('UNLOCK_MEDIA_PASSWORD posts to unlock URL and reloads media on success', () => {
+                const ctx = loadStore();
+                const pending = jest.fn();
+                const unlocked = jest.fn();
+                ctx.store.on('media_password_unlock_pending', pending);
+                ctx.store.on('media_password_unlocked', unlocked);
+
+                ctx.actions.loadMediaData();
+                const getCallsBefore = ctx.getRequest.mock.calls.length;
+
+                ctx.actions.unlockMediaPassword('secret');
+
+                expect(pending).toHaveBeenCalledTimes(1);
+                expect(ctx.store.get('password-unlocking')).toBe(true);
+                expect(ctx.postRequest).toHaveBeenCalledWith(
+                    api + '/media/abc/unlock',
+                    { password: 'secret' },
+                    csrfConfig,
+                    false,
+                    expect.any(Function),
+                    expect.any(Function)
+                );
+
+                ctx.postRequest.mock.calls[0][4]();
+
+                expect(unlocked).toHaveBeenCalledTimes(1);
+                expect(ctx.store.get('password-required')).toBe(false);
+                expect(ctx.store.get('password-unlocking')).toBe(false);
+                expect(ctx.store.get('password-unlock-error')).toBeNull();
+                expect(ctx.getRequest.mock.calls.length).toBeGreaterThan(getCallsBefore);
+            });
+
+            test('UNLOCK_MEDIA_PASSWORD failure with 403 shows incorrect password', () => {
+                const ctx = loadStore();
+                const failed = jest.fn();
+                ctx.store.on('media_password_unlock_failed', failed);
+                ctx.actions.loadMediaData();
+                ctx.actions.unlockMediaPassword('wrong');
+                ctx.postRequest.mock.calls[0][5]({ response: { status: 403 } });
+                expect(failed).toHaveBeenCalledTimes(1);
+                expect(ctx.store.get('password-unlock-error')).toBe('Incorrect password');
+                expect(ctx.store.get('password-unlocking')).toBe(false);
+            });
+
+            test('UNLOCK_MEDIA_PASSWORD failure with other errors shows generic message', () => {
+                const ctx = loadStore();
+                const failed = jest.fn();
+                ctx.store.on('media_password_unlock_failed', failed);
+                ctx.actions.loadMediaData();
+                ctx.actions.unlockMediaPassword('secret');
+                ctx.postRequest.mock.calls[0][5](new Error('network'));
+                expect(failed).toHaveBeenCalledTimes(1);
+                expect(ctx.store.get('password-unlock-error')).toBe('Could not unlock media');
+            });
+
+            test('UNLOCK_MEDIA_PASSWORD without media id is a no-op', () => {
+                const ctx = loadStore({ mediaId: null });
+                ctx.actions.unlockMediaPassword('secret');
+                expect(ctx.postRequest).not.toHaveBeenCalled();
             });
 
             test('Unknown load errors are ignored', () => {
